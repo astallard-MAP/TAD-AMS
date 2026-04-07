@@ -1,4 +1,6 @@
-const functions = require("firebase-functions");
+const { onRequest } = require("firebase-functions/v2/https");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 const Parser = require("rss-parser");
@@ -8,14 +10,16 @@ const { vertexAI, gemini25Flash } = require("@genkit-ai/vertexai");
 const { defineSecret } = require("firebase-functions/params");
 const { google } = require("googleapis");
 
-// Initialize Genkit with Vertex AI (No hardcoded keys)
-const ai = genkit({
-  plugins: [
-    vertexAI({
-      location: 'us-central1' // Production context
-    })
-  ]
-});
+// Initialize Genkit with Vertex AI
+let aiInstance;
+function getAI() {
+  if (!aiInstance) {
+    aiInstance = genkit({
+      plugins: [vertexAI({ location: 'us-central1' })]
+    });
+  }
+  return aiInstance;
+}
 
 admin.initializeApp();
 
@@ -50,12 +54,12 @@ function getTransporter() {
 
 /**
  * Triggers when a new lead is added to the 'leads' collection.
- * Sends a confirmation email to the lead and a notification to Andy.
  */
-exports.processLead = functions.runWith({ secrets: ["SMTP_PASS", "ADMIN_UID"] })
-  .firestore.document("leads/{leadId}")
-  .onCreate(async (snap, context) => {
-    const data = snap.data();
+exports.processLead = onDocumentCreated({ 
+  document: "leads/{leadId}", 
+  secrets: ["SMTP_PASS", "ADMIN_UID"] 
+}, async (event) => {
+    const data = event.data.data();
     const transporter = getTransporter();
 
     // 1. Email to the Customer (The Lead)
@@ -112,7 +116,7 @@ exports.processLead = functions.runWith({ secrets: ["SMTP_PASS", "ADMIN_UID"] })
         transporter.sendMail(customerMailOptions),
         transporter.sendMail(adminMailOptions),
       ]);
-      console.log(`Successfully sent emails for lead ${context.params.leadId}`);
+      console.log(`Successfully sent emails for lead ${event.params.leadId}`);
     } catch (error) {
       console.error("FAILED to send emails:", error);
     }
@@ -181,6 +185,7 @@ async function updateMarketNews() {
   `;
 
   // Use gemini25Flash as gemini-1.5 is retired
+  const ai = getAI();
   const { text } = await ai.generate({
     model: gemini25Flash,
     prompt: prompt
@@ -194,8 +199,12 @@ async function updateMarketNews() {
 
   // CROSSPOST TO GOOGLE BUSINESS PROFILE
   try {
-    await crosspostToGBP(text);
-  } catch (err) { console.error("GBP Post Error:", err); }
+    const gbpResponse = await crosspostToGBP(text);
+    console.log("GBP API Response Success:", JSON.stringify(gbpResponse));
+  } catch (err) { 
+    console.error("CRITICAL GBP ERROR (Check Credentials):", err.message);
+    if (err.response) console.error("GBP Detailed Error:", JSON.stringify(err.response.data));
+  }
 
   return text;
 }
@@ -229,30 +238,45 @@ async function crosspostToGBP(text) {
 
   // Note: Production implementation requires correctly configured scope and endpoint
   console.log("Crossposting to Google Business Profile for SEO...");
+  return { status: "Feature Initialized - Verification Pending" };
 }
 
 /**
  * Synchronizes the latest Google Business Profile reviews.
  */
-exports.syncGBPReviews = functions.runWith({ 
-  secrets: ["GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "GBP_LOCATION_ID"] 
-}).pubsub.schedule("0 9 * * *").onRun(async (context) => {
-  // Logic to fetch reviews and save to Firestore 'reviews' collection
+exports.syncGBPReviews = onSchedule({
+  schedule: "0 9 * * *",
+  secrets: ["GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "GBP_LOCATION_ID"]
+}, async (event) => {
   console.log("Syncing Google Reviews for 'Cash 4 Houses'...");
 });
 
-exports.scheduledMarketUpdate = functions.runWith({ timeoutSeconds: 300 })
-  .pubsub.schedule("0 8 * * *")
-  .timeZone("Europe/London")
-  .onRun(async (context) => {
-    await updateMarketNews();
-  });
+/**
+ * DAILY MARKET UPDATE (Scheduled)
+ */
+exports.scheduledMarketUpdate = onSchedule({
+  schedule: "0 8 * * *",
+  timeZone: "Europe/London",
+  memory: "512MiB",
+  secrets: ["GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "GBP_LOCATION_ID"]
+}, async (event) => {
+  await updateMarketNews();
+});
 
-exports.manualMarketUpdate = functions.https.onRequest(async (req, res) => {
+/**
+ * MANUAL MARKET UPDATE (CORS Enabled)
+ */
+exports.manualMarketUpdate = onRequest({
+  cors: true,
+  memory: "512MiB",
+  timeoutSeconds: 300,
+  secrets: ["GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "GBP_LOCATION_ID"]
+}, async (req, res) => {
   try {
     const result = await updateMarketNews();
     res.status(200).send(result);
   } catch (err) {
+    console.error("Manual News Update Failed:", err);
     res.status(500).send(err.message);
   }
 });

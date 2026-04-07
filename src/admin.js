@@ -76,7 +76,8 @@ async function loadLeads() {
         const querySnapshot = await getDocs(q);
         
         leadsTable.innerHTML = "";
-        totalLeadsEl.textContent = querySnapshot.size;
+        const totalLeadsEl = document.getElementById('totalLeadsEl');
+        if (totalLeadsEl) totalLeadsEl.textContent = querySnapshot.size;
 
         querySnapshot.forEach((doc) => {
             const lead = doc.data();
