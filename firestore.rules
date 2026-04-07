@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow public to create leads, but only read them through the admin portal/console
+    match /leads/{leadId} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+    
+    // Allow public to read the morning market summaries from Andy
+    match /marketUpdates/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
