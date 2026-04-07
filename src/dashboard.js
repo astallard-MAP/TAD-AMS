@@ -99,10 +99,14 @@ async function loadUserProfile(uid) {
 function setupDashboardListeners(user) {
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-            await signOut(auth);
-            window.location.href = "/";
-        });
+        logoutBtn.onclick = async () => {
+            try {
+                await signOut(auth);
+                window.location.replace("/");
+            } catch (err) {
+                console.error("User Logout Error:", err);
+            }
+        };
     }
 
     const fileInput = document.getElementById('profile-upload');

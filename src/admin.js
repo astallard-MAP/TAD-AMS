@@ -1,4 +1,4 @@
-import { db, auth } from './firebase-config.js';
+import { db, auth, storage } from './firebase-config.js';
 import { 
     collection, 
     getDocs, 
@@ -7,30 +7,48 @@ import {
     getCountFromServer,
     where,
     doc,
-    getDoc
+    getDoc,
+    setDoc
 } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { ref, getDownloadURL } from "firebase/storage";
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (!user || user.uid !== ADMIN_UID) {
         window.location.href = "/";
     } else {
         loadDashboardStats();
         loadLeads();
         loadAdminNews();
+        loadAdminProfile(user.uid);
         
         // Finalize logout logic
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', async () => {
-                await auth.signOut();
-                window.location.href = "/";
-            });
+            logoutBtn.onclick = async () => {
+                console.log("Admin Logging Out...");
+                try {
+                    await signOut(auth);
+                    console.log("Logged out, redirecting...");
+                    window.location.replace("/");
+                } catch (err) {
+                    console.error("Logout failed:", err);
+                }
+            };
         }
     }
 });
+
+async function loadAdminProfile(uid) {
+    try {
+        const userDoc = await getDoc(doc(db, "users", uid));
+        if (userDoc.exists() && userDoc.data().photoURL) {
+            document.getElementById('profile-img').src = userDoc.data().photoURL;
+        }
+    } catch (err) { console.error("Profile Error:", err); }
+}
 
 async function loadDashboardStats() {
     try {
