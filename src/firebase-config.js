@@ -20,7 +20,7 @@ const firebaseConfig = {
   measurementId: "G-VN391ZERB0"
 };
 
-// Initialize Firebase
+// Initialise Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = isSupported().then(yes => yes ? getAnalytics(app) : null).catch(() => null);
 const db = getFirestore(app);

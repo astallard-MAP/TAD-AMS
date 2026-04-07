@@ -48,7 +48,7 @@ const FAQS = [
   { keywords: ["condition", "broken", "repair", "worse", "derelict"], answer: "I buy property in ANY condition. Don't worry about repairs." },
   { keywords: ["where", "london", "essex", "locations", "hertfordshire"], answer: "We cover all of London, Hertfordshire, and Essex." },
   { keywords: ["guaranteed", "offer", "promise"], answer: "I offer a guaranteed offer. If I don't buy it personally, I have a network who will." },
-  { keywords: ["financial", "stop", "repossession", "pressure"], answer: "I specialize in helping people under financial pressure. Our service is discrete." },
+  { keywords: ["financial", "stop", "repossession", "pressure"], answer: "I specialise in helping people under financial pressure. Our service is discrete." },
   { keywords: ["cost", "fees", "pay"], answer: "There are no hidden fees or high-pressure tactics." }
 ];
 
@@ -64,7 +64,7 @@ const logoutBtn = document.getElementById('logout-btn');
 const loginModal = document.getElementById('login-modal');
 const loginForm = document.getElementById('login-form');
 
-// Chat Logic - Safe Initialization
+// Chat Logic - Safe Initialisation
 if (chatToggle && chatWindow) {
     chatToggle.onclick = () => chatWindow.classList.toggle('active');
 }
@@ -97,10 +97,10 @@ function getAndyResponse(input) {
     for (const faq of FAQS) {
         if (faq.keywords.some(k => lowercaseInput.includes(k))) return faq.answer;
     }
-    return "Fill out the form, I'll analyze the data and call you back!";
+    return "Fill out the form, I'll analyse the data and call you back!";
 }
 
-// Form Logic - Safe Initialization
+// Form Logic - Safe Initialisation
 if (leadForm) {
     leadForm.onsubmit = async (e) => {
         e.preventDefault();

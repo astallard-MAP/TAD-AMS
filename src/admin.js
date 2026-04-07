@@ -24,7 +24,7 @@ onAuthStateChanged(auth, async (user) => {
         loadAdminNews();
         loadAdminProfile(user.uid);
         
-        // Finalize logout logic
+        // Finalise logout logic
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
             logoutBtn.onclick = async () => {
@@ -85,7 +85,7 @@ async function loadAdminNews() {
             const data = newsDoc.data();
             newsContent.innerHTML = `
                 <div class="news-meta">
-                    <small>Last Analyzed: ${data.updatedAt?.toDate().toLocaleString('en-GB')}</small>
+                    <small>Last Analysed: ${data.updatedAt?.toDate().toLocaleString('en-GB')}</small>
                 </div>
                 <div class="news-body markdown-body">
                     ${marked.parse(data.content)}
@@ -140,10 +140,16 @@ if (genNewsAction) {
         genNewsAction.style.pointerEvents = 'none';
 
         try {
-            await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/manualMarketUpdate');
+            const token = await auth.currentUser.getIdToken();
+            await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/manualMarketUpdate', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             await loadAdminNews();
             alert("Andy has successfully generated and published today's stories!");
-        } catch (err) { alert("Failed to trigger update."); }
+        } catch (err) { 
+            console.error("News Trigger Error:", err);
+            alert("Failed to trigger update. Check console for permission details."); 
+        }
         
         icon.className = originalIcon;
         genNewsAction.style.opacity = '1';
