@@ -12,6 +12,9 @@
     "vite": "^8.0.4"
   },
   "dependencies": {
+    "@genkit-ai/ai": "^1.31.0",
+    "@genkit-ai/firebase": "^1.31.0",
+    "@genkit-ai/vertexai": "^1.31.0",
     "firebase": "^12.11.0"
   }
 }

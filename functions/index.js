@@ -3,9 +3,21 @@ const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 const Parser = require("rss-parser");
 const parser = new Parser();
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { genkit } = require("@genkit-ai/ai");
+const { vertexAI, gemini25Flash } = require("@genkit-ai/vertexai");
 const { defineSecret } = require("firebase-functions/params");
 const { google } = require("googleapis");
+
+// Initialize Genkit with Vertex AI (No hardcoded keys)
+const ai = genkit({
+  plugins: [
+    vertexAI({
+      location: 'us-central1' // Production context
+    })
+  ]
+});
+
+admin.initializeApp();
 
 // Define Secrets (Managed via Firebase Secret Manager)
 const SMTP_PASS = defineSecret("SMTP_PASS");
@@ -155,15 +167,6 @@ async function updateMarketNews() {
 
   if (filtered.length === 0) return "No distressed triggers found in today's news.";
 
-  const apiKey = GEMINI_API_KEY.value();
-  if (!apiKey) {
-    console.error("Missing GEMINI_API_KEY secrets");
-    return "AI generation failed: Missing Secret API key.";
-  }
-
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
   const prompt = `
     You are "Andy the Property Buyer", an expert with decades of experience in the UK property market. 
     Review the following news items and produce a daily amalgamated news story overview titled "What's Driving Todays Property Market".
@@ -177,8 +180,11 @@ async function updateMarketNews() {
     ${JSON.stringify(filtered)}
   `;
 
-  const result = await model.generateContent(prompt);
-  const text = result.response.text();
+  // Use gemini25Flash as gemini-1.5 is retired
+  const { text } = await ai.generate({
+    model: gemini25Flash,
+    prompt: prompt
+  });
 
   await admin.firestore().collection("marketUpdates").doc("latest").set({
     content: text,
@@ -235,15 +241,14 @@ exports.syncGBPReviews = functions.runWith({
   console.log("Syncing Google Reviews for 'Cash 4 Houses'...");
 });
 
-exports.scheduledMarketUpdate = functions.runWith({ secrets: ["GEMINI_API_KEY"] })
+exports.scheduledMarketUpdate = functions.runWith({ timeoutSeconds: 300 })
   .pubsub.schedule("0 8 * * *")
   .timeZone("Europe/London")
   .onRun(async (context) => {
     await updateMarketNews();
   });
 
-exports.manualMarketUpdate = functions.runWith({ secrets: ["GEMINI_API_KEY"] })
-  .https.onRequest(async (req, res) => {
+exports.manualMarketUpdate = functions.https.onRequest(async (req, res) => {
   try {
     const result = await updateMarketNews();
     res.status(200).send(result);
