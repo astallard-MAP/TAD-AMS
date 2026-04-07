@@ -589,17 +589,122 @@ footer {
     margin: 3rem 0;
 }
 
-/* Analogue Clock Component */
-.clock-component {
+/* Admin Dashboard Overhaul */
+.admin-nav {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    background: #fff;
+    padding: 1rem 0;
+}
+
+.kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.kpi-card {
+    background: white;
+    padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    width: 150px;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    border: 1px solid #eee;
+}
+
+.kpi-card i {
+    font-size: 2rem;
+    color: #d32f2f;
+    opacity: 0.8;
+}
+
+.kpi-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-label {
+    font-size: 0.75rem;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.kpi-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #2c3e50;
+    font-family: 'Outfit', sans-serif;
+}
+
+.social-breakdown {
+    font-size: 0.7rem;
+    color: #888;
+    margin-top: 5px;
+    line-height: 1.2;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.admin-panel {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+}
+
+.panel-header {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h2 {
+    font-size: 1.1rem;
+    margin: 0;
+    color: #2c3e50;
+}
+
+.table-container {
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+.news-display {
+    padding: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #444;
+    overflow-y: auto;
+    max-height: 600px;
+}
+
+.panel-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #eee;
+    margin-top: auto;
+}
+
+@media (max-width: 1200px) {
+    .kpi-row { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 968px) {
+    .admin-grid { grid-template-columns: 1fr; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
 }
 
 .analogue-clock {
@@ -754,4 +859,101 @@ footer {
     font-weight: bold;
     color: #2e7d32;
     font-family: 'Outfit', sans-serif;
+}
+
+/* Analogue Clock Component */
+.clock-component {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    width: 150px;
+}
+
+/* Reviews Section */
+.reviews {
+    padding: 6rem 0;
+    background: #fff;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.review-card {
+    background: #fcfcfc;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    transition: transform 0.3s ease;
+}
+
+.review-card:hover { transform: translateY(-5px); }
+
+.review-stars { color: #ffc107; margin-bottom: 1rem; }
+
+.review-author {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.review-author img { width: 40px; height: 40px; border-radius: 50%; }
+
+.reviews-footer {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+/* Quick Actions Row */
+.quick-actions {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.action-card {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    flex: 1;
+    max-width: 350px;
+}
+
+.action-card:hover {
+    border-color: #d32f2f;
+    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.1);
+    transform: translateY(-2px);
+}
+
+.action-card i {
+    font-size: 1.5rem;
+    color: #d32f2f;
+}
+
+.action-info h3 {
+    font-size: 1rem;
+    margin: 0;
+    color: #2c3e50;
+}
+
+.action-info p {
+    font-size: 0.75rem;
+    color: #666;
+    margin: 3px 0 0;
 }

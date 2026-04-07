@@ -117,8 +117,22 @@ leadForm.addEventListener('submit', async (e) => {
     // Save to Firestore
     await addDoc(collection(db, "leads"), data);
     
-    await new Promise(r => setTimeout(r, 800));
-    alert("Thank you! Andy has completed the initial investigation. He will review the property data and contact you shortly with your guaranteed offer.");
+    // UI Success State
+    const formCard = leadForm.closest('.form-card');
+    if (formCard) {
+        formCard.innerHTML = `
+            <div class="success-wrap" style="text-align: center; padding: 2rem;">
+                <i class="fas fa-check-circle" style="font-size: 4rem; color: #2e7d32; margin-bottom: 1.5rem;"></i>
+                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; margin-bottom: 1rem;">Done, ${data.firstName}!</h3>
+                <p style="color: #666; margin-bottom: 2rem;">Andy has received your property details and the initial investigation is complete. Expect a contact from him shortly.</p>
+                
+                <div class="review-invite" style="background: #f9f9f9; padding: 1.5rem; border-radius: 12px; border: 1px solid #eee;">
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem; color: #444;"><strong>Help us help others?</strong><br>If you've found our service fast and helpful, please leave us a review on Google.</p>
+                    <a href="https://search.google.com/local/writereview?placeid=ChIJN1t_tDeuEmsRUsoyG83OBY8" target="_blank" class="btn btn-primary" style="width: 100%;">Share Your Feedback</a>
+                </div>
+            </div>
+        `;
+    }
   } catch (error) {
     console.error("Error adding document: ", error);
     alert("Sorry, there was an error sending your details. Please call us directly at 01702 416 323.");

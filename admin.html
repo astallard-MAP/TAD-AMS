@@ -4,53 +4,117 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Admin Dashboard | Cash 4 Houses</title>
+    <title>Global Admin Dashboard | Cash 4 Houses</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/src/style.css">
 </head>
 <body class="admin-body">
     <header>
-        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="container admin-nav">
             <a href="/" class="logo">
-                <img src="/logo.jpg" alt="Logo" style="height: 50px;">
+                <img src="/logo.jpg" alt="Logo">
             </a>
-            <h1>Global Admin Dashboard</h1>
+            <h1>Global Administrator</h1>
             <div id="admin-clock"></div>
-            <div id="admin-auth-status"></div>
         </div>
     </header>
 
-    <main class="container admin-main">
-        <section class="admin-stats">
-            <div class="stat-card">
-                <span class="stat-num" id="total-leads">-</span>
-                <span class="stat-label">Total Leads</span>
+    <main class="container admin-container">
+        <!-- KPI Row -->
+        <section class="kpi-row">
+            <div class="kpi-card">
+                <i class="fas fa-users"></i>
+                <div class="kpi-info">
+                    <span class="kpi-label">Site Visitors</span>
+                    <span class="kpi-value" id="stat-visitors">0</span>
+                </div>
             </div>
-            <div class="stat-card">
-                <button id="refresh-leads" class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
+            <div class="kpi-card">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <div class="kpi-info">
+                    <span class="kpi-label">Valuations</span>
+                    <span class="kpi-value" id="stat-leads">0</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <i class="fas fa-user-check"></i>
+                <div class="kpi-info">
+                    <span class="kpi-label">Registered Users</span>
+                    <span class="kpi-value" id="stat-users">0</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <i class="fas fa-hand-holding-dollar"></i>
+                <div class="kpi-info">
+                    <span class="kpi-label">Offers Made</span>
+                    <span class="kpi-value" id="stat-offers">0</span>
+                </div>
+            </div>
+            <div class="kpi-card social-kpi">
+                <i class="fas fa-share-nodes"></i>
+                <div class="kpi-info">
+                    <span class="kpi-label">Social Posts</span>
+                    <div class="social-breakdown">
+                        <div>Today: <span id="social-today">0</span></div>
+                        <div>Week: <span id="social-week">0</span></div>
+                        <div>Month: <span id="social-month">0</span></div>
+                        <div>Year: <span id="social-year">0</span></div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section class="leads-table-container">
-            <h2>Recent Enquiries</h2>
-            <div class="table-wrapper">
-                <table id="leads-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Name</th>
-                            <th>Property</th>
-                            <th>Timescale</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leads-body">
-                        <!-- Leads populated by JS -->
-                    </tbody>
-                </table>
+        <!-- Quick Actions Row -->
+        <section class="quick-actions">
+            <div class="action-card" id="btn-generate-news">
+                <i class="fas fa-magic"></i>
+                <div class="action-info">
+                    <h3>Generate News Story</h3>
+                    <p>Trigger Andy to scan and summarize today's property triggers.</p>
+                </div>
             </div>
+            <!-- More actions can be added here -->
         </section>
+
+        <!-- Main Content Grid -->
+        <div class="admin-grid">
+            <!-- Left: Enquiries -->
+            <section class="admin-panel enq-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-envelope-open-text"></i> Recent Enquiries</h2>
+                    <button id="refresh-leads" class="btn btn-sm btn-outline">Refresh</button>
+                </div>
+                <div class="table-container">
+                    <table id="leads-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Lead</th>
+                                <th>Property</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leads-body">
+                            <!-- Populated by admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Right: AI Market News -->
+            <section class="admin-panel news-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-robot"></i> Today's AI Analysis (Andy)</h2>
+                    <span id="news-status" class="status-badge">Live</span>
+                </div>
+                <div id="admin-news-content" class="news-display">
+                    <p class="loading">Fetching latest analysis...</p>
+                </div>
+                <div class="panel-footer">
+                    <button id="force-update-news" class="btn btn-primary btn-sm">Force AI Update Now</button>
+                </div>
+            </section>
+        </div>
     </main>
 
     <script type="module" src="/src/admin.js"></script>
