@@ -1,5 +1,23 @@
-import { db } from './firebase-config.js';
-import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
+import { db, auth } from './firebase-config.js';
+import { 
+    collection, 
+    addDoc, 
+    serverTimestamp,
+    doc,
+    getDoc
+} from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+
+// Global Redirect: If logged in, go to dashboard
+onAuthStateChanged(auth, (user) => {
+    if (user && !window.location.pathname.includes('admin.html')) {
+        // We exclude admin.html to allow the admin to stay on their dashboard 
+        // if they are the admin, but for general users on home, move to dashboard.
+        if (window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
+            window.location.href = '/dashboard.html';
+        }
+    }
+});
 
 // Andy's Persona and FAQs
 const ANDY_PERSONA = {
