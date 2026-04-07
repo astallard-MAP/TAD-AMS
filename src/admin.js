@@ -20,6 +20,15 @@ onAuthStateChanged(auth, (user) => {
         loadDashboardStats();
         loadLeads();
         loadAdminNews();
+        
+        // Finalize logout logic
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                await auth.signOut();
+                window.location.href = "/";
+            });
+        }
     }
 });
 

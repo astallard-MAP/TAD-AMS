@@ -8,12 +8,14 @@ import {
 } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
 
-// Global Redirect: If logged in, go to dashboard
+// Global Redirect: If logged in, go to the correct dashboard
+const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
+
 onAuthStateChanged(auth, (user) => {
-    if (user && !window.location.pathname.includes('admin.html')) {
-        // We exclude admin.html to allow the admin to stay on their dashboard 
-        // if they are the admin, but for general users on home, move to dashboard.
-        if (window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
+    if (user && (window.location.pathname === '/' || window.location.pathname.includes('index.html'))) {
+        if (user.uid === ADMIN_UID) {
+            window.location.href = '/admin.html';
+        } else {
             window.location.href = '/dashboard.html';
         }
     }

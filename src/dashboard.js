@@ -1,19 +1,30 @@
-import { db, auth } from './firebase-config.js';
-import { onAuthStateChanged } from "firebase/auth";
+import { db, auth, storage } from './firebase-config.js';
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { 
     collection, 
     query, 
     where, 
     getDocs, 
-    orderBy 
+    orderBy,
+    doc,
+    setDoc,
+    getDoc
 } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = "/";
+    } else if (user.uid === ADMIN_UID) {
+        window.location.href = "/admin.html";
     } else {
         document.getElementById('dash-user-name').textContent = user.email.split('@')[0];
+        document.getElementById('user-email').textContent = user.email;
         loadUserProperties(user.email);
+        loadUserProfile(user.uid);
+        setupDashboardListeners(user);
     }
 });
 
@@ -71,5 +82,52 @@ async function loadUserProperties(email) {
     } catch (error) {
         console.error("Error loading properties:", error);
         listEl.innerHTML = "<p>Error loading your property dashboard. Please try again later.</p>";
+    }
+}
+
+async function loadUserProfile(uid) {
+    try {
+        const userDoc = await getDoc(doc(db, "users", uid));
+        if (userDoc.exists() && userDoc.data().photoURL) {
+            document.getElementById('profile-img').src = userDoc.data().photoURL;
+        }
+    } catch (err) {
+        console.error("Error loading user profile:", err);
+    }
+}
+
+function setupDashboardListeners(user) {
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            await signOut(auth);
+            window.location.href = "/";
+        });
+    }
+
+    const fileInput = document.getElementById('profile-upload');
+    if (fileInput) {
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const storageRef = ref(storage, `profiles/${user.uid}`);
+                const snapshot = await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(snapshot.ref);
+
+                // Update Firestore
+                await setDoc(doc(db, "users", user.uid), {
+                    photoURL: url,
+                    updatedAt: new Date()
+                }, { merge: true });
+
+                // Update UI
+                document.getElementById('profile-img').src = url;
+            } catch (err) {
+                console.error("Profile upload failed:", err);
+                alert("Failed to upload profile picture. Please try again.");
+            }
+        });
     }
 }
