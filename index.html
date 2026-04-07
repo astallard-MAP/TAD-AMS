@@ -67,46 +67,49 @@
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="title">Title</label>
-                                    <select id="title" required>
+                                    <select name="title" id="title" required>
                                         <option value="">Select...</option>
                                         <option value="Mr">Mr</option>
-                                        <option value="Miss">Miss</option>
                                         <option value="Mrs">Mrs</option>
+                                        <option value="Miss">Miss</option>
                                         <option value="Ms">Ms</option>
+                                        <option value="Mx">Mx</option>
                                         <option value="Dr">Dr</option>
+                                        <option value="Prof">Prof</option>
+                                        <option value="Rev">Rev</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="firstName">First Name</label>
-                                    <input type="text" id="firstName" required>
+                                    <input type="text" name="firstName" id="firstName" required>
                                 </div>
                             </div>
                             
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="surname">Surname</label>
-                                    <input type="text" id="surname" required>
+                                    <input type="text" name="surname" id="surname" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="mobile">Mobile Number</label>
-                                    <input type="tel" id="mobile" required>
+                                    <input type="tel" name="mobile" id="mobile" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="email">Email Address</label>
-                                <input type="email" id="email" required>
+                                <input type="email" name="email" id="email" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="address">Property Address</label>
-                                <input type="text" id="address" placeholder="Enter full property address" required>
+                                <input type="text" name="address" id="address" placeholder="Enter full property address" required>
                             </div>
 
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="type">Property Type</label>
-                                    <select id="type" required>
+                                    <select name="type" id="type" required>
                                         <option value="">Select...</option>
                                         <option value="House">House</option>
                                         <option value="Flat">Flat</option>
@@ -117,13 +120,13 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="bedrooms">Bedrooms</label>
-                                    <input type="number" id="bedrooms" min="0" required>
+                                    <input type="number" name="bedrooms" id="bedrooms" min="0" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="condition">Condition of Property</label>
-                                <select id="condition" required>
+                                <select name="condition" id="condition" required>
                                     <option value="">Select...</option>
                                     <option value="Excellent">Excellent</option>
                                     <option value="Good">Good</option>
@@ -135,12 +138,12 @@
 
                             <div class="form-group">
                                 <label for="reason">Reason for Sale</label>
-                                <input type="text" id="reason" placeholder="e.g. Financial pressure, relocation, inheritance" required>
+                                <input type="text" name="reason" id="reason" placeholder="e.g. Financial pressure, relocation, inheritance" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="timescale">Timescale</label>
-                                <select id="timescale" required>
+                                <select name="timescale" id="timescale" required>
                                     <option value="">How quickly do you need the money?</option>
                                     <option value="Within 7 Days">Within 7 Days</option>
                                     <option value="1-2 Weeks">1-2 Weeks</option>
@@ -317,6 +320,5 @@
     </div>
 
     <script type="module" src="/src/main.js"></script>
-    <script type="module" src="/src/auth.js"></script>
 </body>
 </html>
