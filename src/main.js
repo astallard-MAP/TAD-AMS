@@ -1,3 +1,6 @@
+import { db } from './firebase-config.js';
+import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
+
 // Andy's Persona and FAQs
 const ANDY_PERSONA = {
   name: "Andy",
@@ -106,13 +109,60 @@ leadForm.addEventListener('submit', async (e) => {
   }
 
   submitBtn.textContent = "Analysis Complete - Sending Data...";
-  await new Promise(r => setTimeout(r, 800));
+  
+  try {
+    // Add current timestamp
+    data.createdAt = serverTimestamp();
+    
+    // Save to Firestore
+    await addDoc(collection(db, "leads"), data);
+    
+    await new Promise(r => setTimeout(r, 800));
+    alert("Thank you! Andy has completed the initial investigation. He will review the property data and contact you shortly with your guaranteed offer.");
+  } catch (error) {
+    console.error("Error adding document: ", error);
+    alert("Sorry, there was an error sending your details. Please call us directly at 01702 416 323.");
+  }
 
-  alert("Thank you! Andy has completed the initial investigation. He will review the property data and contact you shortly with your guaranteed offer.");
   submitBtn.textContent = originalText;
   submitBtn.disabled = false;
   leadForm.reset();
 });
+
+// Market News Logic
+async function fetchLatestNews() {
+  const newsContent = document.getElementById('news-content');
+  const newsDate = document.getElementById('news-date');
+  const newsSources = document.getElementById('news-sources');
+
+  if (!newsContent) return;
+
+  try {
+    const docRef = doc(db, "marketUpdates", "latest");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      
+      // Use marked to parse the markdown content
+      newsContent.innerHTML = marked.parse(data.content);
+      
+      // Format date
+      const date = data.updatedAt.toDate();
+      newsDate.textContent = `Last Analyzed by Andy: ${date.toLocaleDateString()} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      
+      // Render sources
+      newsSources.innerHTML = data.sources.map(s => `<span class="source-tag">${s}</span>`).join('');
+    } else {
+      newsContent.innerHTML = "<p>Andy is currently gathering today's property triggers. Check back shortly!</p>";
+    }
+  } catch (err) {
+    console.error("Error fetching news:", err);
+    newsContent.innerHTML = "<p>Sorry, there was a temporary issue loading the market analysis.</p>";
+  }
+}
+
+fetchLatestNews();
 
 // Smooth Scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

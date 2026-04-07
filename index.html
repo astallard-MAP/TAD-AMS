@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="stylesheet" href="/src/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <header>
@@ -138,6 +139,22 @@
 
                             <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem;">Get Guaranteed Offer</button>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Daily Market News Section -->
+        <section class="market-news" id="market-news">
+            <div class="container">
+                <div class="news-card">
+                    <h2><i class="fas fa-newspaper"></i> What's Driving Todays Property Market</h2>
+                    <div id="news-content" class="news-content">
+                        <p class="loading"><i class="fas fa-spinner fa-spin"></i> Andy is analyzing today's property news triggers...</p>
+                    </div>
+                    <div class="news-footer">
+                        <span id="news-date"></span>
+                        <div class="source-cloud" id="news-sources"></div>
                     </div>
                 </div>
             </div>
