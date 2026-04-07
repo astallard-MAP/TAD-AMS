@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash 4 Houses | Fast, Discrete Property Sales in London & Essex</title>
+    <meta name="description" content="Sell your house fast for cash in London, Hertfordshire, and Essex. We buy properties in any condition. Guaranteed offer, professional and discrete service.">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">
+                    <img src="/logo.jpg" alt="Cash 4 Houses Logo">
+                </a>
+                <div class="nav-links">
+                    <a href="#about">About</a>
+                    <a href="#locations">Locations</a>
+                    <a href="tel:01702416323" class="btn btn-primary"><i class="fas fa-phone"></i> 01702 416 323</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1>Sell Your Property <span>Fast</span> For Cash</h1>
+                        <p>Discrete, professional service for homeowners in London, Hertfordshire, and Essex. Get a guaranteed offer within 24 hours.</p>
+                        <div class="trust-badges">
+                            <span class="badge"><i class="fas fa-check-circle"></i> No Obligation</span>
+                            <span class="badge"><i class="fas fa-check-circle"></i> Any Condition</span>
+                            <span class="badge"><i class="fas fa-check-circle"></i> Fast Completion</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-card" id="get-offer">
+                        <h2>Get Your Cash Offer</h2>
+                        <form id="lead-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="title">Title</label>
+                                    <select id="title" required>
+                                        <option value="">Select...</option>
+                                        <option value="Mr">Mr</option>
+                                        <option value="Miss">Miss</option>
+                                        <option value="Mrs">Mrs</option>
+                                        <option value="Ms">Ms</option>
+                                        <option value="Dr">Dr</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="firstName">First Name</label>
+                                    <input type="text" id="firstName" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="surname">Surname</label>
+                                    <input type="text" id="surname" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="mobile">Mobile Number</label>
+                                    <input type="tel" id="mobile" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="address">Property Address</label>
+                                <input type="text" id="address" placeholder="Enter full property address" required>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="type">Property Type</label>
+                                    <select id="type" required>
+                                        <option value="">Select...</option>
+                                        <option value="House">House</option>
+                                        <option value="Flat">Flat</option>
+                                        <option value="Studio">Studio</option>
+                                        <option value="Bungalow">Bungalow</option>
+                                        <option value="Land">Land</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bedrooms">Bedrooms</label>
+                                    <input type="number" id="bedrooms" min="0" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="condition">Condition of Property</label>
+                                <select id="condition" required>
+                                    <option value="">Select...</option>
+                                    <option value="Excellent">Excellent</option>
+                                    <option value="Good">Good</option>
+                                    <option value="Fair">Fair</option>
+                                    <option value="Poor">Poor / Needs Work</option>
+                                    <option value="Derelict">Derelict / Major Renovation</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reason">Reason for Sale</label>
+                                <input type="text" id="reason" placeholder="e.g. Financial pressure, relocation, inheritance" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="timescale">Timescale</label>
+                                <select id="timescale" required>
+                                    <option value="">How quickly do you need the money?</option>
+                                    <option value="Within 7 Days">Within 7 Days</option>
+                                    <option value="1-2 Weeks">1-2 Weeks</option>
+                                    <option value="1 Month">1 Month</option>
+                                    <option value="Flexible">Flexible</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem;">Get Guaranteed Offer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="about">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Our Fast Property Buying Process</h2>
+                    <p>We pride ourselves on offering a friendly, professional, and discrete service.</p>
+                </div>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                        <h3>Fast Completion</h3>
+                        <p>We have cash available immediately. We can complete sales in as little as 7 days, giving you the money you need when you need it.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-shield-halved"></i></div>
+                        <h3>Discrete & Professional</h3>
+                        <p>No high-pressure sales tactics. We offer a private, confidential service for homeowners under financial pressure.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-tools"></i></div>
+                        <h3>Any Condition</h3>
+                        <p>Whether it's in pristine condition or derelict, we are interested. To be honest, the worse the condition, the better!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Areas Section -->
+        <section class="areas" id="locations">
+            <div class="container">
+                <h2>Serving London, Hertfordshire & Essex</h2>
+                <p style="text-align: center; margin-bottom: 2rem;">Specifically looking for properties in:</p>
+                <div class="area-list">
+                    <div class="area-item">Southend on Sea</div>
+                    <div class="area-item">Basildon</div>
+                    <div class="area-item">Wickford</div>
+                    <div class="area-item">Billericay</div>
+                    <div class="area-item">Brentwood</div>
+                    <div class="area-item">Chingford</div>
+                    <div class="area-item">Woodford</div>
+                    <div class="area-item">South Woodford</div>
+                    <div class="area-item">East Ham</div>
+                    <div class="area-item">Forest Gate</div>
+                    <div class="area-item">Leyton</div>
+                    <div class="area-item">Leytonstone</div>
+                    <div class="area-item">Walthamstow</div>
+                </div>
+                <p style="text-align: center; margin-top: 2rem;">Plus all other areas across the counties.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <div class="footer-logo">
+                        <img src="/logo.jpg" alt="Logo">
+                    </div>
+                    <p>Hillsboro, 377 Southchurch Road,<br>Southend-On-Sea, Essex SS1 2PQ</p>
+                    <p><strong>Tel:</strong> 01702 416 323</p>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/Cash4Houses.co.uk" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="https://www.instagram.com/cash4houses.co.uk/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#about">About Our Service</a></li>
+                        <li><a href="#locations">Areas We Buy</a></li>
+                        <li><a href="#get-offer">Get an Offer</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Our Ethos</h4>
+                    <p>We provide a fast, friendly, and professional service with no obligation. If we can't buy your property, we'll secure the best offer from our personal contacts.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Andy Chatbot Widget -->
+    <div class="chat-widget">
+        <div class="chat-window" id="chat-window">
+            <div class="chat-header">
+                <img src="/andy.jpg" alt="Andy">
+                <div>
+                    <strong>Andy</strong>
+                    <div style="font-size: 0.7rem; opacity: 0.8;">Property Buyer (Decades of Experience)</div>
+                </div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message message-bot">
+                    Hi! I'm Andy. I've been buying property for decades. How can I help you today?
+                </div>
+            </div>
+            <form class="chat-input-area" id="chat-form">
+                <input type="text" id="chat-input" placeholder="Ask me anything...">
+                <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem;"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+        <div class="chat-button" id="chat-toggle">
+            <i class="fas fa-comments"></i>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
