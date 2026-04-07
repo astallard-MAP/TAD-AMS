@@ -580,3 +580,178 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* Dashboard & Property Cards */
+.properties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+/* Analogue Clock Component */
+.clock-component {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    width: 150px;
+}
+
+.analogue-clock {
+    width: 80px;
+    height: 80px;
+    border: 3px solid #2c3e50;
+    border-radius: 50%;
+    position: relative;
+    padding: 2px;
+}
+
+.hand {
+    width: 50%;
+    height: 3px;
+    background: #2c3e50;
+    position: absolute;
+    top: 50%;
+    transform-origin: 100%;
+    transform: rotate(90deg);
+    transition: all 0.05s;
+    transition-timing-function: cubic-bezier(0.1, 2.7, 0.58, 1);
+    border-radius: 4px;
+}
+
+.hour-hand {
+    width: 30%;
+    z-index: 3;
+    left: 20%;
+}
+
+.minute-hand {
+    width: 40%;
+    height: 2px;
+    z-index: 2;
+    left: 10%;
+}
+
+.second-hand {
+    width: 45%;
+    height: 1px;
+    background: #d32f2f;
+    z-index: 1;
+    left: 5%;
+}
+
+.clock-center {
+    width: 8px;
+    height: 8px;
+    background: #2c3e50;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.digital-date {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+
+.digital-time {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.property-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #eee;
+}
+
+.prop-status-ribbon {
+    position: absolute;
+    top: 15px;
+    right: -35px;
+    transform: rotate(45deg);
+    padding: 5px 40px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.status-pending { background: #ffa000; }
+.status-offer { background: #2e7d32; }
+
+.prop-header {
+    background: #fcfcfc;
+    padding: 2rem 1.5rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.prop-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.prop-date {
+    display: block;
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 5px;
+}
+
+.prop-details {
+    padding: 1.5rem;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.prop-details p {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.prop-actions {
+    padding: 1.5rem;
+    background: #f9f9f9;
+}
+
+.waiting-msg {
+    font-size: 0.85rem;
+    color: #d32f2f;
+    font-style: italic;
+    margin: 0;
+}
+
+.offer-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.offer-label {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.offer-amount {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2e7d32;
+    font-family: 'Outfit', sans-serif;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Property Dashboard | Cash 4 Houses</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="dashboard-body">
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="/" class="logo">
+                <img src="/logo.jpg" alt="Logo" style="height: 50px;">
+            </a>
+            <h1>My Property Portfolio</h1>
+            <div id="user-clock"></div>
+            <div id="user-display"></div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="dashboard-header">
+            <h2>Welcome back, <span id="dash-user-name">...</span></h2>
+            <p>Manage your property inquiries and view active cash offers below.</p>
+        </section>
+
+        <section class="properties-grid" id="properties-list">
+            <!-- Property cards will be injected here -->
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i> Loading your properties...
+            </div>
+        </section>
+
+        <section class="dashboard-actions">
+            <a href="/#get-offer" class="btn btn-primary">Add Another Property</a>
+        </section>
+    </main>
+
+    <script type="module" src="/src/dashboard.js"></script>
+    <script type="module">
+        import { initAnalogueClock } from '/src/clock.js';
+        initAnalogueClock('user-clock');
+    </script>
+</body>
+</html>

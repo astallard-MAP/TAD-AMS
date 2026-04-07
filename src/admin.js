@@ -35,7 +35,7 @@ async function loadLeads() {
             
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${date.toLocaleDateString()}</td>
+                <td>${date.toLocaleDateString('en-GB')}</td>
                 <td><strong>${lead.firstName} ${lead.surname}</strong><br><small>${lead.email}</small></td>
                 <td>${lead.address}<br><small>${lead.type} - ${lead.bedrooms}br</small></td>
                 <td><span class="badge ${lead.timescale === 'Within 7 Days' ? 'badge-urgent' : ''}">${lead.timescale}</span></td>

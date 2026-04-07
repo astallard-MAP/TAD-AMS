@@ -149,7 +149,7 @@ async function fetchLatestNews() {
       
       // Format date
       const date = data.updatedAt.toDate();
-      newsDate.textContent = `Last Analyzed by Andy: ${date.toLocaleDateString()} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      newsDate.textContent = `Last Analysed: ${date.toLocaleString('en-GB')}`;
       
       // Render sources
       newsSources.innerHTML = data.sources.map(s => `<span class="source-tag">${s}</span>`).join('');

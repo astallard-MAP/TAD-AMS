@@ -1,7 +1,7 @@
 # Cash4Houses Portal
 
 ## 🌟 Overview
-A premium, AI-powered platform for distressed property sellers in London, Hertfordshire, and Essex. This portal uses real-time market data and AI triggers to identify and convert leads into guaranteed cash sales.
+A premium, AI-powered platform for distressed property sellers in London, Hertfordshire, and Essex. Created for Andrew Stallard, this portal uses real-time market data and AI triggers to identify and convert leads into guaranteed cash sales.
 
 ## 🚀 Key Features
 - **AI Investigation Logic**: Automated preliminary property analysis (Land Registry & Comparable Sales).

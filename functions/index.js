@@ -4,33 +4,40 @@ const nodemailer = require("nodemailer");
 const Parser = require("rss-parser");
 const parser = new Parser();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { defineSecret } = require("firebase-functions/params");
 
-admin.initializeApp();
+// Define Secrets (Managed via Firebase Secret Manager)
+const SMTP_PASS = defineSecret("SMTP_PASS");
+const ADMIN_UID = defineSecret("ADMIN_UID");
+const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
 
-// Office 365 SMTP configuration
-const transporter = nodemailer.createTransport({
-  host: "smtp.office365.com",
-  port: 587,
-  secure: false, // STARTTLS
-  auth: {
-    user: "Andy@Cash4Houses.co.uk",
-    pass: "FTBss12pq#",
-  },
-  tls: {
-    // Office 365 requires specific TLS settings sometimes
-    ciphers: "SSLv3",
-    rejectUnauthorized: false
-  },
-});
+// Optimized transporter - initialized inside individual function calls 
+// to use Secret Manager values securely.
+function getTransporter() {
+  return nodemailer.createTransport({
+    host: "smtp.office365.com",
+    port: 587,
+    secure: false, // STARTTLS
+    auth: {
+      user: "Andy@Cash4Houses.co.uk",
+      pass: SMTP_PASS.value(),
+    },
+    tls: {
+      ciphers: "SSLv3",
+      rejectUnauthorized: false
+    },
+  });
+}
 
 /**
  * Triggers when a new lead is added to the 'leads' collection.
  * Sends a confirmation email to the lead and a notification to Andy.
  */
-exports.processLead = functions.firestore
-  .document("leads/{leadId}")
+exports.processLead = functions.runWith({ secrets: ["SMTP_PASS", "ADMIN_UID"] })
+  .firestore.document("leads/{leadId}")
   .onCreate(async (snap, context) => {
     const data = snap.data();
+    const transporter = getTransporter();
 
     // 1. Email to the Customer (The Lead)
     const customerMailOptions = {
@@ -76,6 +83,10 @@ exports.processLead = functions.firestore
         </div>
       `,
     };
+
+    // Use current Global Admin UID from Secrets Manager
+    const targetAdminUid = ADMIN_UID.value();
+    console.log(`Processing new lead for administrator: ${targetAdminUid}`);
 
     try {
       await Promise.all([
@@ -137,10 +148,10 @@ async function updateMarketNews() {
 
   if (filtered.length === 0) return "No distressed triggers found in today's news.";
 
-  const apiKey = functions.config().google_ai?.key;
+  const apiKey = GEMINI_API_KEY.value();
   if (!apiKey) {
-    console.error("Missing google_ai.key");
-    return "AI generation failed: Missing API key.";
+    console.error("Missing GEMINI_API_KEY secrets");
+    return "AI generation failed: Missing Secret API key.";
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
@@ -171,14 +182,15 @@ async function updateMarketNews() {
   return text;
 }
 
-exports.scheduledMarketUpdate = functions.pubsub
-  .schedule("0 8 * * *")
+exports.scheduledMarketUpdate = functions.runWith({ secrets: ["GEMINI_API_KEY"] })
+  .pubsub.schedule("0 8 * * *")
   .timeZone("Europe/London")
   .onRun(async (context) => {
     await updateMarketNews();
   });
 
-exports.manualMarketUpdate = functions.https.onRequest(async (req, res) => {
+exports.manualMarketUpdate = functions.runWith({ secrets: ["GEMINI_API_KEY"] })
+  .https.onRequest(async (req, res) => {
   try {
     const result = await updateMarketNews();
     res.status(200).send(result);

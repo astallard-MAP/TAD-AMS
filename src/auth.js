@@ -6,6 +6,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 
+// Authentication for Andrew Stallard (Global Administrator)
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
 // Global Auth State Handler
@@ -22,8 +23,12 @@ onAuthStateChanged(auth, async (user) => {
     }
     
     // Check if Global Admin
-    if (user.uid === ADMIN_UID && adminToggle) {
-      adminToggle.style.display = 'block';
+    if (user.uid === ADMIN_UID) {
+      if (adminToggle) adminToggle.style.display = 'block';
+    } else {
+      // Regular User Profile Link
+      const portfolioLink = document.getElementById('portfolio-link');
+      if (portfolioLink) portfolioLink.style.display = 'block';
     }
   } else {
     if (loginBtn) loginBtn.style.display = 'block';

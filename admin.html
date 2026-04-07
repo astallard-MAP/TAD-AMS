@@ -15,6 +15,7 @@
                 <img src="/logo.jpg" alt="Logo" style="height: 50px;">
             </a>
             <h1>Global Admin Dashboard</h1>
+            <div id="admin-clock"></div>
             <div id="admin-auth-status"></div>
         </div>
     </header>
@@ -53,5 +54,9 @@
     </main>
 
     <script type="module" src="/src/admin.js"></script>
+    <script type="module">
+        import { initAnalogueClock } from '/src/clock.js';
+        initAnalogueClock('admin-clock');
+    </script>
 </body>
 </html>
