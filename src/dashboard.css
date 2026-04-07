@@ -93,6 +93,9 @@
 .sidebar-nav {
     flex-grow: 1;
     padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .sidebar-nav a {
