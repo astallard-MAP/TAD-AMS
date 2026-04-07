@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" id="seo-page">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="seo-title">Selling Property Fast | Cash 4 Houses AI Market Daily</title>
+    <meta name="description" id="seo-meta" content="Get the latest property market updates and expert advice on selling your house fast for cash. Discrete, professional service across London and Essex.">
+    <link rel="stylesheet" href="/src/style.css">
+    <style>
+        .seo-container { max-width: 800px; margin: 4rem auto; padding: 0 2rem; }
+        .seo-header { text-align: center; margin-bottom: 4rem; }
+        .seo-content { line-height: 1.8; color: #333; font-size: 1.15rem; }
+        .seo-content h2 { margin: 2rem 0 1rem; color: #1e293b; }
+        .seo-cta { margin-top: 5rem; padding: 3rem; background: #f8fafc; border-radius: 20px; text-align: center; border: 1px solid #e2e8f0; }
+        .keyword-pill { display: inline-block; padding: 4px 12px; background: #f1f5f9; border-radius: 20px; font-size: 0.75rem; color: #64748b; margin-top: 1rem; margin-right: 5px; }
+        .social-shout { border-left: 4px solid #EA287A; padding: 1rem 2rem; background: #fff1f2; margin: 2rem 0; font-style: italic; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">
+                    <img src="/logo.jpg" alt="Cash 4 Houses Logo">
+                </a>
+                <a href="/" class="btn btn-outline">Back to Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="seo-container">
+        <header class="seo-header">
+            <h1 id="page-h1">Property Market Pulse</h1>
+            <p id="page-date" style="color: #64748b; margin-top: 10px;"></p>
+        </header>
+
+        <article id="main-content" class="seo-content">
+            <p class="loading">Andy is generating today's property insight...</p>
+        </article>
+
+        <section id="social-content" class="social-shout" style="display: none;">
+            <!-- Latest AI Social Post -->
+        </section>
+
+        <div class="seo-cta">
+            <i class="fas fa-home" style="font-size: 3rem; color: #EA287A; margin-bottom: 1.5rem;"></i>
+            <h2>Need a Fast Cash Offer?</h2>
+            <p style="margin-bottom: 2rem;">Get your property valuation analyzed by Andy AI and receive a guaranteed cash offer within 24 hours.</p>
+            <a href="/#get-offer" class="btn btn-primary btn-lg" style="padding: 1rem 3rem;">Get Your Offer Now</a>
+        </div>
+
+        <div id="keyword-cloud" style="margin-top: 4rem; text-align: center; opacity: 0.5;">
+            <!-- Indexed Keywords -->
+        </div>
+    </main>
+
+    <script type="module">
+        import { db } from './src/firebase-config.js';
+        import { doc, getDoc } from 'firebase/firestore';
+
+        async function loadDailyContent() {
+            const params = new URLSearchParams(window.location.search);
+            const contentId = params.get('v') || 'latest';
+            
+            try {
+                const docRef = doc(db, "dailySeo", contentId);
+                const snap = await getDoc(docRef);
+                
+                if (snap.exists()) {
+                    const data = snap.data();
+                    document.getElementById('seo-title').innerText = `${data.title} | Cash 4 Houses`;
+                    document.getElementById('page-h1').innerText = data.title;
+                    document.getElementById('page-date').innerText = `Analysis Date: ${data.date}`;
+                    document.getElementById('main-content').innerHTML = data.htmlContent;
+                    
+                    if (data.socialPost) {
+                        const socialEl = document.getElementById('social-content');
+                        socialEl.style.display = 'block';
+                        socialEl.innerHTML = `<strong>Social Pulse:</strong> ${data.socialPost}`;
+                    }
+                    
+                    if (data.keywords) {
+                        document.getElementById('keyword-cloud').innerHTML = data.keywords.map(k => `<span class="keyword-pill">${k}</span>`).join('');
+                    }
+                }
+            } catch (err) { console.error(err); }
+        }
+        loadDailyContent();
+    </script>
+</body>
+</html>

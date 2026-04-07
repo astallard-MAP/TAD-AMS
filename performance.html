@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Performance | Cash 4 Houses Admin</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <link rel="stylesheet" href="/src/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .full-width-card {
+            grid-column: span 3;
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        .metric-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .chart-container { min-height: 250px; }
+        .location-list { padding: 0; list-style: none; }
+        .location-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+        .keyword-table { width: 100%; border-collapse: collapse; }
+        .keyword-table td { padding: 0.5rem 0; font-size: 0.85rem; }
+        .keyword-count { text-align: right; font-weight: bold; color: #10b981; }
+        .performance-header { margin-bottom: 2rem; }
+        .performance-header h2 { font-size: 1.4rem; color: #1e293b; margin-bottom: 5px; }
+        .performance-header p { font-size: 0.9rem; color: #64748b; }
+    </style>
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <aside class="dashboard-sidebar">
+            <div class="profile-section">
+                <div class="profile-pic-container">
+                    <img id="profile-img" src="/avatar.png" alt="Admin" class="profile-img">
+                </div>
+                <h3>Andrew Stallard</h3>
+                <p>Global Administrator</p>
+                <p style="font-size: 0.75rem; opacity: 0.7;">andy@cash4houses.co.uk</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/admin.html"><i class="fas fa-chart-line"></i> Command Center</a>
+                <a href="/performance.html" class="active"><i class="fas fa-microchip"></i> Performance Hub</a>
+                <a href="/admin.html#leads-section"><i class="fas fa-list-ul"></i> Enquiries</a>
+                <a href="/admin.html#news-section"><i class="fas fa-robot"></i> AI News Suite</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-secondary btn-full"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="dash-top-bar">
+                <h1>Portal Performance Hub</h1>
+                <p style="color: #64748b; font-size: 0.9rem;">Real-time engagement and AI-driven SEO insights.</p>
+            </header>
+
+            <!-- Top: Live Portal Usage Graph -->
+            <div class="full-width-card">
+                <div class="performance-header">
+                    <h2>Live Portal Engagement</h2>
+                    <p>Real-time active sessions and interaction frequency.</p>
+                </div>
+                <div id="usage-chart" class="chart-container"></div>
+            </div>
+
+            <!-- Row 1: Users, Geography, Engagement Time -->
+            <div class="performance-grid">
+                <div class="metric-card">
+                    <div class="performance-header">
+                        <h2>Registered Users</h2>
+                        <p>Total verified portal profiles.</p>
+                    </div>
+                    <div style="font-size: 3rem; font-weight: 800; color: #1e293b; text-align: center; margin: 2rem 0;">
+                        142
+                    </div>
+                    <div id="user-growth-chart"></div>
+                </div>
+                <div class="metric-card">
+                    <div class="performance-header">
+                        <h2>Geographical Reach</h2>
+                        <p>User origins by IP analysis.</p>
+                    </div>
+                    <div class="location-list">
+                        <li class="location-item"><span>London, UK</span> <span>42%</span></li>
+                        <li class="location-item"><span>Essex, UK</span> <span>28%</span></li>
+                        <li class="location-item"><span>Hertfordshire, UK</span> <span>15%</span></li>
+                        <li class="location-item"><span>Manchester, UK</span> <span>8%</span></li>
+                        <li class="location-item"><span>Birmingham, UK</span> <span>7%</span></li>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="performance-header">
+                        <h2>Engagement Peak</h2>
+                        <p>Most active interaction windows.</p>
+                    </div>
+                    <div id="peak-chart"></div>
+                </div>
+            </div>
+
+            <!-- Row 2: Search Intent, Entry, Property Valuations -->
+            <div class="performance-grid">
+                <div class="metric-card">
+                    <div class="performance-header">
+                        <h2>Top 10 Source Keywords</h2>
+                        <p>Organic search intent profile.</p>
+                    </div>
+                    <table class="keyword-table">
+                        <tr><td>sell house fast london</td><td class="keyword-count">1.2k</td></tr>
+                        <tr><td>cash house buyer essex</td><td class="keyword-count">840</td></tr>
+                        <tr><td>stop repossession quickly</td><td class="keyword-count">620</td></tr>
+                        <tr><td>fast property sale essex</td><td class="keyword-count">510</td></tr>
+                        <tr><td>probate property buyers</td><td class="keyword-count">480</td></tr>
+                    </table>
+                </div>
+                <div class="metric-card">
+                    <div class="performance-header">
+                        <h2>Popular Entry Channels</h2>
+                        <p>User acquisition pathways.</p>
+                    </div>
+                    <div id="entry-routes-chart"></div>
+                </div>
+                <div class="metric-card">
+                    <div class="performance-header">
+                        <h2>Valuation Volume</h2>
+                        <p>Requested property assessments.</p>
+                    </div>
+                    <div style="font-size: 2.5rem; font-weight: 800; color: #10b981; text-align: center; margin: 2rem 0;">
+                        89
+                    </div>
+                    <div id="valuation-volume-chart"></div>
+                </div>
+            </div>
+
+            <!-- Row 3: Valuation Analysis Deep-Dive -->
+            <div class="performance-grid">
+                <div class="metric-card">
+                    <div class="performance-header">
+                        <h2>Valuation Heatmap</h2>
+                        <p>Submission peaks by day/time.</p>
+                    </div>
+                    <div id="valuation-heatmap"></div>
+                </div>
+                <div class="metric-card">
+                    <div class="performance-header">
+                        <h2>Lead Acquisition Source</h2>
+                        <p>Where valuation callers originate.</p>
+                    </div>
+                    <div id="lead-source-chart"></div>
+                </div>
+                <div class="metric-card">
+                    <div class="performance-header">
+                        <h2>High-Value Keywords</h2>
+                        <p>Keywords driving actual submissions.</p>
+                    </div>
+                    <table class="keyword-table">
+                        <tr><td>sell house within 7 days</td><td class="keyword-count">14</td></tr>
+                        <tr><td>immediate cash offer london</td><td class="keyword-count">11</td></tr>
+                        <tr><td>discrete property buyers</td><td class="keyword-count">9</td></tr>
+                        <tr><td>financial pressure sell home</td><td class="keyword-count">7</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Row 4: AI News and Social Posts -->
+            <div class="performance-grid">
+                <div class="metric-card">
+                    <div class="performance-header">
+                        <h2>Latest AI News Article</h2>
+                        <p>Generated by Andy AI.</p>
+                    </div>
+                    <div id="latest-ai-news" style="font-size: 0.85rem; color: #444; overflow: hidden; height: 150px;">
+                        Loading latest automated analysis...
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="performance-header">
+                        <h2>Latest Social Feeds</h2>
+                        <p>AI-driven engagement posts.</p>
+                    </div>
+                    <div id="latest-social-posts" style="font-size: 0.85rem; color: #444; overflow: hidden; height: 150px;">
+                        Scanning latest social crossposts...
+                    </div>
+                </div>
+                <div class="metric-card" style="background: #0f172a; color: white;">
+                    <div class="performance-header">
+                        <h2 style="color: #10b981;">SEO Daily Pulse</h2>
+                        <p style="color: #94a3b8;">Agentic Content Health.</p>
+                    </div>
+                    <div style="text-align: center; padding: 1rem;">
+                        <i class="fas fa-satellite-dish" style="font-size: 3rem; color: #10b981;"></i>
+                        <h3 style="margin-top: 1rem; color: white;">Next Page Build</h3>
+                        <p style="font-size: 0.8rem; color: #94a3b8;">Tomorrow @ 06:00 AM</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="/src/performance.js"></script>
+</body>
+</html>
