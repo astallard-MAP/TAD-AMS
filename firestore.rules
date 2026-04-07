@@ -1,10 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow public to create leads, but only read them through the admin portal/console
+    // Only the Global Admin can read or manage all leads
     match /leads/{leadId} {
       allow create: if true;
-      allow read, update, delete: if false;
+      allow read, update, delete: if request.auth != null && request.auth.uid == "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
     }
     
     // Allow public to read the morning market summaries from Andy

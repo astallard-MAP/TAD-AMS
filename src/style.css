@@ -340,6 +340,94 @@ nav {
   z-index: 2000;
 }
 
+.btn-outline {
+    background: transparent;
+    border: 1px solid #d32f2f;
+    color: #d32f2f;
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.user-profile {
+    display: none;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.user-name {
+    font-weight: bold;
+    color: #2c3e50;
+    padding: 0.5rem 1rem;
+    background: #fcfcfc;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.user-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    min-width: 180px;
+    padding: 10px;
+    z-index: 1000;
+}
+
+.user-profile:hover .user-dropdown {
+    display: block;
+}
+
+.logout-btn {
+    width: 100%;
+    text-align: left;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+}
+
+/* Modal Styling */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 380px;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
 .chat-button {
   width: 60px;
   height: 60px;

@@ -57,7 +57,7 @@ exports.processLead = functions.firestore
     // 2. Email to Andy (Notification for the portal owner)
     const adminMailOptions = {
       from: '"Cash4Houses Portal" <Andy@Cash4Houses.co.uk>',
-      to: "Andy@Cash4Houses.co.uk",
+      to: ["Andy@Cash4Houses.co.uk", "andrew@essex.properties"],
       subject: `🚨 NEW LEAD: ${data.firstName} - ${data.address}`,
       html: `
         <div style="font-family: sans-serif; padding: 20px; background: #f9f9f9; border: 1px solid #ddd;">

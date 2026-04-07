@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin Dashboard | Cash 4 Houses</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="admin-body">
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="/" class="logo">
+                <img src="/logo.jpg" alt="Logo" style="height: 50px;">
+            </a>
+            <h1>Global Admin Dashboard</h1>
+            <div id="admin-auth-status"></div>
+        </div>
+    </header>
+
+    <main class="container admin-main">
+        <section class="admin-stats">
+            <div class="stat-card">
+                <span class="stat-num" id="total-leads">-</span>
+                <span class="stat-label">Total Leads</span>
+            </div>
+            <div class="stat-card">
+                <button id="refresh-leads" class="btn btn-outline"><i class="fas fa-sync"></i> Refresh</button>
+            </div>
+        </section>
+
+        <section class="leads-table-container">
+            <h2>Recent Enquiries</h2>
+            <div class="table-wrapper">
+                <table id="leads-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Property</th>
+                            <th>Timescale</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leads-body">
+                        <!-- Leads populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="/src/admin.js"></script>
+</body>
+</html>
