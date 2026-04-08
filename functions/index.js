@@ -7,7 +7,7 @@ const { ClientSecretCredential } = require("@azure/identity");
 require("isomorphic-fetch");
 const Parser = require("rss-parser");
 const { genkit } = require("genkit");
-const { googleAI } = require("@genkit-ai/googleai");
+const { vertexAI } = require("@genkit-ai/vertexai");
 const { defineSecret } = require("firebase-functions/params");
 
 // Initialize Firebase Admin
@@ -16,7 +16,7 @@ const db = admin.firestore();
 
 // Initialize Genkit (Social Media Agent & News Suite)
 const ai = genkit({
-  plugins: [googleAI()] 
+  plugins: [vertexAI({ location: 'us-central1' })] 
 });
 
 // Secrets
@@ -68,7 +68,7 @@ async function generateSocialPost(timeOfDay) {
   const town = ESSEX_TOWNS[Math.floor(Math.random() * ESSEX_TOWNS.length)];
   const prompt = `Generate a high-quality social media post for 'Cash 4 Houses'. Town: ${town}. Time: ${timeOfDay}. ${VALUE_PROP}`;
   try {
-    const { text } = await ai.generate({ model: 'googleai/gemini-1.5-flash', prompt: prompt });
+    const { text } = await ai.generate({ model: 'vertexai/gemini-1.5-flash', prompt: prompt });
     await db.collection("socialPosts").add({ content: text, scheduledTime: timeOfDay, town: town, timestamp: admin.firestore.FieldValue.serverTimestamp(), published: false });
     return text;
   } catch (error) {
@@ -97,7 +97,7 @@ async function updateMarketNews() {
   }
   const prompt = `Summarize these property triggers: ${JSON.stringify(allItems.slice(0, 10))}`;
   try {
-    const { text } = await ai.generate({ model: 'googleai/gemini-1.5-flash', prompt: prompt });
+    const { text } = await ai.generate({ model: 'vertexai/gemini-1.5-flash', prompt: prompt });
     const payload = { content: text, updatedAt: admin.firestore.FieldValue.serverTimestamp() };
     await db.collection("marketUpdates").doc("latest").set(payload);
     return { success: true, content: text };
@@ -141,8 +141,8 @@ exports.testEmailConnection = onRequest({
   cors: true, 
   secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"] 
 }, async (req, res) => {
-  const client = getGraphClient();
   try {
+    const client = getGraphClient();
     await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
       message: {
         subject: "Office 365 Configuration: GRAPH API SUCCESS",
@@ -151,5 +151,8 @@ exports.testEmailConnection = onRequest({
       }
     });
     res.status(200).json({ success: true, message: "Graph Auth verified. Test email dispatched." });
-  } catch (err) { res.status(500).json({ success: false, error: err.code || "AUTH_FAIL", message: err.message }); }
+  } catch (err) { 
+    console.error("Test Email Error:", err);
+    res.status(200).json({ success: false, error: err.code || "AUTH_FAIL", message: err.message }); 
+  }
 });

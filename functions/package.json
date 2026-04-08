@@ -17,6 +17,7 @@
     "@genkit-ai/ai": "^1.31.0",
     "@genkit-ai/firebase": "^1.31.0",
     "@genkit-ai/googleai": "^1.28.0",
+    "@genkit-ai/vertexai": "^1.31.0",
     "@microsoft/microsoft-graph-client": "^3.0.7",
     "firebase-admin": "^13.7.0",
     "firebase-functions": "^7.2.3",
