@@ -49,7 +49,7 @@
                     <p style="color: #64748b; font-size: 0.85rem; margin-top: 4px;">Strategic oversight and UK market insights.</p>
                 </div>
                 <div class="top-bar-right">
-                    <div id="admin-clock" style="width: 80px; height: 80px;"></div>
+                    <div id="portal-date" class="header-date">Tuesday 7th of April 2026</div>
                 </div>
             </header>
 
@@ -159,8 +159,8 @@
 
     <script type="module" src="/src/admin.js"></script>
     <script type="module">
-        import { initAnalogueClock } from '/src/clock.js';
-        initAnalogueClock('admin-clock');
+        import { initLiveDate } from '/src/date-helper.js';
+        initLiveDate('portal-date');
     </script>
 </body>
 </html>

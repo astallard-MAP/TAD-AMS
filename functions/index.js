@@ -5,7 +5,7 @@ const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 const Parser = require("rss-parser");
 const { genkit } = require("genkit");
-const { vertexAI, gemini25Flash } = require("@genkit-ai/vertexai");
+const { googleAI } = require("@genkit-ai/googleai");
 const { defineSecret } = require("firebase-functions/params");
 const { google } = require("googleapis");
 
@@ -13,24 +13,18 @@ const { google } = require("googleapis");
 admin.initializeApp();
 const db = admin.firestore();
 
-// Initialize Genkit (2026 v2.x Standard compatible with CommonJS)
+// Initialize Genkit (2026 Google GenAI Migration)
 const ai = genkit({
-  plugins: [vertexAI({ location: 'us-central1' })]
+  plugins: [googleAI()] // No hardcoded API keys; relies on Vertex project auth
 });
 
 // Define Secrets
 const SMTP_PASS = defineSecret("SMTP_PASS");
 const ADMIN_UID = defineSecret("ADMIN_UID");
-const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
-
-const GBP_CLIENT_ID = defineSecret("GBP_CLIENT_ID");
-const GBP_CLIENT_SECRET = defineSecret("GBP_CLIENT_SECRET");
-const GBP_REFRESH_TOKEN = defineSecret("GBP_REFRESH_TOKEN");
-const GBP_LOCATION_ID = defineSecret("GBP_LOCATION_ID");
 
 const parser = new Parser({
   headers: {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
   }
 });
 
@@ -52,7 +46,7 @@ function getTransporter() {
 
 exports.processLead = onDocumentCreated({ 
   document: "leads/{leadId}", 
-  secrets: ["SMTP_PASS", "ADMIN_UID"] 
+  secrets: ["SMTP_PASS"] 
 }, async (event) => {
     const data = event.data.data();
     if (!data) return;
@@ -91,18 +85,14 @@ exports.processLead = onDocumentCreated({
 });
 
 const RSS_FEEDS = [
-  "https://www.ons.gov.uk/economy/inflationandpriceindices/rss",
-  "https://www.ons.gov.uk/economy/economicoutputandproductivity/output/rss",
+  "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/rss",
+  "https://www.ons.gov.uk/economy/grossdomesticproductgdp/rss",
   "https://www.bankofengland.co.uk/rss/news",
-  "https://www.thegazette.co.uk/all-notices/notice.rss?categorycode=G205000002",
   "https://thenegotiator.co.uk/feed/",
   "https://www.estateagenttoday.co.uk/rss",
-  "https://propertyindustryeye.com/feed/",
   "https://www.zoopla.co.uk/discover/property-news/rss/",
   "https://www.rightmove.co.uk/news/feed/",
-  "https://www.standard.co.uk/homesandproperty/rss",
-  "https://www.essexlive.news/news/?service=rss",
-  "https://www.echo-news.co.uk/news/rss/"
+  "https://www.standard.co.uk/homesandproperty/rss"
 ];
 
 const NEGATIVE_KEYWORDS = [
@@ -112,6 +102,8 @@ const NEGATIVE_KEYWORDS = [
 
 async function updateMarketNews() {
   let allItems = [];
+  
+  // 1. RSS Parallel Fetching
   for (const url of RSS_FEEDS) {
     try {
       const feed = await parser.parseURL(url);
@@ -120,28 +112,44 @@ async function updateMarketNews() {
           title: item.title,
           snippet: item.contentSnippet || item.content || "",
           link: item.link,
-          pubDate: item.pubDate,
           source: feed.title
         });
       });
-    } catch (err) { console.error(`Error parsing ${url}:`, err); }
+    } catch (err) { console.warn(`RSS Fail: ${url}`); }
+  }
+
+  // 2. Resilient JSON Fetch (ONS Fallback)
+  if (allItems.length < 5) {
+      try {
+          const response = await fetch("https://api.ons.gov.uk/timeseries/CHAW/dataset/MM23/data", {
+              headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+          });
+          const data = await response.json();
+          allItems.push({
+              title: `ONS Market Indicator: ${data.description.title}`,
+              snippet: `Latest data: ${data.description.unit} - Value: ${data.years[0]?.value || 'N/A'}`,
+              link: "https://www.ons.gov.uk",
+              source: "ONS Data API"
+          });
+      } catch (e) { console.error("ONS JSON Fallback Failed"); }
   }
 
   const filtered = allItems.filter(item => {
     const text = (item.title + " " + item.snippet).toLowerCase();
     return NEGATIVE_KEYWORDS.some(k => text.includes(k.toLowerCase()));
-  }).slice(0, 20);
+  }).slice(0, 15);
 
-  if (filtered.length === 0) return "No distressed triggers found in today's news.";
+  if (filtered.length === 0) {
+      return { success: false, error: "News sources unavailable" };
+  }
 
-  const prompt = `Review these UK property news items and produce a daily amalgamated news story overview titled "What's Driving Todays Property Market". Data: ${JSON.stringify(filtered)}`;
+  const prompt = `Review these UK property news items and produce a daily amalgamated news story overview titled "What's Driving Todays Property Market". Specifically discuss the implications for South East Essex (Southend, Basildon, Rayleigh, Leigh-on-Sea). Data: ${JSON.stringify(filtered)}`;
 
   const { text } = await ai.generate({
-    model: gemini25Flash,
+    model: 'googleai/gemini-2.5-flash',
     prompt: prompt
   });
 
-  const archiveRef = db.collection("marketUpdatesArchive").doc();
   const updatePayload = {
     content: text,
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -150,32 +158,24 @@ async function updateMarketNews() {
 
   await Promise.all([
     db.collection("marketUpdates").doc("latest").set(updatePayload),
-    archiveRef.set(updatePayload)
+    db.collection("marketUpdatesArchive").add(updatePayload)
   ]);
 
-  return text;
+  return { success: true, content: text };
 }
-
-exports.scheduledMarketUpdate = onSchedule({
-  schedule: "0 8 * * *",
-  timeZone: "Europe/London",
-  memory: "512MiB",
-  secrets: ["GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "GBP_LOCATION_ID", "GEMINI_API_KEY"]
-}, async (event) => {
-  await updateMarketNews();
-});
 
 exports.manualMarketUpdate = onRequest({
   cors: true,
   memory: "512MiB",
-  timeoutSeconds: 300,
-  secrets: ["GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "GBP_LOCATION_ID", "GEMINI_API_KEY"]
+  timeoutSeconds: 300
 }, async (req, res) => {
   try {
     const result = await updateMarketNews();
-    res.status(200).send(result);
+    if (!result.success) {
+        return res.status(503).json(result);
+    }
+    res.status(200).send(result.content);
   } catch (err) {
-    console.error("Manual News Update Failed:", err);
-    res.status(500).send(err.message);
+    res.status(500).json({ success: false, error: err.message });
   }
 });

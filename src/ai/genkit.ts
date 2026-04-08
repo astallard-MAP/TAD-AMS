@@ -1,15 +1,14 @@
-import { vertexAI } from '@genkit-ai/vertexai';
-import { genkit } from '@genkit-ai/ai';
+import { genkit } from 'genkit';
+import { googleAI } from '@genkit-ai/googleai';
 
-// Initialize Genkit with Vertex AI Plugin
-// Note: No apiKey field is present, as Vertex AI relies on Google Cloud Authentication.
+// Initialize Genkit with Google GenAI Plugin (2026 Migration)
+// Configuration is inherited from the Vertex AI Project Environment.
+// Note: No hardcoded API keys are used as per production hardening.
 export const ai = genkit({
   plugins: [
-    vertexAI({
-      location: 'us-central1' // Production region
-    })
+    googleAI() // Replaces deprecated vertexAI plugin
   ]
 });
 
-// Configure for gemini-2.5-flash as gemini-1.5 is retired
-export const model = 'vertexai/gemini-2.5-flash';
+// Configure for gemini-2.5-flash for character-perfect news summarisation
+export const model = 'googleai/gemini-2.5-flash';

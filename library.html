@@ -54,7 +54,7 @@
                     <p style="color: #64748b; font-size: 0.9rem;">Historic records of News, Reviews, Social, and Communications.</p>
                 </div>
                 <div class="top-bar-right">
-                    <div id="admin-clock" style="width: 80px; height: 80px;"></div>
+                    <div id="portal-date" class="header-date">Tuesday 7th of April 2026</div>
                 </div>
             </header>
 
@@ -82,5 +82,9 @@
     </div>
 
     <script type="module" src="/src/library.js"></script>
+    <script type="module">
+        import { initLiveDate } from '/src/date-helper.js';
+        initLiveDate('portal-date');
+    </script>
 </body>
 </html>

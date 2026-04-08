@@ -88,7 +88,7 @@
                     <p style="color: #64748b; font-size: 0.9rem;">Real-time engagement and AI-driven SEO insights.</p>
                 </div>
                 <div class="top-bar-right">
-                    <div id="admin-clock" style="width: 80px; height: 80px;"></div>
+                    <div id="portal-date" class="header-date">Tuesday 7th of April 2026</div>
                 </div>
             </header>
 
@@ -119,11 +119,11 @@
                         <p>User origins by IP analysis.</p>
                     </div>
                     <div class="location-list">
-                        <li class="location-item"><span>London, UK</span> <span>42%</span></li>
-                        <li class="location-item"><span>Essex, UK</span> <span>28%</span></li>
-                        <li class="location-item"><span>Hertfordshire, UK</span> <span>15%</span></li>
-                        <li class="location-item"><span>Manchester, UK</span> <span>8%</span></li>
-                        <li class="location-item"><span>Birmingham, UK</span> <span>7%</span></li>
+                        <li class="location-item"><span>Southend, Essex</span> <span>35%</span></li>
+                        <li class="location-item"><span>Basildon, Essex</span> <span>22%</span></li>
+                        <li class="location-item"><span>Leigh-on-Sea, Essex</span> <span>18%</span></li>
+                        <li class="location-item"><span>Rayleigh, Essex</span> <span>15%</span></li>
+                        <li class="location-item"><span>Canvey Island, Essex</span> <span>10%</span></li>
                     </div>
                 </div>
                 <div class="metric-card">
@@ -143,11 +143,11 @@
                         <p>Organic search intent profile.</p>
                     </div>
                     <table class="keyword-table">
-                        <tr><td>sell house fast london</td><td class="keyword-count">1.2k</td></tr>
-                        <tr><td>cash house buyer essex</td><td class="keyword-count">840</td></tr>
-                        <tr><td>stop repossession quickly</td><td class="keyword-count">620</td></tr>
-                        <tr><td>fast property sale essex</td><td class="keyword-count">510</td></tr>
-                        <tr><td>probate property buyers</td><td class="keyword-count">480</td></tr>
+                        <tr><td>sell house fast southend</td><td class="keyword-count">1.5k</td></tr>
+                        <tr><td>cash house buyer basildon</td><td class="keyword-count">1.1k</td></tr>
+                        <tr><td>stop repossession essex</td><td class="keyword-count">920</td></tr>
+                        <tr><td>fast property sale leigh</td><td class="keyword-count">710</td></tr>
+                        <tr><td>probate property buyers essex</td><td class="keyword-count">680</td></tr>
                     </table>
                 </div>
                 <div class="metric-card">
@@ -191,10 +191,10 @@
                         <p>Keywords driving actual submissions.</p>
                     </div>
                     <table class="keyword-table">
-                        <tr><td>sell house within 7 days</td><td class="keyword-count">14</td></tr>
-                        <tr><td>immediate cash offer london</td><td class="keyword-count">11</td></tr>
-                        <tr><td>discrete property buyers</td><td class="keyword-count">9</td></tr>
-                        <tr><td>financial pressure sell home</td><td class="keyword-count">7</td></tr>
+                        <tr><td>sell house within 7 days essex</td><td class="keyword-count">18</td></tr>
+                        <tr><td>immediate cash offer southend</td><td class="keyword-count">15</td></tr>
+                        <tr><td>discrete property buyers rayleigh</td><td class="keyword-count">12</td></tr>
+                        <tr><td>financial pressure sell home essex</td><td class="keyword-count">9</td></tr>
                     </table>
                 </div>
             </div>
@@ -235,5 +235,9 @@
     </div>
 
     <script type="module" src="/src/performance.js"></script>
+    <script type="module">
+        import { initLiveDate } from '/src/date-helper.js';
+        initLiveDate('portal-date');
+    </script>
 </body>
 </html>

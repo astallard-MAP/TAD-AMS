@@ -46,7 +46,7 @@ onAuthStateChanged(auth, async (user) => {
 const FAQS = [
   { keywords: ["how fast", "speed", "timescale", "week"], answer: "We can complete the sale in as little as 7 days. Once we agree on a price, we move fast to get you the cash." },
   { keywords: ["condition", "broken", "repair", "worse", "derelict"], answer: "I buy property in ANY condition. Don't worry about repairs." },
-  { keywords: ["where", "london", "essex", "locations", "hertfordshire"], answer: "We cover all of London, Hertfordshire, and Essex." },
+  { keywords: ["where", "essex", "locations", "southend", "basildon", "leigh", "rayleigh"], answer: "We focus exclusively on South East Essex, covering Southend, Basildon, Rayleigh, Leigh-on-Sea, and all surrounding areas." },
   { keywords: ["guaranteed", "offer", "promise"], answer: "I offer a guaranteed offer. If I don't buy it personally, I have a network who will." },
   { keywords: ["financial", "stop", "repossession", "pressure"], answer: "I specialise in helping people under financial pressure. Our service is discrete." },
   { keywords: ["cost", "fees", "pay"], answer: "There are no hidden fees or high-pressure tactics." }
