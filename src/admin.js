@@ -189,3 +189,11 @@ if (testEmailBtn) {
         testEmailBtn.style.pointerEvents = 'auto';
     };
 }
+
+const impersonateBtn = document.getElementById('btn-impersonate');
+if (impersonateBtn) {
+    impersonateBtn.onclick = () => {
+        localStorage.setItem('impersonate_seller', 'true');
+        window.location.href = "/dashboard.html";
+    };
+}

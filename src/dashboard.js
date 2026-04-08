@@ -17,7 +17,7 @@ const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = "/";
-    } else if (user.uid === ADMIN_UID) {
+    } else if (user.uid === ADMIN_UID && localStorage.getItem('impersonate_seller') !== 'true') {
         window.location.href = "/admin.html";
     } else {
         document.getElementById('dash-user-name').textContent = user.email.split('@')[0];
@@ -25,8 +25,32 @@ onAuthStateChanged(auth, async (user) => {
         loadUserProperties(user.email);
         loadUserProfile(user.uid);
         setupDashboardListeners(user);
+
+        if (user.uid === ADMIN_UID) {
+            showImpersonationBar();
+        }
     }
 });
+
+function showImpersonationBar() {
+    const bar = document.createElement('div');
+    bar.style.cssText = `
+        position: fixed; top: 0; left: 0; right: 0; 
+        background: #ef4444; color: white; padding: 10px; 
+        text-align: center; z-index: 9999; font-weight: bold;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        display: flex; justify-content: center; align-items: center; gap: 20px;
+    `;
+    bar.innerHTML = `
+        <span><i class="fas fa-user-secret"></i> IMPERSONATION MODE ACTIVE</span>
+        <button id="exit-impersonation" class="btn btn-sm btn-light" style="color: #ef4444; border: none; padding: 5px 15px; border-radius: 4px; font-weight: bold; cursor: pointer;">Exit & Return to Command Centre</button>
+    `;
+    document.body.prepend(bar);
+    document.getElementById('exit-impersonation').onclick = () => {
+        localStorage.removeItem('impersonate_seller');
+        window.location.href = "/admin.html";
+    };
+}
 
 // Global Logout Controller - Absolute Reliability
 document.addEventListener('click', async (e) => {

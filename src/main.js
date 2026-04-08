@@ -27,7 +27,8 @@ onAuthStateChanged(auth, async (user) => {
 
         // Global Redirect Logic
         if (window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
-            if (user.uid === ADMIN_UID) {
+            const isImpersonating = localStorage.getItem('impersonate_seller') === 'true';
+            if (user.uid === ADMIN_UID && !isImpersonating) {
                 if (adminToggle) adminToggle.style.display = 'block';
                 window.location.href = '/admin.html';
             } else {
