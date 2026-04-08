@@ -1,18 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Owners can see their own property enquiries; Admin can see everything
-    match /leads/{leadId} {
-      allow create: if true;
-      allow read, update: if (request.auth != null && request.auth.token.email == resource.data.email) ||
-                           (request.auth != null && request.auth.uid == "Djh7uHK2yZYHC4Ta4xhbguaCJVl1");
-      allow delete: if request.auth != null && request.auth.uid == "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
-    }
-    
-    // Allow public to read the morning market summaries from Andy
-    match /marketUpdates/{document} {
-      allow read: if true;
-      allow write: if false;
+    match /{document=**} {
+      allow read, write: if request.auth != null;
     }
   }
 }

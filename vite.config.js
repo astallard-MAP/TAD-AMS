@@ -1,7 +1,42 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  plugins: [
+    VitePWA({
+      registerType: 'autoUpdate',
+      injectRegister: 'auto',
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'logo.png'],
+      manifest: {
+        name: 'Cash 4 Houses',
+        short_name: 'C4H',
+        description: 'Fast property sales in South East Essex',
+        theme_color: '#10b981',
+        icons: [
+          {
+            src: 'favicon.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'android-chrome-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          }
+        ]
+      },
+      workbox: {
+        navigateFallbackDenylist: [/^\/gtag/],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/www\.googletagmanager\.com\/.*/,
+            handler: 'NetworkOnly'
+          }
+        ]
+      }
+    })
+  ],
   build: {
     rollupOptions: {
       input: {
