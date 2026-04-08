@@ -126,10 +126,15 @@ exports.processLead = onDocumentCreated({
           subject: "Inquiry Confirmation",
           body: { contentType: "HTML", content: `<p>Hello ${data.firstName}, Andrew Stallard here. Received your details for <strong>${data.address}</strong>. Analyising now. Guaranteed offer within 48 hours.</p>` },
           toRecipients: [{ emailAddress: { address: data.email } }]
-        }
+        },
+        saveToSentItems: true
       });
       await db.collection("communicationLogs").add({ leadId: event.params.leadId, timestamp: admin.firestore.FieldValue.serverTimestamp(), type: "Enquiry", summary: `Graph API: sent to ${data.email}` });
-    } catch (error) { console.error("Graph Error:", error); }
+    } catch (error) { 
+      console.error("Graph Error:", error);
+      if (error.requestId) console.log("Graph Request ID:", error.requestId);
+      if (error.clientRequestId) console.log("Graph Client Request ID:", error.clientRequestId);
+    }
 });
 
 exports.manualSocialGenerate = onRequest({ cors: true, memory: "512MiB" }, async (req, res) => {
@@ -148,11 +153,14 @@ exports.testEmailConnection = onRequest({
         subject: "Office 365 Configuration: GRAPH API SUCCESS",
         body: { contentType: "HTML", content: `<p>Diagnostic check complete at ${new Date().toISOString()}. Secure OAuth2 link active.</p>` },
         toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
-      }
+      },
+      saveToSentItems: true
     });
     res.status(200).json({ success: true, message: "Graph Auth verified. Test email dispatched." });
   } catch (err) { 
     console.error("Test Email Error:", err);
-    res.status(200).json({ success: false, error: err.code || "AUTH_FAIL", message: err.message }); 
+    if (err.requestId) console.log("Graph Request ID:", err.requestId);
+    if (err.clientRequestId) console.log("Graph Client Request ID:", err.clientRequestId);
+    res.status(200).json({ success: false, error: err.code || "AUTH_FAIL", message: err.message, requestId: err.requestId }); 
   }
 });
