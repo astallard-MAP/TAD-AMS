@@ -137,6 +137,16 @@ async function loadUserProperties(email) {
 
                 <div class="dossier-section" id="dossier-${doc.id}">
                     <h4><i class="fas fa-file-contract"></i> Advanced Property Dossier</h4>
+                    
+                    <!-- Street View Integration -->
+                    <div class="street-view-panel">
+                        <div id="street-view-${doc.id}" class="street-view-container"></div>
+                        <div class="street-view-placeholder">
+                            <i class="fas fa-map-location-dot"></i>
+                            <p>Loading Street View...</p>
+                        </div>
+                    </div>
+
                     <div class="dossier-grid">
                         <div class="dossier-item">
                             <i class="fas fa-coins"></i>
@@ -174,26 +184,46 @@ async function loadUserProperties(email) {
             listEl.appendChild(card);
         });
 
-        // Add toggle listeners
+        // Add toggle listeners and initialize maps
         document.querySelectorAll('.toggle-dossier').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.getAttribute('data-id');
                 const section = document.getElementById(`dossier-${id}`);
-                section.classList.toggle('active');
+                const isActive = section.classList.toggle('active');
+                
+                if (isActive) {
+                    const address = btn.closest('.property-card').querySelector('h3').textContent;
+                    initStreetView(id, address);
+                }
             });
         });
 
-        // Add event listeners for toggle buttons
-        document.querySelectorAll('.toggle-dossier').forEach(btn => {
-            btn.onclick = () => {
-                const id = btn.getAttribute('data-id');
-                const dossier = document.getElementById(`dossier-${id}`);
-                dossier.classList.toggle('active');
-            };
-        });
     } catch (error) {
         console.error("Error loading properties:", error);
     }
+}
+
+function initStreetView(id, address) {
+    const container = document.getElementById(`street-view-${id}`);
+    if (container.dataset.loaded === "true") return;
+
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ address: address }, (results, status) => {
+        if (status === "OK" && results[0]) {
+            const panorama = new google.maps.StreetViewPanorama(container, {
+                position: results[0].geometry.location,
+                pov: { heading: 165, pitch: 0 },
+                zoom: 1,
+                addressControl: false,
+                showRoadLabels: false,
+                motionTracking: false,
+                motionTrackingControl: false
+            });
+            container.dataset.loaded = "true";
+        } else {
+            container.innerHTML = `<div class="map-error">Street View not available for this location.</div>`;
+        }
+    });
 }
 
 async function loadUserProfile(uid) {
