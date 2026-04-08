@@ -7,7 +7,7 @@ import {
     doc,
     getDoc
 } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
@@ -17,8 +17,23 @@ onAuthStateChanged(auth, async (user) => {
     } else {
         loadLibrary('all');
         setupFilters();
+        setupGlobalLogout();
     }
 });
+
+function setupGlobalLogout() {
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.onclick = async () => {
+            try { 
+                await signOut(auth); 
+                window.location.replace("/"); 
+            } catch (err) { 
+                console.error("Logout Error:", err); 
+            }
+        };
+    }
+}
 
 function setupFilters() {
     const tabs = document.querySelectorAll('.library-tab');

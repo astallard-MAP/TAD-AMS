@@ -4,13 +4,11 @@ import {
     getDocs, 
     query, 
     orderBy,
-    addDoc,
-    serverTimestamp,
     doc,
     updateDoc,
     deleteDoc
 } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 const MANUAL_GEN_URL = "https://manualsocialgenerate-vjikc6hdhq-uc.a.run.app";
@@ -20,11 +18,27 @@ onAuthStateChanged(auth, async (user) => {
         window.location.href = "/";
     } else {
         loadSocialPosts();
+        setupGlobalLogout();
     }
 });
 
+function setupGlobalLogout() {
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.onclick = async () => {
+            try { 
+                await signOut(auth); 
+                window.location.replace("/"); 
+            } catch (err) { 
+                console.error("Logout Error:", err); 
+            }
+        };
+    }
+}
+
 async function loadSocialPosts() {
     const container = document.getElementById('posts-container');
+    if (!container) return;
     container.innerHTML = '<p class="loading">Loading agentic feed...</p>';
 
     try {
@@ -88,7 +102,10 @@ if (genBtn) {
         genBtn.disabled = true;
         genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agent is thinking...';
         try {
-            const resp = await fetch(MANUAL_GEN_URL);
+            const token = await auth.currentUser.getIdToken();
+            const resp = await fetch(MANUAL_GEN_URL, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (resp.ok) {
                 alert("New post generated successfully!");
                 loadSocialPosts();

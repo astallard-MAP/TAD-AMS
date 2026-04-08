@@ -33,13 +33,14 @@
     bottom: 0;
     height: 100vh;
     z-index: 1000;
-    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    box-shadow: 4px 0 10px rgba(0,0,0,0.3);
 }
 
 .profile-section {
     padding: 2.5rem 1.5rem;
     text-align: center;
     border-bottom: 1px solid rgba(255,255,255,0.05);
+    flex-shrink: 0;
 }
 
 .profile-pic-container {
@@ -92,10 +93,22 @@
 
 .sidebar-nav {
     flex-grow: 1;
-    padding: 2rem 0;
+    overflow-y: auto;
+    padding: 1.5rem 0;
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    scrollbar-width: thin;
+    scrollbar-color: #10b981 transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background-color: #10b981;
+    border-radius: 10px;
 }
 
 .sidebar-nav a {
@@ -123,8 +136,11 @@
 }
 
 .sidebar-footer {
-    padding: 2rem;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 1.5rem;
+    background: #151516;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+    margin-top: auto;
 }
 
 /* MAIN CONTENT BLOCK */
