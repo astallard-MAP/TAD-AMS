@@ -96,7 +96,16 @@ document.getElementById('profile-form').onsubmit = async (e) => {
     saveBtn.textContent = "Save Character Profile";
 };
 
-// Logout
-document.getElementById('logout-btn').onclick = () => {
-    signOut(auth).then(() => window.location.href = "/");
-};
+// Global Logout Controller - Absolute Reliability
+document.addEventListener('click', async (e) => {
+    if (e.target.closest('#logout-btn')) {
+        e.preventDefault();
+        try {
+            await signOut(auth);
+            window.location.replace("/");
+        } catch (err) {
+            console.error("Logout error", err);
+            window.location.href = "/"; 
+        }
+    }
+});

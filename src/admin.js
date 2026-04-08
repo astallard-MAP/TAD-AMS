@@ -23,20 +23,20 @@ authReady.then(async (user) => {
         loadLeads();
         loadAdminNews();
         loadAdminProfile(user.uid);
-        
-        // Finalise logout logic
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-            logoutBtn.onclick = async () => {
-                console.log("Admin Logging Out...");
-                try {
-                    await signOut(auth);
-                    console.log("Logged out, redirecting...");
-                    window.location.replace("/");
-                } catch (err) {
-                    console.error("Logout failed:", err);
-                }
-            };
+    }
+});
+
+// Global Logout Controller - Absolute Reliability
+document.addEventListener('click', async (e) => {
+    if (e.target.closest('#logout-btn')) {
+        e.preventDefault();
+        console.log("Global Admin Sign Out Initiated...");
+        try {
+            await signOut(auth);
+            window.location.replace("/");
+        } catch (err) {
+            console.error("Logout error", err);
+            window.location.href = "/"; 
         }
     }
 });

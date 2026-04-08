@@ -60,7 +60,6 @@ const chatInput = document.getElementById('chat-input');
 const chatMessages = document.getElementById('chat-messages');
 const leadForm = document.getElementById('lead-form');
 const loginBtn = document.getElementById('login-btn');
-const logoutBtn = document.getElementById('logout-btn');
 const loginModal = document.getElementById('login-modal');
 const loginForm = document.getElementById('login-form');
 
@@ -161,12 +160,20 @@ if (loginForm) {
     };
 }
 
-if (logoutBtn) {
-    logoutBtn.onclick = async () => {
-        await signOut(auth);
-        window.location.replace("/");
-    };
-}
+// Global Logout Controller - Absolute Reliability
+document.addEventListener('click', async (e) => {
+    if (e.target.closest('#logout-btn')) {
+        e.preventDefault();
+        console.log("Global Sign Out Sequence Initiated...");
+        try {
+            await signOut(auth);
+            window.location.replace("/");
+        } catch (err) {
+            console.error("Logout error", err);
+            window.location.href = "/"; 
+        }
+    }
+});
 
 // Market News Logic
 async function fetchLatestNews() {

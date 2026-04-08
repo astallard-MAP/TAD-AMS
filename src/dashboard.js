@@ -28,12 +28,26 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
+// Global Logout Controller - Absolute Reliability
+document.addEventListener('click', async (e) => {
+    if (e.target.closest('#logout-btn')) {
+        e.preventDefault();
+        console.log("Global Dashboard Sign Out Initiated...");
+        try {
+            await signOut(auth);
+            window.location.replace("/");
+        } catch (err) {
+            console.error("Logout error", err);
+            window.location.href = "/"; 
+        }
+    }
+});
+
 async function loadUserProperties(email) {
     const listEl = document.getElementById('properties-list');
     if (!listEl) return;
 
     try {
-        // Query leads matching this user's email
         const q = query(collection(db, "leads"), where("email", "==", email), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
 
@@ -81,7 +95,6 @@ async function loadUserProperties(email) {
         });
     } catch (error) {
         console.error("Error loading properties:", error);
-        listEl.innerHTML = "<p>Error loading your property dashboard. Please try again later.</p>";
     }
 }
 
@@ -91,24 +104,10 @@ async function loadUserProfile(uid) {
         if (userDoc.exists() && userDoc.data().photoURL) {
             document.getElementById('profile-img').src = userDoc.data().photoURL;
         }
-    } catch (err) {
-        console.error("Error loading user profile:", err);
-    }
+    } catch (err) { console.error("Profile Error:", err); }
 }
 
 function setupDashboardListeners(user) {
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.onclick = async () => {
-            try {
-                await signOut(auth);
-                window.location.replace("/");
-            } catch (err) {
-                console.error("User Logout Error:", err);
-            }
-        };
-    }
-
     const fileInput = document.getElementById('profile-upload');
     if (fileInput) {
         fileInput.addEventListener('change', async (e) => {
@@ -120,17 +119,15 @@ function setupDashboardListeners(user) {
                 const snapshot = await uploadBytes(storageRef, file);
                 const url = await getDownloadURL(snapshot.ref);
 
-                // Update Firestore
                 await setDoc(doc(db, "users", user.uid), {
                     photoURL: url,
                     updatedAt: new Date()
                 }, { merge: true });
 
-                // Update UI
                 document.getElementById('profile-img').src = url;
             } catch (err) {
                 console.error("Profile upload failed:", err);
-                alert("Failed to upload profile picture. Please try again.");
+                alert("Failed to upload profile picture.");
             }
         });
     }
