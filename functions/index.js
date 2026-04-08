@@ -68,7 +68,7 @@ async function generateSocialPost(timeOfDay) {
   const town = ESSEX_TOWNS[Math.floor(Math.random() * ESSEX_TOWNS.length)];
   const prompt = `Generate a high-quality social media post for 'Cash 4 Houses'. Town: ${town}. Time: ${timeOfDay}. ${VALUE_PROP}`;
   try {
-    const { text } = await ai.generate({ model: 'vertexai/gemini-1.5-flash', prompt: prompt });
+    const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: prompt });
     await db.collection("socialPosts").add({ content: text, scheduledTime: timeOfDay, town: town, timestamp: admin.firestore.FieldValue.serverTimestamp(), published: false });
     return text;
   } catch (error) {
@@ -97,7 +97,7 @@ async function updateMarketNews() {
   }
   const prompt = `Summarize these property triggers: ${JSON.stringify(allItems.slice(0, 10))}`;
   try {
-    const { text } = await ai.generate({ model: 'vertexai/gemini-1.5-flash', prompt: prompt });
+    const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: prompt });
     const payload = { content: text, updatedAt: admin.firestore.FieldValue.serverTimestamp() };
     await db.collection("marketUpdates").doc("latest").set(payload);
     return { success: true, content: text };
