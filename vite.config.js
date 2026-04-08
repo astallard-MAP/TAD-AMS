@@ -51,6 +51,7 @@ export default defineConfig({
         cookies: resolve(__dirname, 'cookies.html'),
         terms: resolve(__dirname, 'terms.html'),
         sitemap: resolve(__dirname, 'sitemap.html'),
+        profile: resolve(__dirname, 'profile.html'),
       },
     },
   },
