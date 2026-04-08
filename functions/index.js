@@ -67,16 +67,26 @@ const VALUE_PROP = `
 async function generateSocialPost(timeOfDay) {
   const town = ESSEX_TOWNS[Math.floor(Math.random() * ESSEX_TOWNS.length)];
   const prompt = `Generate a high-quality social media post for 'Cash 4 Houses'. Town: ${town}. Time: ${timeOfDay}. ${VALUE_PROP}`;
-  const { text } = await ai.generate({ model: 'googleai/gemini-2.5-flash', prompt: prompt });
-  await db.collection("socialPosts").add({ content: text, scheduledTime: timeOfDay, town: town, timestamp: admin.firestore.FieldValue.serverTimestamp(), published: false });
-  return text;
+  try {
+    const { text } = await ai.generate({ model: 'googleai/gemini-1.5-flash', prompt: prompt });
+    await db.collection("socialPosts").add({ content: text, scheduledTime: timeOfDay, town: town, timestamp: admin.firestore.FieldValue.serverTimestamp(), published: false });
+    return text;
+  } catch (error) {
+    console.error("AI Error (Social):", error);
+    return "Social content generation failed. Please check API status.";
+  }
 }
 
 exports.socialMorningPost = onSchedule({ schedule: "0 9 * * *", timeZone: "Europe/London", secrets: ["GBP_LOCATION_ID"] }, async (event) => { await generateSocialPost("Morning"); });
 exports.socialAfternoonPost = onSchedule({ schedule: "0 15 * * *", timeZone: "Europe/London", secrets: ["GBP_LOCATION_ID"] }, async (event) => { await generateSocialPost("Afternoon"); });
 
 // --- MARKET NEWS SUITE ---
-const RSS_FEEDS = ["https://www.ons.gov.uk/economy/grossdomesticproductgdp/rss", "https://www.bankofengland.co.uk/rss/news"];
+const RSS_FEEDS = [
+  "https://www.ons.gov.uk/economy/grossdomesticproductgdp/rss", 
+  "https://www.bankofengland.co.uk/rss/news",
+  "https://www.propertyindustryeye.com/feed/",
+  "https://www.mortgagestrategy.co.uk/feed/"
+];
 async function updateMarketNews() {
   let allItems = [];
   for (const url of RSS_FEEDS) {
@@ -86,10 +96,15 @@ async function updateMarketNews() {
     } catch (err) { console.warn(`RSS Fail: ${url}`); }
   }
   const prompt = `Summarize these property triggers: ${JSON.stringify(allItems.slice(0, 10))}`;
-  const { text } = await ai.generate({ model: 'googleai/gemini-2.5-flash', prompt: prompt });
-  const payload = { content: text, updatedAt: admin.firestore.FieldValue.serverTimestamp() };
-  await db.collection("marketUpdates").doc("latest").set(payload);
-  return { success: true, content: text };
+  try {
+    const { text } = await ai.generate({ model: 'googleai/gemini-1.5-flash', prompt: prompt });
+    const payload = { content: text, updatedAt: admin.firestore.FieldValue.serverTimestamp() };
+    await db.collection("marketUpdates").doc("latest").set(payload);
+    return { success: true, content: text };
+  } catch (error) {
+    console.error("AI Error (Market News):", error);
+    return { success: false, content: "Market analysis temporarily unavailable. Check Generative Language API status." };
+  }
 }
 
 exports.manualMarketUpdate = onRequest({ cors: true, memory: "512MiB" }, async (req, res) => {
