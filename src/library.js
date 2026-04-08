@@ -84,6 +84,20 @@ async function loadLibrary(filter) {
             });
         }
 
+        // 4. Fetch Social Media Agent Feed
+        if (filter === 'all' || filter === 'social') {
+            const socialSnap = await getDocs(query(collection(db, "socialPosts"), orderBy("timestamp", "desc")));
+            socialSnap.forEach(d => {
+                allRecords.push({
+                    type: 'social',
+                    title: `Agentic Social Post (${d.data().town})`,
+                    date: d.data().timestamp?.toDate() || new Date(),
+                    content: d.data().content,
+                    id: d.id
+                });
+            });
+        }
+
         // Sort by Date
         allRecords.sort((a, b) => b.date - a.date);
 

@@ -1,0 +1,100 @@
+import { db, auth } from './firebase-config.js';
+import { 
+    collection, 
+    getDocs, 
+    query, 
+    orderBy,
+    addDoc,
+    serverTimestamp,
+    doc,
+    updateDoc,
+    deleteDoc
+} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+
+const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
+const MANUAL_GEN_URL = "https://manualsocialgenerate-vjikc6hdhq-uc.a.run.app";
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user || user.uid !== ADMIN_UID) {
+        window.location.href = "/";
+    } else {
+        loadSocialPosts();
+    }
+});
+
+async function loadSocialPosts() {
+    const container = document.getElementById('posts-container');
+    container.innerHTML = '<p class="loading">Loading agentic feed...</p>';
+
+    try {
+        const snap = await getDocs(query(collection(db, "socialPosts"), orderBy("timestamp", "desc")));
+        container.innerHTML = "";
+        
+        if (snap.empty) {
+            container.innerHTML = '<p style="text-align: center; color: #64748b; padding: 3rem;">No posts generated yet. Click above to start.</p>';
+            return;
+        }
+
+        snap.forEach(d => {
+            const post = d.data();
+            const date = post.timestamp?.toDate().toLocaleString('en-GB') || 'Just now';
+            const card = document.createElement('div');
+            card.className = 'post-card';
+            card.innerHTML = `
+                <div class="post-meta">
+                    <span><i class="fas fa-calendar-alt"></i> ${date} - <strong>${post.town}</strong></span>
+                    <span class="${post.published ? 'badge-published' : 'badge-pending'}">${post.published ? 'PUBLISHED' : 'PENDING'}</span>
+                </div>
+                <div class="post-content">${post.content}</div>
+                <div class="post-actions">
+                    ${!post.published ? `<button class="btn btn-sm btn-primary publish-btn" data-id="${d.id}">Publish Now</button>` : ''}
+                    <button class="btn btn-sm btn-secondary delete-btn" data-id="${d.id}">Delete</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        setupActionButtons();
+    } catch (err) { console.error(err); }
+}
+
+function setupActionButtons() {
+    document.querySelectorAll('.publish-btn').forEach(btn => {
+        btn.onclick = async () => {
+            const id = btn.getAttribute('data-id');
+            btn.disabled = true;
+            btn.textContent = "Publishing...";
+            try {
+                await updateDoc(doc(db, "socialPosts", id), { published: true });
+                loadSocialPosts();
+            } catch (err) { alert("Publish failed"); btn.disabled = false; }
+        };
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = async () => {
+            if (!confirm("Are you sure?")) return;
+            const id = btn.getAttribute('data-id');
+            await deleteDoc(doc(db, "socialPosts", id));
+            loadSocialPosts();
+        };
+    });
+}
+
+const genBtn = document.getElementById('generate-now-btn');
+if (genBtn) {
+    genBtn.onclick = async () => {
+        genBtn.disabled = true;
+        genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agent is thinking...';
+        try {
+            const resp = await fetch(MANUAL_GEN_URL);
+            if (resp.ok) {
+                alert("New post generated successfully!");
+                loadSocialPosts();
+            }
+        } catch (err) { alert("Generation failed"); }
+        genBtn.disabled = false;
+        genBtn.innerHTML = '<i class="fas fa-plus"></i> Generate Immediate Post';
+    };
+}

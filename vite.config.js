@@ -11,6 +11,7 @@ export default defineConfig({
         performance: resolve(__dirname, 'performance.html'),
         seo: resolve(__dirname, 'seo-update.html'),
         library: resolve(__dirname, 'library.html'),
+        social: resolve(__dirname, 'social.html'),
       },
     },
   },
