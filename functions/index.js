@@ -176,3 +176,28 @@ exports.manualSocialGenerate = onRequest({ cors: true, memory: "512MiB" }, async
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+exports.testEmailConnection = onRequest({ cors: true, secrets: ["SMTP_PASS"] }, async (req, res) => {
+  const transporter = getTransporter();
+  try {
+    // 1. Verify Handshake
+    await transporter.verify();
+    
+    // 2. Send Diagnostic Email
+    await transporter.sendMail({
+      from: '"System Diagnostic" <Andy@Cash4Houses.co.uk>',
+      to: "Andy@Cash4Houses.co.uk",
+      subject: "Office 365 Configuration: SUCCESS",
+      html: `<p>Diagnostic check complete at ${new Date().toISOString()}. The portal is communicating effectively with the SMTP server.</p>`
+    });
+
+    res.status(200).json({ success: true, message: "Handshake verified. Test email dispatched." });
+  } catch (err) {
+    console.error("Diagnostic Failure:", err);
+    res.status(500).json({ 
+      success: false, 
+      error: err.code || "UNKNOWN",
+      message: err.message 
+    });
+  }
+});

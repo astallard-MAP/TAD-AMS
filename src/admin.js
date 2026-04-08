@@ -156,3 +156,36 @@ if (genNewsAction) {
         genNewsAction.style.pointerEvents = 'auto';
     };
 }
+
+const testEmailBtn = document.getElementById('btn-test-email');
+if (testEmailBtn) {
+    testEmailBtn.onclick = async () => {
+        const icon = testEmailBtn.querySelector('i');
+        const originalIcon = icon.className;
+        
+        icon.className = 'fas fa-spinner fa-spin';
+        testEmailBtn.style.opacity = '0.7';
+        testEmailBtn.style.pointerEvents = 'none';
+
+        try {
+            const token = await auth.currentUser.getIdToken();
+            const resp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/testEmailConnection', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const result = await resp.json();
+            
+            if (result.success) {
+                alert("System Online: " + result.message);
+            } else {
+                alert("Critical Failure: [" + result.error + "] " + result.message);
+            }
+        } catch (err) { 
+            console.error("Diagnostic Error:", err);
+            alert("Connection Failed: Unable to reach diagnostic endpoint."); 
+        }
+        
+        icon.className = originalIcon;
+        testEmailBtn.style.opacity = '1';
+        testEmailBtn.style.pointerEvents = 'auto';
+    };
+}
