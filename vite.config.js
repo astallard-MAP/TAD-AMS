@@ -16,7 +16,7 @@ export default defineConfig({
         icons: [
           {
             src: 'favicon.png',
-            sizes: '192x192',
+            sizes: '32x32',
             type: 'image/png'
           },
           {
@@ -50,6 +50,7 @@ export default defineConfig({
         privacy: resolve(__dirname, 'privacy.html'),
         cookies: resolve(__dirname, 'cookies.html'),
         terms: resolve(__dirname, 'terms.html'),
+        sitemap: resolve(__dirname, 'sitemap.html'),
       },
     },
   },

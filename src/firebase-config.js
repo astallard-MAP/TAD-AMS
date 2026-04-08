@@ -27,4 +27,12 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-export { app, analytics, db, auth, storage };
+// New: Auth State Resolution Promise for data synchronisation
+const authReady = new Promise((resolve) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+        resolve(user);
+        unsubscribe();
+    });
+});
+
+export { app, analytics, db, auth, storage, authReady };

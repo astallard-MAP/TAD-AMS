@@ -1,4 +1,4 @@
-import { db, auth, storage } from './firebase-config.js';
+import { authReady, db, auth, storage } from './firebase-config.js';
 import { 
     collection, 
     getDocs, 
@@ -10,12 +10,12 @@ import {
     getDoc,
     setDoc
 } from "firebase/firestore";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { ref, getDownloadURL } from "firebase/storage";
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
-onAuthStateChanged(auth, async (user) => {
+authReady.then(async (user) => {
     if (!user || user.uid !== ADMIN_UID) {
         window.location.href = "/";
     } else {
