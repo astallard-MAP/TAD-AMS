@@ -113,6 +113,13 @@ if (leadForm) {
 
         try {
             data.createdAt = serverTimestamp();
+            
+            // Sample EPC Data Integration for demonstration
+            if (data.address.includes('289 Carlton Avenue')) {
+                data.epcRating = 'F';
+                data.epcExpiry = '18 Aug 2025';
+            }
+
             await addDoc(collection(db, "leads"), data);
             
             const formCard = leadForm.closest('.form-card');

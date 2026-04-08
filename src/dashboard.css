@@ -349,3 +349,38 @@
 .markdown-body h1, .markdown-body h2 {
     color: #0f172a;
 }
+
+/* EPC DATA STYLES */
+.epc-container {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.epc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: white;
+}
+
+.epc-rating-a { background-color: #008055; }
+.epc-rating-b { background-color: #00963d; }
+.epc-rating-c { background-color: #87bc25; }
+.epc-rating-d { background-color: #eedd00; color: #1e293b; }
+.epc-rating-e { background-color: #f1b000; }
+.epc-rating-f { background-color: #eb7d00; }
+.epc-rating-g { background-color: #e30613; }
+
+.epc-expiry {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-style: italic;
+}

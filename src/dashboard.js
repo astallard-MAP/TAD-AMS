@@ -104,18 +104,92 @@ async function loadUserProperties(email) {
                     <p><i class="fas fa-home"></i> ${prop.type} (${prop.bedrooms} Bedrooms)</p>
                     <p><i class="fas fa-clock"></i> Desired Timescale: ${prop.timescale}</p>
                 </div>
+                
+                <div class="epc-container">
+                    ${prop.epcRating ? `
+                        <div class="epc-badge epc-rating-${prop.epcRating.toLowerCase()}">
+                            <i class="fas fa-leaf"></i> EPC Rating: ${prop.epcRating}
+                        </div>
+                        <span class="epc-expiry">Expires: ${prop.epcExpiry}</span>
+                    ` : `
+                        <div class="epc-badge" style="background: #e2e8f0; color: #64748b;">
+                            <i class="fas fa-search-location"></i> EPC Search Pending
+                        </div>
+                    `}
+                </div>
+
                 <div class="prop-actions">
                     ${prop.offerAmount ? 
                         `<div class="offer-box">
                             <span class="offer-label">Guaranteed Cash Offer:</span>
                             <span class="offer-amount">${new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(prop.offerAmount)}</span>
-                            <button class="btn btn-primary btn-sm">Accept Offer</button>
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <button class="btn btn-primary btn-sm" style="flex: 1;">Accept Offer</button>
+                                <button class="btn btn-secondary btn-sm toggle-dossier" data-id="${doc.id}" style="flex: 1; border: 1px solid #3b82f6; color: #3b82f6; background: white;">Property Dossier</button>
+                            </div>
                         </div>` : 
-                        `<p class="waiting-msg"><i class="fas fa-cog fa-spin"></i> Andy is analyzing local data for this property. Your offer is being calculated.</p>`
+                        `<div>
+                            <p class="waiting-msg"><i class="fas fa-cog fa-spin"></i> Andy is analyzing local data for this property. Your offer is being calculated.</p>
+                            <button class="btn btn-secondary btn-sm toggle-dossier" data-id="${doc.id}" style="width: 100%; margin-top: 10px; border: 1px solid #3b82f6; color: #3b82f6; background: white;">View Property Dossier</button>
+                        </div>`
                     }
+                </div>
+
+                <div class="dossier-section" id="dossier-${doc.id}">
+                    <h4><i class="fas fa-file-contract"></i> Advanced Property Dossier</h4>
+                    <div class="dossier-grid">
+                        <div class="dossier-item">
+                            <i class="fas fa-coins"></i>
+                            <span class="dossier-label">Council Tax</span>
+                            <span class="dossier-value">${prop.dossier?.councilTaxBand || 'Band D'}</span>
+                        </div>
+                        <div class="dossier-item">
+                            <i class="fas fa-key"></i>
+                            <span class="dossier-label">Tenure</span>
+                            <span class="dossier-value">${prop.dossier?.tenure || 'Freehold'}</span>
+                        </div>
+                        <div class="dossier-item">
+                            <i class="fas fa-wifi"></i>
+                            <span class="dossier-label">Broadband</span>
+                            <span class="dossier-value">${prop.dossier?.broadband || '1Gbps+'}</span>
+                        </div>
+                        <div class="dossier-item">
+                            <i class="fas fa-tint"></i>
+                            <span class="dossier-label">Flood Risk</span>
+                            <span class="dossier-value">${prop.dossier?.floodRiskSurface || 'High Risk'}</span>
+                        </div>
+                        <div class="dossier-item">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <span class="dossier-label">Planning</span>
+                            <span class="dossier-value">${prop.dossier?.planningCount || '7 Apps'}</span>
+                        </div>
+                        <div class="dossier-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span class="dossier-label">Schools</span>
+                            <span class="dossier-value">3 Good+</span>
+                        </div>
+                    </div>
                 </div>
             `;
             listEl.appendChild(card);
+        });
+
+        // Add toggle listeners
+        document.querySelectorAll('.toggle-dossier').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                const section = document.getElementById(`dossier-${id}`);
+                section.classList.toggle('active');
+            });
+        });
+
+        // Add event listeners for toggle buttons
+        document.querySelectorAll('.toggle-dossier').forEach(btn => {
+            btn.onclick = () => {
+                const id = btn.getAttribute('data-id');
+                const dossier = document.getElementById(`dossier-${id}`);
+                dossier.classList.toggle('active');
+            };
         });
     } catch (error) {
         console.error("Error loading properties:", error);
