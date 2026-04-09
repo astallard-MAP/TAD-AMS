@@ -43,15 +43,8 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// Andy's Persona and FAQs
-const FAQS = [
-  { keywords: ["how fast", "speed", "timescale", "week"], answer: "We can complete the sale in as little as 7 days. Once we agree on a price, we move fast to get you the cash." },
-  { keywords: ["condition", "broken", "repair", "worse", "derelict"], answer: "I buy property in ANY condition. Don't worry about repairs." },
-  { keywords: ["where", "essex", "locations", "southend", "basildon", "leigh", "rayleigh"], answer: "We focus exclusively on South East Essex, covering Southend, Basildon, Rayleigh, Leigh-on-Sea, and all surrounding areas." },
-  { keywords: ["guaranteed", "offer", "promise"], answer: "I offer a guaranteed offer. If I don't buy it personally, I have a network who will." },
-  { keywords: ["financial", "stop", "repossession", "pressure"], answer: "I specialise in helping people under financial pressure. Our service is discrete." },
-  { keywords: ["cost", "fees", "pay"], answer: "There are no hidden fees or high-pressure tactics." }
-];
+const CHATBOT_URL = "https://chatbotandy-vjikc6hdhq-uc.a.run.app";
+let chatHistory = [];
 
 // UI Element Selections
 const chatToggle = document.getElementById('chat-toggle');
@@ -64,40 +57,65 @@ const loginBtn = document.getElementById('login-btn');
 const loginModal = document.getElementById('login-modal');
 const loginForm = document.getElementById('login-form');
 
-// Chat Logic - Safe Initialisation
+// Chat Toggle Logic
 if (chatToggle && chatWindow) {
     chatToggle.onclick = () => chatWindow.classList.toggle('active');
-}
-
-if (chatForm && chatInput && chatMessages) {
-    chatForm.onsubmit = (e) => {
-        e.preventDefault();
-        const msg = chatInput.value.trim();
-        if (!msg) return;
-        addMessage(msg, 'user');
-        chatInput.value = '';
-        setTimeout(() => {
-            const response = getAndyResponse(msg);
-            addMessage(response, 'bot');
-        }, 1000);
-    };
 }
 
 function addMessage(text, sender) {
     if (!chatMessages) return;
     const msgDiv = document.createElement('div');
     msgDiv.className = `message message-${sender}`;
+    // Support markdown if needed, otherwise plain text
     msgDiv.textContent = text;
     chatMessages.appendChild(msgDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function getAndyResponse(input) {
-    const lowercaseInput = input.toLowerCase();
-    for (const faq of FAQS) {
-        if (faq.keywords.some(k => lowercaseInput.includes(k))) return faq.answer;
+async function getAndyResponse(input) {
+    try {
+        const resp = await fetch(CHATBOT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: input, history: chatHistory })
+        });
+        const data = await resp.json();
+        chatHistory.push({ role: 'user', content: input });
+        chatHistory.push({ role: 'assistant', content: data.response });
+        // Keep history manageable
+        if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+        return data.response;
+    } catch (err) {
+        console.error(err);
+        return "I'm having a bit of a moment with my connection, but I'm still ready to help with your property. Why don't you try asking again or just fill in the form?";
     }
-    return "Fill out the form, I'll analyse the data and call you back!";
+}
+
+if (chatForm && chatInput && chatMessages) {
+    chatForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const msg = chatInput.value.trim();
+        if (!msg) return;
+        
+        addMessage(msg, 'user');
+        chatInput.value = '';
+        
+        // Add a "typing" indicator
+        const typingId = "typing-" + Date.now();
+        const typingEl = document.createElement('div');
+        typingEl.id = typingId;
+        typingEl.className = 'message message-bot typing';
+        typingEl.textContent = "Andy is thinking...";
+        chatMessages.appendChild(typingEl);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        const response = await getAndyResponse(msg);
+        
+        const indicator = document.getElementById(typingId);
+        if (indicator) indicator.remove();
+        
+        addMessage(response, 'bot');
+    };
 }
 
 // Form Logic - Safe Initialisation
