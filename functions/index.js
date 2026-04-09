@@ -395,6 +395,24 @@ exports.chatbotAndy = onRequest({
       prompt: `History: ${JSON.stringify(history)}\nUser: ${message}`
     });
 
+    // SENTINEL SAFETY CHECK
+    const safetyCheck = await ai.generate({
+      model: 'vertexai/gemini-2.5-flash',
+      system: "You are the 'Sentinel Moderation AI'. Rejects racism, sexism, abuse, foul language, and religious content. Reply ONLY with 'SAFE' or 'FAIL: [Reason]'",
+      prompt: `Review this chat response for safety: ${text}`
+    });
+
+    if (!safetyCheck.text.includes('SAFE')) {
+      await db.collection("systemAlerts").add({
+        type: "Blocked Chat Content",
+        reason: safetyCheck.text,
+        content: text,
+        timestamp: new Date(),
+        status: "unread"
+      });
+      return res.status(200).json({ response: "I'm sorry, but I can only discuss topics that are professional and inclusive. How else can I help you with your property?" });
+    }
+
     res.status(200).json({ response: text });
   } catch (error) {
     console.error("Chatbot Error:", error);

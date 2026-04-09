@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Audit Log | Cash 4 Houses</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <link rel="stylesheet" href="/src/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <aside class="dashboard-sidebar">
+            <div class="profile-section">
+                <i class="fas fa-shield-halved" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+                <h3>Security Sentinel</h3>
+                <p>Content Moderation Center</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/admin.html"><i class="fas fa-arrow-left"></i> Return to Command Centre</a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="dash-top-bar">
+                <h1>Security Audit Log</h1>
+            </header>
+
+            <section class="admin-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-list-check"></i> Incident History</h2>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Issue Type</th>
+                                <th>Reason</th>
+                                <th>Content Snippet</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="audit-log-body">
+                            <!-- Populated by audit-log.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="/src/audit-log.js"></script>
+</body>
+</html>

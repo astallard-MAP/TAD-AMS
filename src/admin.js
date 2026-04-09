@@ -23,8 +23,49 @@ authReady.then(async (user) => {
         loadLeads();
         loadAdminNews();
         loadAdminProfile(user.uid);
+        pollSecurityAlerts();
     }
 });
+
+async function pollSecurityAlerts() {
+    const alertsQuery = query(
+        collection(db, "systemAlerts"), 
+        where("status", "==", "unread"),
+        orderBy("timestamp", "desc")
+    );
+
+    // Initial check
+    const checkAlerts = async () => {
+        const snap = await getDocs(alertsQuery);
+        if (!snap.empty) {
+            const alert = snap.docs[0];
+            showSecurityAlert(alert);
+        }
+    };
+
+    checkAlerts();
+    // Poll every 60 seconds for live updates if logged in
+    setInterval(checkAlerts, 60000);
+}
+
+function showSecurityAlert(alertDoc) {
+    const alert = alertDoc.data();
+    const modal = document.getElementById('security-alert-modal');
+    if (!modal) return;
+
+    document.getElementById('alert-type').textContent = alert.type;
+    document.getElementById('alert-reason').textContent = alert.reason;
+    document.getElementById('alert-content').textContent = alert.content;
+    
+    modal.style.display = 'flex';
+
+    document.getElementById('ack-alert-btn').onclick = async () => {
+        await setDoc(doc(db, "systemAlerts", alertDoc.id), { status: "read" }, { merge: true });
+        modal.style.display = 'none';
+        // Check for next unread alert
+        pollSecurityAlerts();
+    };
+}
 
 // Global Logout Controller - Absolute Reliability
 document.addEventListener('click', async (e) => {
