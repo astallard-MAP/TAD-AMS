@@ -74,10 +74,15 @@ function addMessage(text, sender) {
 
 async function getAndyResponse(input) {
     try {
+        const user = auth.currentUser;
         const resp = await fetch(CHATBOT_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: input, history: chatHistory })
+            body: JSON.stringify({ 
+                message: input, 
+                history: chatHistory,
+                userId: user ? user.uid : 'anonymous'
+            })
         });
         const data = await resp.json();
         chatHistory.push({ role: 'user', content: input });
@@ -226,11 +231,25 @@ async function fetchLatestNews() {
     const newsContent = document.getElementById('news-content');
     if (!newsContent) return;
     try {
-        const docSnap = await getDoc(doc(db, "marketUpdates", "latest"));
-        if (docSnap.exists()) {
-            newsContent.innerHTML = marked.parse(docSnap.data().content);
+        const newsDoc = await getDoc(doc(db, "marketUpdates", "latest"));
+        if (newsDoc.exists()) {
+            const data = newsDoc.data();
+            newsContent.innerHTML = `
+                <div class="news-meta">
+                    <small>Last Analysed: ${data.updatedAt?.toDate().toLocaleString('en-GB')}</small>
+                </div>
+                ${data.imageUrl ? `<img src="${data.imageUrl}" alt="News Context" style="width: 100%; border-radius: 8px; margin: 1rem 0; max-height: 300px; object-fit: cover;">` : ''}
+                <div class="news-body markdown-body">
+                    ${marked.parse(data.content)}
+                </div>
+            `;
+        } else {
+            newsContent.innerHTML = "<p>Andy is currently preparing today's market insights. Please check back shortly.</p>";
         }
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+        console.error(err); 
+        newsContent.innerHTML = "<p>Unable to load news at this time. Our researchers are investigating.</p>";
+    }
 }
 
 fetchLatestNews();

@@ -165,17 +165,58 @@ async function updateMarketNews() {
       feed.items.forEach(item => allItems.push({ title: item.title, snippet: item.contentSnippet || "", source: feed.title }));
     } catch (err) { console.warn(`RSS Fail: ${url}`); }
   }
-  const prompt = `Summarize these property triggers: ${JSON.stringify(allItems.slice(0, 10))}`;
+
+  const prompt = `
+    ROLE: You are 'Andy', a property market analyst.
+    INPUT: ${JSON.stringify(allItems.slice(0, 10))}
+    MISSION: Summarize today's UK property news triggers in an empathetic, supportive way for sellers under pressure. 
+    Explain why a fast cash sale might be the best strategic move in this current climate.
+  `;
+
   try {
     const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: prompt });
-    const payload = { content: text, updatedAt: admin.firestore.FieldValue.serverTimestamp() };
+    
+    // Generate a unique photographic image for this news
+    const town = ESSEX_TOWNS[Math.floor(Math.random() * ESSEX_TOWNS.length)];
+    const imageUrl = await generateSocialImage(town, text.substring(0, 100));
+
+    const payload = { 
+      content: text, 
+      imageUrl: imageUrl,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp() 
+    };
+    
     await db.collection("marketUpdates").doc("latest").set(payload);
-    return { success: true, content: text };
+
+    // AUTO-PUBLISH TO SOCIAL MEDIA
+    const postRef = await db.collection("socialPosts").add({
+      content: `DAILY NEWS UPDATE: ${text.substring(0, 200)}... Read more on our portal.`,
+      imageUrl: imageUrl,
+      scheduledTime: "Daily News",
+      town: "South East Essex",
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      published: false
+    });
+
+    // We can't easily wait for the Meta req in this function safely if it takes too long,
+    // but we'll try a quick publish hook here or let a background task handle it.
+    // For now, we'll just log it. The Admin can also manually publish.
+    
+    return { success: true, content: text, imageUrl: imageUrl };
   } catch (error) {
     console.error("AI Error (Market News):", error);
-    return { success: false, content: "Market analysis temporarily unavailable. Check Generative Language API status." };
+    return { success: false, content: "Market analysis temporarily unavailable." };
   }
 }
+
+// Ensure it runs once a day automatically at 8:00 AM
+exports.dailyMarketAnalysis = onSchedule({ 
+  schedule: "0 8 * * *", 
+  timeZone: "Europe/London",
+  secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
+}, async (event) => { 
+  await updateMarketNews(); 
+});
 
 exports.manualMarketUpdate = onRequest({ cors: true, memory: "512MiB" }, async (req, res) => {
   const result = await updateMarketNews();
@@ -412,6 +453,16 @@ exports.chatbotAndy = onRequest({
       });
       return res.status(200).json({ response: "I'm sorry, but I can only discuss topics that are professional and inclusive. How else can I help you with your property?" });
     }
+
+    // LOG INTERACTION TO IMMUTABLE RECORD
+    const InteractionLog = {
+      userId: req.body.userId || user.uid,
+      timestamp: new Date(),
+      channel: "Andy AI Chatbot",
+      type: "Exchange",
+      content: `User: ${message}\nAndy: ${text}`
+    };
+    await db.collection("communications").add(InteractionLog);
 
     res.status(200).json({ response: text });
   } catch (error) {

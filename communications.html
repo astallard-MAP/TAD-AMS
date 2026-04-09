@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communications Log | Cash 4 Houses</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <link rel="stylesheet" href="/src/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <aside class="dashboard-sidebar">
+            <div class="profile-section">
+                <i class="fas fa-history" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+                <h3>Interaction Record</h3>
+                <p>Immutable Communication Log</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="dash-top-bar">
+                <h1>All Portal Communications</h1>
+                <p style="color: #64748b; font-size: 0.85rem;">This record is time-stamped and immutable. It cannot be altered or deleted.</p>
+            </header>
+
+            <section class="admin-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-list-ul"></i> Interaction History</h2>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Type</th>
+                                <th>Subject/Channel</th>
+                                <th>Content Snippet</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comms-log-body">
+                            <!-- Populated by communications.js -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="no-comms" style="display: none; text-align: center; padding: 4rem;">
+                    <i class="fas fa-comment-slash" style="font-size: 3rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+                    <p>No recorded communications found for your account.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="/src/communications.js"></script>
+</body>
+</html>

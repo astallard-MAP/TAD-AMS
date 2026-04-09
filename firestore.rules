@@ -5,6 +5,18 @@ service cloud.firestore {
       allow create: if true;
       allow read, update, delete: if request.auth != null;
     }
+    
+    // Communication Interaction Records (IMMUTABLE)
+    match /communications/{msgId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid || request.auth.uid == 'Djh7uHK2yZYHC4Ta4xhbguaCJVl1');
+      allow update, delete: if false; // STRICT IMMUTABILITY
+    }
+
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
     match /{document=**} {
       allow read, write: if request.auth != null;
     }

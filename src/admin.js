@@ -128,6 +128,7 @@ async function loadAdminNews() {
                 <div class="news-meta">
                     <small>Last Analysed: ${data.updatedAt?.toDate().toLocaleString('en-GB')}</small>
                 </div>
+                ${data.imageUrl ? `<img src="${data.imageUrl}" alt="News Context" style="width: 100%; border-radius: 8px; margin: 1rem 0; max-height: 300px; object-fit: cover;">` : ''}
                 <div class="news-body markdown-body">
                     ${marked.parse(data.content)}
                 </div>
