@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Sitemap: https://c4h-wesbite.web.app/sitemap.xml
+Sitemap: https://c4h-wesbite.web.app/sitemap.html
+
+# Priority Areas
+Disallow: /admin.html
+Disallow: /dashboard.html
+Disallow: /profile.html
+Disallow: /communications.html

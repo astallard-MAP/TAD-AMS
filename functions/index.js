@@ -647,3 +647,31 @@ exports.portalSentinel = onSchedule({
         console.error("Sentinel Failure:", error);
     }
 });
+
+// --- SEO SENTINEL: SEARCH ENGINE SUBMISSION AGENT ---
+exports.seoSubmissionAgent = onSchedule({
+    schedule: "0 1 * * *", // 1:00 am every day
+    timeZone: "Europe/London",
+    memory: "512MiB"
+}, async (event) => {
+    console.log("SEO Submission Agent Active...");
+    const siteUrl = "https://c4h-wesbite.web.app";
+    const sitemapUrl = `${siteUrl}/sitemap.xml`;
+    
+    try {
+        // Bing (IndexNow Protocol) - Using a simplified ping for demonstration
+        await fetch(`https://www.bing.com/indexnow?url=${siteUrl}&key=8e3a09f`); 
+        
+        // Google Search Console Ping
+        await fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`);
+
+        await db.collection("seoSubmissions").add({
+            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            engines: ["Google", "Bing"],
+            sitemap: sitemapUrl,
+            status: "Submitted"
+        });
+    } catch (error) {
+        console.error("SEO Submission Failure:", error);
+    }
+});
