@@ -24,6 +24,10 @@ const AZURE_TENANT_ID = defineSecret("AZURE_TENANT_ID");
 const AZURE_CLIENT_ID = defineSecret("AZURE_CLIENT_ID");
 const AZURE_CLIENT_SECRET = defineSecret("AZURE_CLIENT_SECRET");
 const GBP_LOCATION_ID = defineSecret("GBP_LOCATION_ID");
+const META_PAGE_ID = defineSecret("META_PAGE_ID");
+const META_PERMANENT_PAGE_TOKEN = defineSecret("META_PERMANENT_PAGE_TOKEN");
+const META_APP_ID = defineSecret("META_APP_ID");
+const META_APP_SECRET = defineSecret("META_APP_SECRET");
 
 const parser = new Parser({
   headers: {
@@ -162,5 +166,126 @@ exports.testEmailConnection = onRequest({
     if (err.requestId) console.log("Graph Request ID:", err.requestId);
     if (err.clientRequestId) console.log("Graph Client Request ID:", err.clientRequestId);
     res.status(200).json({ success: false, error: err.code || "AUTH_FAIL", message: err.message, requestId: err.requestId }); 
+  }
+});
+
+// --- META GRAPH API (FB & IG) ---
+exports.publishToMeta = onRequest({ 
+  cors: true, 
+  secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "META_APP_ID", "META_APP_SECRET"] 
+}, async (req, res) => {
+  const { postId } = req.body;
+  if (!postId) return res.status(400).send("Missing postId");
+
+  try {
+    const postDoc = await db.collection("socialPosts").doc(postId).get();
+    if (!postDoc.exists) return res.status(404).send("Post not found");
+    const postData = postDoc.data();
+    const content = postData.content;
+    const imageUrl = postData.imageUrl; // Optional image
+
+    const pageId = META_PAGE_ID.value();
+    const token = META_PERMANENT_PAGE_TOKEN.value();
+
+    // --- 1. FACEBOOK PUBLISHING ---
+    const fbUrl = `https://graph.facebook.com/v19.0/${pageId}/feed`;
+    const fbPayload = { message: content, access_token: token };
+    if (imageUrl) fbPayload.link = imageUrl;
+
+    const fbResp = await fetch(fbUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fbPayload)
+    });
+    const fbResult = await fbResp.json();
+
+    // --- 2. INSTAGRAM PUBLISHING ---
+    const igAccountUrl = `https://graph.facebook.com/v19.0/${pageId}?fields=instagram_business_account&access_token=${token}`;
+    const igAccountResp = await fetch(igAccountUrl);
+    const igAccountData = await igAccountResp.json();
+    const igAccountId = igAccountData.instagram_business_account?.id;
+
+    let igResult = { status: "Skipped" };
+    
+    // Instagram requires an image/video for publishing via API
+    if (igAccountId && imageUrl) {
+      try {
+        // Step A: Create Media Container
+        const containerUrl = `https://graph.facebook.com/v19.0/${igAccountId}/media`;
+        const containerResp = await fetch(containerUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image_url: imageUrl,
+            caption: content,
+            access_token: token
+          })
+        });
+        const containerData = await containerResp.json();
+        
+        if (containerData.id) {
+          // Step B: Publish Media
+          const publishUrl = `https://graph.facebook.com/v19.0/${igAccountId}/media_publish`;
+          const publishResp = await fetch(publishUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              creation_id: containerData.id,
+              access_token: token
+            })
+          });
+          igResult = await publishResp.json();
+        } else {
+          igResult = { error: containerData.error || "Failed to create container" };
+        }
+      } catch (igErr) {
+        igResult = { error: igErr.message };
+      }
+    } else if (igAccountId && !imageUrl) {
+      igResult = { status: "Skipped - Text only posts not supported on IG API" };
+    }
+
+    // Update the post record
+    await db.collection("socialPosts").doc(postId).update({ 
+      published: true, 
+      fbPostId: fbResult.id || null,
+      igPostId: igResult.id || null,
+      metaPublishedAt: admin.firestore.FieldValue.serverTimestamp(),
+      metaStatus: {
+        facebook: fbResult.id ? "Success" : "Error",
+        instagram: igResult.id ? "Success" : (igAccountId ? "Failed/Skipped" : "No IG Account")
+      }
+    });
+
+    res.status(200).json({ 
+      success: true, 
+      facebook: fbResult,
+      instagram: igResult
+    });
+
+  } catch (error) {
+    console.error("Meta Publishing Error:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+exports.verifyMetaConnection = onRequest({
+  cors: true,
+  secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"]
+}, async (req, res) => {
+  try {
+    const pageId = META_PAGE_ID.value();
+    const token = META_PERMANENT_PAGE_TOKEN.value();
+    const url = `https://graph.facebook.com/v19.0/${pageId}?fields=name,username,followers_count&access_token=${token}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+    
+    res.status(200).json({ success: true, pageDetails: data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 });

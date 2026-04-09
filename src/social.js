@@ -12,6 +12,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 const MANUAL_GEN_URL = "https://manualsocialgenerate-vjikc6hdhq-uc.a.run.app";
+const PUBLISH_META_URL = "https://publishtometa-vjikc6hdhq-uc.a.run.app";
 
 onAuthStateChanged(auth, async (user) => {
     if (!user || user.uid !== ADMIN_UID) {
@@ -80,9 +81,31 @@ function setupActionButtons() {
             btn.disabled = true;
             btn.textContent = "Publishing...";
             try {
-                await updateDoc(doc(db, "socialPosts", id), { published: true });
-                loadSocialPosts();
-            } catch (err) { alert("Publish failed"); btn.disabled = false; }
+                const token = await auth.currentUser.getIdToken();
+                const resp = await fetch(PUBLISH_META_URL, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ postId: id })
+                });
+                
+                if (resp.ok) {
+                    alert("Published successfully to Facebook!");
+                    loadSocialPosts();
+                } else {
+                    const errData = await resp.json();
+                    alert("Publish failed: " + (errData.error || "Unknown error"));
+                    btn.disabled = false;
+                    btn.textContent = "Publish Now";
+                }
+            } catch (err) { 
+                console.error(err);
+                alert("Publish failed - Check connection"); 
+                btn.disabled = false; 
+                btn.textContent = "Publish Now";
+            }
         };
     });
 
