@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Template Library | Cash 4 Houses</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <link rel="stylesheet" href="/src/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Quill WYSIWYG Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        .editor-container { background: white; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        #quill-editor { height: 400px; font-size: 1rem; }
+        .template-list { display: grid; grid-template-columns: 250px 1fr; gap: 2rem; min-height: 80vh; }
+        .sidebar-library { background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .template-item { padding: 12px; margin-bottom: 8px; background: white; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .template-item:hover { transform: translateY(-2px); border-color: #3b82f6; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .template-item.active { border-left: 4px solid #3b82f6; background: #eff6ff; }
+        .version-badge { font-size: 0.7rem; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; }
+    </style>
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <aside class="dashboard-sidebar">
+            <div class="profile-section">
+                <i class="fas fa-envelope-open-text" style="font-size: 3rem; color: #3b82f6; margin-bottom: 1rem;"></i>
+                <h3>Library</h3>
+                <p>Email Template Suite</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/admin.html"><i class="fas fa-arrow-left"></i> Command Centre</a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="dash-top-bar">
+                <h1>Email Template Library</h1>
+                <button id="btn-new-template" class="btn btn-primary"><i class="fas fa-plus"></i> New Template</button>
+            </header>
+
+            <div class="template-list">
+                <div class="sidebar-library">
+                    <h4>All Templates</h4>
+                    <div id="template-items-container" style="margin-top: 1rem;">
+                        <p class="loading">Loading library...</p>
+                    </div>
+                </div>
+
+                <div class="editor-view">
+                    <div id="no-template-selected" style="text-align: center; padding: 5rem; color: #64748b;">
+                        <i class="fas fa-file-invoice" style="font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.3;"></i>
+                        <h3>Select a template from the library or create a new one to begin editing.</h3>
+                    </div>
+
+                    <div id="editor-ui" style="display: none;">
+                        <div class="admin-panel" style="margin-bottom: 1.5rem;">
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label>Template Name</label>
+                                <input type="text" id="template-name" placeholder="e.g. 7-Day Quick Cash Offer Response">
+                            </div>
+                            <div class="form-group">
+                                <label>Email Subject Line</label>
+                                <input type="text" id="template-subject" placeholder="Good news about {{property_address}}">
+                            </div>
+                        </div>
+
+                        <div class="editor-container">
+                            <div id="quill-editor"></div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                            <div id="version-info" class="text-sm color-muted"></div>
+                            <div style="display: flex; gap: 10px;">
+                                <button id="btn-save-template" class="btn btn-primary">Save as New Version</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Quill Editor library -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script type="module" src="/src/templates-email.js"></script>
+</body>
+</html>
