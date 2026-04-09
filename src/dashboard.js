@@ -79,7 +79,7 @@ async function loadUserProperties(email) {
             listEl.innerHTML = `
                 <div class="empty-state">
                     <h3>No properties yet</h3>
-                    <p>It looks like you haven't added any properties to your dashboard yet. Click "Add Another Property" to get started.</p>
+                    <p>It looks like you haven't added any properties to your dashboard yet. Click "Add Property" to get started.</p>
                 </div>
             `;
             return;

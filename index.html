@@ -328,8 +328,13 @@
                     <label>Password</label>
                     <input type="password" name="password" required>
                 </div>
-                <p id="login-error" style="color: #d32f2f; font-size: 0.8rem;"></p>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+                <p id="auth-error" style="color: #d32f2f; font-size: 0.8rem;"></p>
+                <div id="auth-actions">
+                    <button type="submit" id="main-auth-btn" class="btn btn-primary" style="width: 100%;">Sign In</button>
+                    <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem;">
+                        Don't have an account? <a href="#" id="toggle-signup">Create Login</a>
+                    </p>
+                </div>
             </form>
         </div>
     </div>

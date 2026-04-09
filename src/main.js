@@ -6,7 +6,7 @@ import {
     doc,
     getDoc
 } from 'firebase/firestore';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
@@ -172,16 +172,36 @@ if (loginBtn && loginModal) {
 }
 
 if (loginForm) {
+    let activeMode = 'login';
+    const toggleBtn = document.getElementById('toggle-signup');
+    const authTitle = loginModal.querySelector('h2');
+    const submitBtn = document.getElementById('main-auth-btn');
+
+    if (toggleBtn) {
+        toggleBtn.onclick = (e) => {
+            e.preventDefault();
+            activeMode = activeMode === 'login' ? 'signup' : 'login';
+            authTitle.textContent = activeMode === 'login' ? 'Sign In to Portal' : 'Create Portal Login';
+            submitBtn.textContent = activeMode === 'login' ? 'Sign In' : 'Create Account';
+            toggleBtn.textContent = activeMode === 'login' ? 'Create Login' : 'Already have a login?';
+        };
+    }
+
     loginForm.onsubmit = async (e) => {
         e.preventDefault();
         const email = loginForm.email.value;
         const password = loginForm.password.value;
-        const errorMsg = document.getElementById('login-error');
+        const errorMsg = document.getElementById('auth-error');
+        
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            if (activeMode === 'login') {
+                await signInWithEmailAndPassword(auth, email, password);
+            } else {
+                await createUserWithEmailAndPassword(auth, email, password);
+            }
             if (loginModal) loginModal.classList.remove('active');
         } catch (error) {
-            if (errorMsg) errorMsg.textContent = "Invalid login credentials.";
+            if (errorMsg) errorMsg.textContent = error.message.replace('Firebase:', '');
         }
     };
 }
