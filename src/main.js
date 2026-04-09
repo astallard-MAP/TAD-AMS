@@ -92,7 +92,7 @@ async function getAndyResponse(input) {
         return data.response;
     } catch (err) {
         console.error(err);
-        return "I'm having a bit of a moment with my connection, but I'm still ready to help with your property. Why don't you try asking again or just fill in the form?";
+        return "I'm having a bit of a moment with my connection, but I'm still here to help. How can I assist with your property today?";
     }
 }
 

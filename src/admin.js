@@ -197,14 +197,16 @@ if (genNewsAction) {
 
         try {
             const token = await auth.currentUser.getIdToken();
-            await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/manualMarketUpdate', {
-                headers: { 'Authorization': `Bearer ${token}` }
+            const resp = await fetch('https://manualmarketupdate-vjikc6hdhq-uc.a.run.app', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: token })
             });
             await loadAdminNews();
-            alert("Andy has successfully generated and published today's stories!");
+            alert("Andy has successfully generated today's stories!");
         } catch (err) { 
             console.error("News Trigger Error:", err);
-            alert("Failed to trigger update. Check console for permission details."); 
+            alert("Failed to trigger update.");
         }
         
         icon.className = originalIcon;
@@ -246,6 +248,16 @@ if (testEmailBtn) {
     };
 }
 
+const impersonateBtn = document.getElementById('btn-impersonate');
+if (impersonateBtn) {
+    impersonateBtn.onclick = () => {
+        localStorage.setItem('impersonate_seller', 'true');
+        localStorage.setItem('impersonate_email', 'andrew@stallard.co');
+        window.location.href = "/dashboard.html";
+    };
+}
+
+
 function showImpersonationBar() {
     const bar = document.createElement('div');
     bar.style.cssText = "background: #ffcc00; padding: 10px; text-align: center; font-weight: bold;";
@@ -255,5 +267,74 @@ function showImpersonationBar() {
         localStorage.removeItem('impersonate_seller');
         localStorage.removeItem('impersonate_email');
         window.location.href = "/admin.html";
+    };
+}
+
+// --- ANDY AI CHAT INTEGRATION ---
+const CHATBOT_URL = "https://chatbotandy-vjikc6hdhq-uc.a.run.app";
+let chatHistory = [];
+
+const chatToggle = document.getElementById('chat-toggle');
+const chatWindow = document.getElementById('chat-window');
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+const chatMessages = document.getElementById('chat-messages');
+
+if (chatToggle && chatWindow) {
+    chatToggle.onclick = () => chatWindow.classList.toggle('active');
+}
+
+function addMessage(text, sender) {
+    if (!chatMessages) return;
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message message-${sender}`;
+    msgDiv.textContent = text;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function getAndyResponse(input) {
+    try {
+        const user = auth.currentUser;
+        const resp = await fetch(CHATBOT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                message: input, 
+                history: chatHistory,
+                userId: user ? user.uid : 'anonymous'
+            })
+        });
+        const data = await resp.json();
+        chatHistory.push({ role: 'user', content: input });
+        chatHistory.push({ role: 'assistant', content: data.response });
+        if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+        return data.response;
+    } catch (err) {
+        console.error(err);
+        return "System check: Connection issue detected. I'm still here to help with admin tasks.";
+    }
+}
+
+if (chatForm && chatInput && chatMessages) {
+    chatForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const msg = chatInput.value.trim();
+        if (!msg) return;
+        addMessage(msg, 'user');
+        chatInput.value = '';
+        
+        const typingId = "typing-" + Date.now();
+        const typingEl = document.createElement('div');
+        typingEl.id = typingId;
+        typingEl.className = 'message message-bot typing';
+        typingEl.textContent = "Andy is thinking...";
+        chatMessages.appendChild(typingEl);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        const response = await getAndyResponse(msg);
+        const typing = document.getElementById(typingId);
+        if (typing) typing.remove();
+        addMessage(response, 'bot');
     };
 }

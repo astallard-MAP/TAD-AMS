@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
     <link rel="stylesheet" href="/src/style.css">
     <link rel="stylesheet" href="/src/dashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCLiBVflUaUA7tqdUOfxRb4DkXzLAeEmlI&libraries=places"></script>
 </head>
@@ -69,6 +69,32 @@
                 <a href="/#get-offer" class="btn btn-primary">Add Property</a>
             </section>
         </main>
+    </div>
+
+    <div class="chat-widget">
+        <div class="chat-window" id="chat-window">
+            <div class="chat-header">
+                <div class="chat-title">
+                    <img src="/andy-avatar.jpg" alt="Andy" class="chat-avatar">
+                    <div class="chat-status">
+                        <h4>Andy, Property buyer</h4>
+                        <span><i class="fas fa-circle"></i> Online</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message message-bot">
+                    Hi! I'm Andy. I'm an honest, local property expert here to help you move forward. How can I help you today?
+                </div>
+            </div>
+            <form class="chat-input-area" id="chat-form">
+                <input type="text" id="chat-input" placeholder="Ask me anything...">
+                <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem;"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+        <div class="chat-button" id="chat-toggle">
+            <i class="fas fa-comments"></i>
+        </div>
     </div>
 
     <script type="module" src="/src/dashboard.js"></script>

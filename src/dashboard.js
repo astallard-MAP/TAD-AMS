@@ -263,3 +263,71 @@ function setupDashboardListeners(user) {
         });
     }
 }
+// --- ANDY AI CHAT INTEGRATION ---
+const CHATBOT_URL = "https://chatbotandy-vjikc6hdhq-uc.a.run.app";
+let chatHistory = [];
+
+const chatToggle = document.getElementById('chat-toggle');
+const chatWindow = document.getElementById('chat-window');
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+const chatMessages = document.getElementById('chat-messages');
+
+if (chatToggle && chatWindow) {
+    chatToggle.onclick = () => chatWindow.classList.toggle('active');
+}
+
+function addMessage(text, sender) {
+    if (!chatMessages) return;
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message message-${sender}`;
+    msgDiv.textContent = text;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function getAndyResponse(input) {
+    try {
+        const user = auth.currentUser;
+        const resp = await fetch(CHATBOT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                message: input, 
+                history: chatHistory,
+                userId: user ? user.uid : 'anonymous'
+            })
+        });
+        const data = await resp.json();
+        chatHistory.push({ role: 'user', content: input });
+        chatHistory.push({ role: 'assistant', content: data.response });
+        if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+        return data.response;
+    } catch (err) {
+        console.error(err);
+        return "I'm having a bit of a moment with my connection, but I'm still here to help. How can I assist with your property today?";
+    }
+}
+
+if (chatForm && chatInput && chatMessages) {
+    chatForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const msg = chatInput.value.trim();
+        if (!msg) return;
+        addMessage(msg, 'user');
+        chatInput.value = '';
+        
+        const typingId = "typing-" + Date.now();
+        const typingEl = document.createElement('div');
+        typingEl.id = typingId;
+        typingEl.className = 'message message-bot typing';
+        typingEl.textContent = "Andy is thinking...";
+        chatMessages.appendChild(typingEl);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        const response = await getAndyResponse(msg);
+        const typing = document.getElementById(typingId);
+        if (typing) typing.remove();
+        addMessage(response, 'bot');
+    };
+}
