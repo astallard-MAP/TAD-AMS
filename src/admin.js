@@ -8,7 +8,8 @@ import {
     where,
     doc,
     getDoc,
-    setDoc
+    setDoc,
+    limit
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { ref, getDownloadURL } from "firebase/storage";
@@ -109,7 +110,21 @@ async function loadDashboardStats() {
         // 4. Site Visitors (Placeholder)
         document.getElementById('stat-visitors').textContent = "382";
 
-        // 5. Social Posts (Mock Breakdown)
+        // 5. System Efficiency (From Sentinel)
+        const auditQuery = query(collection(db, "systemAudits"), orderBy("timestamp", "desc"), limit(1));
+        const auditSnap = await getDocs(auditQuery);
+        if (!auditSnap.empty) {
+            const audit = auditSnap.docs[0].data();
+            const effEl = document.getElementById('stat-efficiency');
+            if (effEl) {
+                effEl.textContent = `${audit.score}%`;
+                effEl.style.color = audit.score >= 95 ? "#10b981" : audit.score >= 85 ? "#f59e0b" : "#ef4444";
+            }
+        } else {
+            document.getElementById('stat-efficiency').textContent = "100%"; // Initial peak
+        }
+
+        // 6. Social Posts (Mock Breakdown)
         document.getElementById('social-today').textContent = "2";
         document.getElementById('social-week').textContent = "14";
         document.getElementById('social-month').textContent = "58";
