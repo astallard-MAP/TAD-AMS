@@ -54,9 +54,9 @@ function getGraphClient() {
 
 // --- SOCIAL MEDIA AGENT LOGIC ---
 const ESSEX_TOWNS = [
-  "Southend-on-Sea", "Thorpe Bay", "Shoeburyness", "Westcliff", "Rayleigh", 
-  "Eastwood", "Rochford", "Benfleet", "Canvey Island", "Wickford", 
-  "Basildon", "Stanford Le Hope", "Prittlewell", "Leigh-on-Sea"
+  "Southend-on-Sea", "Westcliff-on-Sea", "Leigh-on-Sea", "Shoeburyness", 
+  "Rochford", "Rayleigh Weir", "Rayleigh", "Basildon", "Wickford", 
+  "Stanford Le Hope", "Brentwood", "Chelmsford", "Maldon", "Battelsbridge"
 ];
 
 const VALUE_PROP = `
@@ -68,21 +68,86 @@ const VALUE_PROP = `
 - Website: https://cash4houses.co.uk
 `;
 
+async function generateSocialImage(town, context) {
+  const prompt = `A professional, high-quality photograph of ${town}, Essex, showing a residential street with houses. The atmosphere should be professional and trustworthy. High resolution, atmospheric lighting.`;
+  try {
+    // Note: Using Imagen via Genkit/VertexAI if configured, or fallback to a placeholder service for demo
+    // For production, we'd use vertexai/imagen-3
+    const result = await ai.generate({
+      model: 'vertexai/imagen-3', 
+      prompt: prompt
+    });
+    // Assuming the output is a URL or base64. For Vertex AI via Genkit, it returns media objects.
+    // Simplifying for this implementation:
+    return "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&q=80&w=1200"; // Placeholder until actual media export is stable
+  } catch (error) {
+    console.warn("Image Gen Error (using fallback):", error);
+    return "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1200";
+  }
+}
+
 async function generateSocialPost(timeOfDay) {
   const town = ESSEX_TOWNS[Math.floor(Math.random() * ESSEX_TOWNS.length)];
-  const prompt = `Generate a high-quality social media post for 'Cash 4 Houses'. Town: ${town}. Time: ${timeOfDay}. ${VALUE_PROP}`;
+  
+  // 1. Fetch Market & Local News Context
+  let newsContext = "";
+  try {
+    const feeds = [
+      "https://www.propertyindustryeye.com/feed/",
+      "https://www.mortgagestrategy.co.uk/feed/"
+    ];
+    let newsItems = [];
+    for (const url of feeds) {
+      const feed = await parser.parseURL(url);
+      newsItems.push(...feed.items.slice(0, 2).map(i => i.title));
+    }
+    newsContext = newsItems.join(". ");
+  } catch (e) { console.warn("News Context Fail"); }
+
+  const prompt = `
+    ROLE: You are the 'South East Essex Social Media Agent' for Cash 4 Houses.
+    TARGET AREA: ${town}, Essex.
+    TIME OF DAY: ${timeOfDay}.
+    CURRENT NEWS: ${newsContext}
+    
+    MISSION: Generate a hard-hitting, urgent social media post.
+    
+    CORE REQUIREMENTS:
+    1. TARGETING: Address the residents of ${town} specifically.
+    2. NEWS BIAS: Analyze the news context and any general economic data. Lean heavily into the "negative" realities: store closures, job losses, falling house prices, rising bills, and the cost of living crisis making mortgages unaffordable for many in Essex.
+    3. THE SOLUTION: Cash 4 Houses is the only certain exit. I am a cash buyer with immediate funds ready to buy ${town} properties in ANY condition.
+    4. SPEED & CERTAINTY: Emphasize completion in as little as 7 days. All legal fees paid.
+    5. HEADLINE: Create a catchy, bold headline. GUIDELINE: Max 7 words.
+    6. CALL TO ACTION: Visit Https://cash4houses.co.uk now for a valuation. Act now, don't delay or miss this certain exit window.
+    7. STYLE: Professional, friendly, but strictly realistic about the economic climate. Use relevant emojis for FB and Instagram.
+    
+    OUTPUT FORMAT:
+    HEADLINE: [Header]
+    CONTENT: [Body text]
+  `;
+
   try {
     const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: prompt });
-    await db.collection("socialPosts").add({ content: text, scheduledTime: timeOfDay, town: town, timestamp: admin.firestore.FieldValue.serverTimestamp(), published: false });
+    const imageUrl = await generateSocialImage(town, newsContext);
+    
+    await db.collection("socialPosts").add({ 
+      content: text, 
+      imageUrl: imageUrl,
+      scheduledTime: timeOfDay, 
+      town: town, 
+      timestamp: admin.firestore.FieldValue.serverTimestamp(), 
+      published: false 
+    });
     return text;
   } catch (error) {
     console.error("AI Error (Social):", error);
-    return "Social content generation failed. Please check API status.";
+    return "Social content generation failed.";
   }
 }
 
 exports.socialMorningPost = onSchedule({ schedule: "0 9 * * *", timeZone: "Europe/London", secrets: ["GBP_LOCATION_ID"] }, async (event) => { await generateSocialPost("Morning"); });
-exports.socialAfternoonPost = onSchedule({ schedule: "0 15 * * *", timeZone: "Europe/London", secrets: ["GBP_LOCATION_ID"] }, async (event) => { await generateSocialPost("Afternoon"); });
+exports.socialLunchPost = onSchedule({ schedule: "0 12 * * *", timeZone: "Europe/London", secrets: ["GBP_LOCATION_ID"] }, async (event) => { await generateSocialPost("Lunch"); });
+exports.socialEveningPost = onSchedule({ schedule: "0 18 * * *", timeZone: "Europe/London", secrets: ["GBP_LOCATION_ID"] }, async (event) => { await generateSocialPost("Evening"); });
 
 // --- MARKET NEWS SUITE ---
 const RSS_FEEDS = [
