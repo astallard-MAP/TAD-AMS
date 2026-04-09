@@ -110,20 +110,22 @@ async function generateSocialPost(timeOfDay) {
     TIME OF DAY: ${timeOfDay}.
     CURRENT NEWS: ${newsContext}
     
-    MISSION: Generate a hard-hitting, urgent social media post.
+    MISSION: Generate a hard-hitting, urgent social media post with absolute "LOCAL DOMINANCE".
     
-    CORE REQUIREMENTS:
-    1. TARGETING: Address the residents of ${town} specifically.
-    2. NEWS BIAS: Analyze the news context and any general economic data. Lean heavily into the "negative" realities: store closures, job losses, falling house prices, rising bills, and the cost of living crisis making mortgages unaffordable for many in Essex.
-    3. THE SOLUTION: Cash 4 Houses is the only certain exit. I am a cash buyer with immediate funds ready to buy ${town} properties in ANY condition.
-    4. SPEED & CERTAINTY: Emphasize completion in as little as 7 days. All legal fees paid.
-    5. HEADLINE: Create a catchy, bold headline. GUIDELINE: Max 7 words.
-    6. CALL TO ACTION: Visit Https://cash4houses.co.uk now for a valuation. Act now, don't delay or miss this certain exit window.
-    7. STYLE: Professional, friendly, but strictly realistic about the economic climate. Use relevant emojis for FB and Instagram.
+    LOCAL DOMINANCE GUIDELINES:
+    1. COMMUNITY HUB: Research and mention specific local points of interest, nearby community groups (e.g., "${town} Community Group", "Local Residents Association"), or landmarks to prove you are an active part of the ${town} community.
+    2. NEWS BIAS: Lean heavily into the "negative" realities: store closures, job losses, falling house prices, and rising bills in Essex. Frame Cash 4 Houses as the only secure "Out".
+    3. THE SOLUTION: Cash 4 Houses - Cash buyer with immediate funds ready to buy ${town} properties in ANY condition. Completion in 7 days. All legal fees paid.
+    4. HEADLINE: Catchy, bold headline (Max 7 words).
+    5. CALL TO ACTION: Visit Https://cash4houses.co.uk now for a valuation.
+    6. HASHTAGS: Scrape your internal knowledge for the most dominant local hashtags (e.g., #SouthendNews, #BasildonBusiness, #EssexProperty, #StopRepossession, #${town.replace(/\s/g, '')}Life, #EssexCostOfLiving). Use 5-8 relevant hashtags.
+    
+    STYLE: Professional, friendly, but strictly realistic about the economic climate. Format for Facebook and Instagram.
     
     OUTPUT FORMAT:
     HEADLINE: [Header]
     CONTENT: [Body text]
+    HASHTAGS: [List of tags]
   `;
 
   try {
