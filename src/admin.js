@@ -117,9 +117,23 @@ async function loadLeads() {
                 <td>${lead.address}<br><small>${lead.type} - ${lead.bedrooms}br</small></td>
                 <td><span class="badge ${lead.timescale === 'Within 7 Days' ? 'badge-urgent' : ''}">${lead.timescale}</span></td>
                 <td>Pending Review</td>
-                <td><button class="btn btn-primary btn-sm">Make Offer</button></td>
+                <td>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn btn-primary btn-sm">Offer</button>
+                        <button class="btn btn-secondary btn-sm impersonate-lead" data-email="${lead.email}">Impersonate</button>
+                    </div>
+                </td>
             `;
             leadsTable.appendChild(tr);
+        });
+        // Add click listeners for impersonation
+        document.querySelectorAll('.impersonate-lead').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const email = btn.getAttribute('data-email');
+                localStorage.setItem('impersonate_seller', 'true');
+                localStorage.setItem('impersonate_email', email);
+                window.location.href = "/dashboard.html";
+            });
         });
     } catch (error) {
         console.error("Error loading leads:", error);
@@ -190,10 +204,14 @@ if (testEmailBtn) {
     };
 }
 
-const impersonateBtn = document.getElementById('btn-impersonate');
-if (impersonateBtn) {
-    impersonateBtn.onclick = () => {
-        localStorage.setItem('impersonate_seller', 'true');
-        window.location.href = "/dashboard.html";
+function showImpersonationBar() {
+    const bar = document.createElement('div');
+    bar.style.cssText = "background: #ffcc00; padding: 10px; text-align: center; font-weight: bold;";
+    bar.innerHTML = `Impersonating ${localStorage.getItem('impersonate_email')} <button id="exit-impersonation">Exit</button>`;
+    document.body.prepend(bar);
+    document.getElementById('exit-impersonation').onclick = () => {
+        localStorage.removeItem('impersonate_seller');
+        localStorage.removeItem('impersonate_email');
+        window.location.href = "/admin.html";
     };
 }

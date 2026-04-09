@@ -20,9 +20,12 @@ onAuthStateChanged(auth, async (user) => {
     } else if (user.uid === ADMIN_UID && localStorage.getItem('impersonate_seller') !== 'true') {
         window.location.href = "/admin.html";
     } else {
-        document.getElementById('dash-user-name').textContent = user.email.split('@')[0];
-        document.getElementById('user-email').textContent = user.email;
-        loadUserProperties(user.email);
+        const impersonateEmail = localStorage.getItem('impersonate_email');
+        const activeEmail = (user.uid === ADMIN_UID && impersonateEmail) ? impersonateEmail : user.email;
+        
+        document.getElementById('dash-user-name').textContent = activeEmail.split('@')[0];
+        document.getElementById('user-email').textContent = activeEmail;
+        loadUserProperties(activeEmail);
         loadUserProfile(user.uid);
         setupDashboardListeners(user);
 
