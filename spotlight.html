@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Area Spotlight | Cash 4 Houses</title>
+    <meta id="meta-desc" name="description" content="Read our daily property spotlight and market analysis for South East Essex.">
+    <link rel="stylesheet" href="/src/style.css">
+    <link rel="stylesheet" href="/src/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .spotlight-content { max-width: 900px; margin: 0 auto; padding: 2rem; background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .social-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 2rem 0; }
+        .social-card { background: #f8fafc; padding: 1rem; border-radius: 8px; font-size: 0.85rem; border: 1px solid #e2e8f0; }
+        .social-card img { width: 100%; border-radius: 4px; margin-bottom: 0.5rem; }
+        .section-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; margin-top: 3rem; margin-bottom: 1.5rem; color: #1e293b; }
+        .history-panel { background: #eff6ff; padding: 2rem; border-radius: 12px; border: 1px solid #dbeafe; margin: 2rem 0; }
+        .signoff { font-style: italic; color: #475569; border-left: 4px solid #10b981; padding-left: 1.5rem; margin-top: 3rem; }
+    </style>
+</head>
+<body class="dashboard-body">
+    <header style="background: white; border-bottom: 1px solid #e2e8f0; padding: 1rem;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="/" class="logo"><img src="/logo.jpg" alt="Logo" style="height: 40px;"></a>
+            <a href="/spotlights-index.html" class="btn btn-outline btn-sm">Archive</a>
+        </div>
+    </header>
+
+    <main class="container" style="padding: 3rem 1rem;">
+        <div id="spotlight-load" class="spotlight-content">
+            <h1 id="page-title" style="font-family: 'Outfit', sans-serif; font-size: 2.5rem; line-height: 1.2;">Loading Spotlight...</h1>
+            <p id="page-date" style="color: #64748b; font-size: 1.1rem; margin-top: 0.5rem;"></p>
+
+            <div id="intro-section" class="markdown-body" style="margin-top: 2rem; font-size: 1.1rem; color: #334155;"></div>
+
+            <div class="history-panel">
+                <h2 style="margin-top: 0;">Area Description & History</h2>
+                <div id="history-section" class="markdown-body"></div>
+            </div>
+
+            <h2 class="section-header">Today's Market Analysis</h2>
+            <div id="news-section" class="markdown-body"></div>
+
+            <h2 class="section-header">Daily Community Pulse (Social Stream)</h2>
+            <div id="social-grid" class="social-grid"></div>
+
+            <h2 class="section-header">Community Reviews</h2>
+            <div id="reviews-section" style="padding: 1rem; background: #f0fdf4; border-radius: 8px;">
+                <p style="text-align: center; color: #166534; font-size: 0.9rem;">Andy is monitoring GMB for today's local feedback.</p>
+            </div>
+
+            <div id="signoff-section" class="signoff"></div>
+            
+            <div style="text-align: center; margin-top: 4rem;">
+                <a href="/#get-offer" class="btn btn-primary btn-lg">Get Your Instant Cash Offer in <span id="target-town">this area</span></a>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="/src/spotlight.js"></script>
+</body>
+</html>

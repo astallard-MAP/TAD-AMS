@@ -470,3 +470,90 @@ exports.chatbotAndy = onRequest({
     res.status(500).json({ response: "I'm having a bit of a technical hiccup, but I'm still here. How else can I help?" });
   }
 });
+
+// --- DAILY AREA SPOTLIGHT GENERATOR (SEO Sentinel) ---
+exports.generateDailySpotlight = onSchedule({ 
+  schedule: "0 0 * * *", // Midnight daily
+  timeZone: "Europe/London",
+  memory: "512MiB" 
+}, async (event) => {
+    const today = new Date();
+    const dateId = today.toISOString().split('T')[0];
+    const dayName = today.toLocaleDateString('en-GB', { weekday: 'long' });
+    const fullDate = `${dayName} the ${today.getDate()}${getOrdinal(today.getDate())} of ${today.toLocaleDateString('en-GB', { month: 'long' })} ${today.getFullYear()}`;
+
+    const town = ESSEX_TOWNS[Math.floor(Math.random() * ESSEX_TOWNS.length)];
+
+    try {
+        // 1. Fetch Today's News
+        const newsSnap = await db.collection("marketUpdates").doc("latest").get();
+        const newsData = newsSnap.exists ? newsSnap.data() : { content: "Market analysis in progress." };
+
+        // 2. Fetch Today's Social Posts (excluding Daily News)
+        const socialSnap = await db.collection("socialPosts")
+            .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(new Date(today.setHours(0,0,0,0))))
+            .where("scheduledTime", "!=", "Daily News")
+            .limit(6)
+            .get();
+        
+        const socialPosts = [];
+        socialSnap.forEach(doc => socialPosts.push(doc.data()));
+
+        // 3. AI Generation: Introduction & Area History
+        const promptIntro = `
+            ROLE: Andy from Cash 4 Houses.
+            AREA: ${town}.
+            DATE: ${fullDate}.
+            MISSION: Write a deeply empathetic introduction (2 paragraphs) about why Cash 4 Houses is focusing on ${town} today. 
+            Connect it to the social media outreach we've done in the area. 
+            Use the "Warm Blanket" persona. Focus on the burden of property and the freedom our service provides.
+        `;
+
+        const promptHistory = `
+            ROLE: Local Historian & Property Expert.
+            AREA: ${town}, Essex.
+            MISSION: Provide a detailed description and history of ${town}. Mention unique landmarks, its evolution from its origins to a modern residential hub, and why people love living here. Max 400 words.
+        `;
+
+        const introRes = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: promptIntro });
+        const historyRes = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: promptHistory });
+
+        // 4. Sign-off
+        const promptSignoff = `
+            ROLE: Andy from Cash 4 Houses.
+            AREA: ${town}.
+            MISSION: Write a powerful 1-paragraph sign-off explaining why ${town} residents choose our fast, fair cash sale service and the relief they feel after completion.
+        `;
+        const signoffRes = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: promptSignoff });
+
+        // 5. Store Spotlight
+        const spotlight = {
+            town: town,
+            dateId: dateId,
+            fullDate: fullDate,
+            intro: introRes.text,
+            history: historyRes.text,
+            news: newsData.content,
+            socialMedia: socialPosts,
+            signoff: signoffRes.text,
+            reviews: [], // Would fetch from GMB in production
+            timestamp: admin.firestore.FieldValue.serverTimestamp()
+        };
+
+        await db.collection("areaSpotlights").doc(dateId).set(spotlight);
+        console.log(`Successfully generated Daily Area Spotlight for ${town} [${dateId}]`);
+
+    } catch (error) {
+        console.error("Spotlight Gen Error:", error);
+    }
+});
+
+function getOrdinal(d) {
+    if (d > 3 && d < 21) return 'th';
+    switch (d % 10) {
+        case 1:  return "st";
+        case 2:  return "nd";
+        case 3:  return "rd";
+        default: return "th";
+    }
+}

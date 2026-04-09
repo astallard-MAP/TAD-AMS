@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Insights & Area Spotlights | Cash 4 Houses</title>
+    <meta name="description" content="Daily property market insights and community spotlights across South East Essex. Stay informed on local property trends in Southend, Basildon, and beyond.">
+    <link rel="stylesheet" href="/src/style.css">
+    <link rel="stylesheet" href="/src/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <aside class="dashboard-sidebar">
+            <div class="profile-section">
+                <i class="fas fa-map-marked-alt" style="font-size: 3rem; color: #3b82f6; margin-bottom: 1rem;"></i>
+                <h3>SEO Sentinel</h3>
+                <p>Daily Area Spotlights</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/admin.html"><i class="fas fa-arrow-left"></i> Admin Command Centre</a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="dash-top-bar">
+                <h1>Area Spotlight Archive</h1>
+                <p>Fresh daily content indexed for SEO and community value.</p>
+            </header>
+
+            <section class="admin-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-calendar-day"></i> Recent Spotlights</h2>
+                </div>
+                <div id="spotlight-list" class="area-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                    <p class="loading">Crawl in progress...</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="/src/spotlights-index.js"></script>
+</body>
+</html>
