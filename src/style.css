@@ -1010,3 +1010,62 @@ footer {
     color: #666;
     margin: 3px 0 0;
 }
+
+/* Success Stories Section */
+.success-stories {
+    padding: 6rem 0;
+    background: #f8fafc;
+}
+
+.success-card {
+    background: white;
+    padding: 2.5rem !important;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid #edf2f7;
+    text-align: left !important;
+}
+
+.success-card p {
+    font-style: italic;
+    color: #4a5568 !important;
+    margin: 1.5rem 0;
+    font-size: 1.05rem;
+    line-height: 1.8;
+}
+
+.success-icon {
+    font-size: 2rem;
+    color: #3b82f6;
+    margin-bottom: 0px !important;
+}
+
+.success-meta {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.office-tag {
+    font-size: 0.7rem;
+    background: #eff6ff;
+    color: #3b82f6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.stars {
+    color: #fbbf24;
+    font-size: 0.9rem;
+}
+
+.reviewer-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+}

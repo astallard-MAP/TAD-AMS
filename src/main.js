@@ -261,6 +261,56 @@ async function fetchLatestNews() {
 
 fetchLatestNews();
 
+// --- GOOGLE REVIEWS INTEGRATION ---
+async function fetchGoogleReviews() {
+    const reviewsGrid = document.getElementById('google-reviews');
+    const reviewsSection = document.getElementById('reviews');
+    if (!reviewsGrid || !reviewsSection) return;
+
+    try {
+        const resp = await fetch('https://getgooglereviews-vjikc6hdhq-uc.a.run.app');
+        if (!resp.ok) throw new Error("API Offline");
+        
+        const reviews = await resp.json();
+        
+        // Filter: Only show reviews that have actual text content
+        const verifiedReviews = (reviews || []).filter(r => r.comment && r.comment.trim().length > 0);
+        
+        if (verifiedReviews.length === 0) {
+            console.log("No text-based reviews found. Keeping section hidden.");
+            reviewsSection.style.display = 'none';
+            return;
+        }
+
+        reviewsSection.style.display = 'block';
+
+        // Render Reviews
+        reviewsGrid.innerHTML = verifiedReviews.map(review => `
+            <div class="review-card">
+                <div class="review-header">
+                    <img src="${review.reviewer.profilePhotoUrl || '/andy-avatar.jpg'}" alt="${review.reviewer.displayName}" class="reviewer-img">
+                    <div class="reviewer-info">
+                        <strong>${review.reviewer.displayName}</strong>
+                        <div class="stars">${'★'.repeat(review.starRating)}${'☆'.repeat(5 - review.starRating)}</div>
+                    </div>
+                </div>
+                <p class="review-text">"${review.comment ? review.comment.split('\n')[0].substring(0, 150) + (review.comment.length > 150 ? '...' : '') : 'Excellent service from the team at Cash 4 Houses.'}"</p>
+                <div class="review-meta">
+                    <small>${new Date(review.createTime).toLocaleDateString('en-GB')}</small>
+                    <span class="office-tag">${review.source || 'Verified Seller'}</span>
+                </div>
+            </div>
+        `).join('');
+
+    } catch (err) {
+        console.warn("Reviews Fetch Failure:", err);
+        // On failure, we hide the section to avoid "nothing to display" impression
+        reviewsSection.style.display = 'none';
+    }
+}
+
+fetchGoogleReviews();
+
 // Smooth Scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
