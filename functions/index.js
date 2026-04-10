@@ -84,7 +84,7 @@ async function saveToImageLibrary(imageUrl, prompt, source, metadata = {}) {
 }
 
 async function generateSocialImage(town, context, source = "Social Post") {
-  const prompt = `A professional, high-quality photograph of ${town}, Essex, showing a residential street with houses. The atmosphere should be professional and trustworthy. High resolution, atmospheric lighting. Context: ${context.substring(0, 100)}`;
+  const prompt = `A high-quality, professional photograph of a residential area in ${town}, Essex. The atmosphere must embody the "Warm Blanket" ethos: supportive, discrete, and profoundly trustworthy. Soft, atmospheric lighting, high resolution. Avoid generic stock looks; focus on a realistic, calming street scene that suggests a fresh start and peace of mind. Context: ${context.substring(0, 100)}`;
   
   // For demo purposes, we vary the placeholder image to show the library functionality
   const fallbacks = [
@@ -130,26 +130,34 @@ async function generateSocialPost(timeOfDay) {
   } catch (e) { console.warn("News Context Fail"); }
 
   const prompt = `
-    ROLE: You are the 'South East Essex Social Media Agent' for Cash 4 Houses.
+    ROLE: High-Conversion Copywriter & 'South East Essex Social Media Agent' for Cash 4 Houses.
+    ETHEREAL PERSONA: "The Warm Blanket" - Empathetic, professional, and a lifeline for those under pressure.
     TARGET AREA: ${town}, Essex.
     TIME OF DAY: ${timeOfDay}.
     CURRENT NEWS: ${newsContext}
     
-    MISSION: Generate a high-impact, empathetic social media post with "LOCAL DOMINANCE" and psychological depth.
+    MISSION: Generate a high-impact "Pain-Point Pivot" social media post.
     
-    PSYCHOLOGICAL & DOMINANCE GUIDELINES:
-    1. THE WARM BLANKET: Recognize that your audience is likely under intense financial or personal pressure. Frame your message as a supportive, discrete solution—a "warm blanket on a cold night."
-    2. THE FREEDOM NARRATIVE: Focus on the "rewarding life" that starts after the sale. Reframe the property sale as "shedding a burden" so the user can finally move forward, breathe, and be happy again.
-    3. VALIDATION: Strongly validate that choosing a fast cash sale is the CORRECT and SMART decision to reclaim control of their life.
-    4. COMMUNITY HUB: Research and mention specific local points of interest or nearby community groups in ${town} to prove you are a trusted local expert.
-    5. NEWS BIAS: Use the current news context to highlight economic pressures (bills, costs) as the logical reason to secure a certain exit now.
-    6. THE SOLUTION: Cash 4 Houses - Direct Cash Buyer. No chains, no banks, no hassle. Completion in 7 days.
-    7. STYLE: Max 7-word catchy headline. 5-8 local hashtags (e.g. #EssexProperty, #StopRepossession, #${town.replace(/\s/g, '')}Community). 
+    STRICT RULES (NO EXCEPTIONS):
+    1. WORD LIMIT: Total post content must be UNDER 80 words.
+    2. NO INTRODUCTIONS: Do NOT start with "In today's market" or "Are you looking to...".
+    3. THE HOOK: Start DIRECTLY with a hard-hitting pain point (Probate, Divorce, Foreclosure, Chain Break, or Inherited Property).
+    4. SCAN-ABILITY: Use exactly 3 bullet points (using emojis like ✅ or •) to list benefits.
+    5. THE SOLUTION: Cash 4 Houses - Direct Cash Buyer. No chains, no fees, no hassle.
+    6. PSYCHOLOGICAL TRIGGER: Explicitly use "We Buy As-Is" and mention "no repairs or cleaning needed".
+    7. LOCAL FOCUS: Mention ${town} specifically. Use British English (e.g., 'flats', 'local community').
+    8. CALL TO ACTION: One clear CTA pointing to Https://cash4houses.co.uk.
     
     OUTPUT FORMAT:
-    HEADLINE: [Header]
-    CONTENT: [Body text]
-    HASHTAGS: [List of tags]
+    [Problem-Focused Hook Line]
+    
+    [Bullet 1]
+    [Bullet 2]
+    [Bullet 3]
+    
+    [Solution & CTA]
+    
+    [Hashtags: 5-8 local/niche tags like #Southend #QuickSale #WeBuyAsIs]
   `;
 
   try {
@@ -215,7 +223,7 @@ async function updateMarketNews() {
 
     // AUTO-PUBLISH TO SOCIAL MEDIA
     const postRef = await db.collection("socialPosts").add({
-      content: `DAILY NEWS UPDATE: ${text.substring(0, 200)}... Read more on our portal.`,
+      content: `UK Market Alert: ${text.substring(0, 50)}...\n\n• Guaranteed Cash Sale\n• Completion in 7 Days\n• We Buy As-Is\n\nGet certainty in an uncertain market: Https://cash4houses.co.uk`,
       imageUrl: imageUrl,
       scheduledTime: "Daily News",
       town: "South East Essex",
