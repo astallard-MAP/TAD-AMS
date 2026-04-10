@@ -31,7 +31,17 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/www\.googletagmanager\.com\/.*/,
-            handler: 'NetworkOnly'
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-analytics',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 // 24 hours
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
           }
         ]
       }

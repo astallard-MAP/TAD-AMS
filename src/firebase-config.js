@@ -23,7 +23,18 @@ const firebaseConfig = {
 
 // Initialise Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = isSupported().then(yes => yes ? getAnalytics(app) : null).catch(() => null);
+
+// Resilient Analytics Initialisation
+let analytics = null;
+isSupported().then(yes => {
+    if (yes) {
+        try {
+            analytics = getAnalytics(app);
+        } catch (e) {
+            console.warn("Analytics blocked or failed to initialise:", e.message);
+        }
+    }
+}).catch(() => { /* Silent fail */ });
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
