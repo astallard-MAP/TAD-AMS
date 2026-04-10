@@ -108,6 +108,7 @@ async function loadLibrary(filter) {
                     title: `Agentic Social Post (${d.data().town})`,
                     date: d.data().timestamp?.toDate() || new Date(),
                     content: d.data().content,
+                    imageUrl: d.data().imageUrl,
                     id: d.id
                 });
             });
@@ -131,6 +132,7 @@ async function loadLibrary(filter) {
                     <span>${rec.date.toLocaleString('en-GB')}</span>
                 </div>
                 <strong class="doc-title">${rec.title}</strong>
+                ${rec.imageUrl ? `<div class="doc-thumb" style="margin: 0.5rem 0;"><img src="${rec.imageUrl}" style="width: 100px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #eee;"></div>` : ''}
                 <p class="doc-snippet">${rec.content.substring(0, 150).replace(/[#*]/g, '')}...</p>
             `;
             div.onclick = () => showPreview(rec);
@@ -152,6 +154,10 @@ function showPreview(rec) {
     
     if (rec.recipients) {
         htmlContent += `<p style="color: #64748b;"><strong>Recipients:</strong> ${rec.recipients.join(', ')}</p>`;
+    }
+
+    if (rec.imageUrl) {
+        htmlContent += `<div style="margin: 1.5rem 0;"><img src="${rec.imageUrl}" alt="Content Visual" style="width: 100%; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);"></div>`;
     }
 
     htmlContent += marked.parse(rec.content);

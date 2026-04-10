@@ -28,22 +28,9 @@ export default defineConfig({
       },
       workbox: {
         navigateFallbackDenylist: [/^\/gtag/],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/www\.googletagmanager\.com\/.*/,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'google-analytics',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 // 24 hours
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          }
-        ]
+        // Google Tag Manager should be handled directly by the browser 
+        // to avoid Service Worker fetch rejections when blocked by ad-blockers.
+        runtimeCaching: []
       }
     })
   ],

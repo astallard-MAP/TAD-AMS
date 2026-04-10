@@ -329,9 +329,18 @@ exports.publishToMeta = onRequest({
     const token = META_PERMANENT_PAGE_TOKEN.value();
 
     // --- 1. FACEBOOK PUBLISHING ---
-    const fbUrl = `https://graph.facebook.com/v19.0/${pageId}/feed`;
-    const fbPayload = { message: content, access_token: token };
-    if (imageUrl) fbPayload.link = imageUrl;
+    let fbUrl = `https://graph.facebook.com/v19.0/${pageId}/feed`;
+    let fbPayload = { message: content, access_token: token };
+
+    if (imageUrl) {
+      // Create a native PHOTO post instead of a link post
+      fbUrl = `https://graph.facebook.com/v19.0/${pageId}/photos`;
+      fbPayload = { 
+        url: imageUrl, 
+        caption: content,
+        access_token: token 
+      };
+    }
 
     const fbResp = await fetch(fbUrl, {
       method: 'POST',

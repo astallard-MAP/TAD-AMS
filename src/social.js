@@ -61,6 +61,7 @@ async function loadSocialPosts() {
                     <span><i class="fas fa-calendar-alt"></i> ${date} - <strong>${post.town}</strong></span>
                     <span class="${post.published ? 'badge-published' : 'badge-pending'}">${post.published ? 'PUBLISHED' : 'PENDING'}</span>
                 </div>
+                ${post.imageUrl ? `<div class="post-preview-img"><img src="${post.imageUrl}" alt="AI generated" style="width: 100%; border-radius: 8px; margin-bottom: 1rem; max-height: 200px; object-fit: cover;"></div>` : ''}
                 <div class="post-content">${post.content}</div>
                 <div class="post-actions">
                     ${!post.published ? `<button class="btn btn-sm btn-primary publish-btn" data-id="${d.id}">Publish Now</button>` : ''}
