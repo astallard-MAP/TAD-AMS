@@ -161,8 +161,19 @@ async function loadAdminNews() {
                     ${marked.parse(data.content)}
                 </div>
             `;
+        } else {
+            newsContent.innerHTML = `
+                <div class="empty-state" style="text-align: center; padding: 2rem; color: #64748b;">
+                    <i class="fas fa-newspaper" style="font-size: 2rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                    <p>No market analysis has been generated yet.</p>
+                    <small>Use the 'Refresh Market News' action to trigger Andy.</small>
+                </div>
+            `;
         }
-    } catch (err) { newsContent.textContent = "Failed to load news analysis."; }
+    } catch (err) { 
+        console.error("News Load Error:", err);
+        newsContent.innerHTML = `<p style="color: #ef4444; padding: 1rem;">Failed to load news analysis. Please check your connection.</p>`; 
+    }
 }
 async function loadLeads() {
     const leadsTable = document.getElementById('leads-body');
