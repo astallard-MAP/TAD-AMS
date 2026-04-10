@@ -386,6 +386,47 @@ if (chatForm && chatInput && chatMessages) {
     };
 }
 
+// GBP Publish Action
+const publishGBPAction = document.getElementById('btn-publish-gbp');
+if (publishGBPAction) {
+    publishGBPAction.onclick = async () => {
+        const icon = publishGBPAction.querySelector('i');
+        const originalIcon = icon.className;
+        
+        icon.className = 'fas fa-spinner fa-spin';
+        publishGBPAction.style.opacity = '0.7';
+        publishGBPAction.style.pointerEvents = 'none';
+
+        try {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Session expired. Please re-login.");
+                return;
+            }
+            const token = await user.getIdToken();
+            const resp = await fetch('https://testgbppost-vjikc6hdhq-uc.a.run.app', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: token })
+            });
+            const result = await resp.json();
+            
+            if (result.success) {
+                alert("GBP Sync Success: Posted to all active locations.");
+            } else {
+                alert("GBP Error: [" + (result.error || "UNKNOWN") + "]");
+            }
+        } catch (err) { 
+            console.error("GMB Sync Error:", err);
+            alert("Connection Failed: Unable to reach GBP engine."); 
+        }
+        
+        icon.className = originalIcon;
+        publishGBPAction.style.opacity = '1';
+        publishGBPAction.style.pointerEvents = 'auto';
+    };
+}
+
 // Mobile Audit Action
 const mobileAuditAction = document.getElementById('btn-mobile-audit');
 if (mobileAuditAction) {
