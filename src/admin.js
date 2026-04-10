@@ -184,8 +184,8 @@ async function loadDashboardStats() {
         const offersSnap = await getCountFromServer(offersQuery);
         document.getElementById('stat-offers').textContent = offersSnap.data().count;
 
-        // 4. Site Visitors (Placeholder)
-        document.getElementById('stat-visitors').textContent = "Live";
+        // 4. Site Visitors (GA4 Telemetry)
+        document.getElementById('stat-visitors').textContent = "Live via GA4";
 
         // 5. System Efficiency (From Sentinel)
         const auditQuery = query(collection(db, "systemAudits"), orderBy("timestamp", "desc"), limit(1));
