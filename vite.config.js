@@ -56,6 +56,8 @@ export default defineConfig({
         templates_docs: resolve(__dirname, 'templates-docs.html'),
         audit_log: resolve(__dirname, 'audit-log.html'),
         communications: resolve(__dirname, 'communications.html'),
+        contact: resolve(__dirname, 'contact.html'),
+        documents: resolve(__dirname, 'documents.html'),
       },
     },
   },

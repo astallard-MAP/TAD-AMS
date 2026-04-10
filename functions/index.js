@@ -1132,3 +1132,56 @@ exports.manualSystemRepair = onRequest({ cors: true, memory: "1GiB" }, async (re
     res.status(500).send(error.message);
   }
 });
+
+// Production Contact Enquiry Agent
+exports.processContactEnquiry = onRequest({ 
+    cors: true,
+    secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"] 
+}, async (req, res) => {
+    const data = req.body;
+    if (!data.email || !data.name) {
+        return res.status(400).send("Invalid enquiry data.");
+    }
+
+    try {
+        const client = getGraphClient();
+        
+        // 1. Send Notification to Andy
+        await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
+            message: {
+                subject: `New Website Enquiry: ${data.name}`,
+                body: { 
+                    contentType: "HTML", 
+                    content: `
+                        <h2>New Contact Form Submission</h2>
+                        <p><strong>Name:</strong> ${data.name}</p>
+                        <p><strong>Phone:</strong> ${data.phone}</p>
+                        <p><strong>Email:</strong> ${data.email}</p>
+                        <p><strong>Preferred Response:</strong> ${data.responseMethod}</p>
+                        <p><strong>Comments:</strong></p>
+                        <blockquote style="background: #f1f5f9; padding: 1rem; border-left: 4px solid #10b981;">
+                            ${data.comments}
+                        </blockquote>
+                        <p style="font-size: 0.8rem; color: #64748b;">This inquiry has been logged in the Cash4Houses Portal Library.</p>
+                    `
+                },
+                toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
+            },
+            saveToSentItems: true
+        });
+
+        // 2. Log to Forensic Communications
+        await db.collection("communicationLogs").add({
+            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            type: "Inquiry Received",
+            channel: "Website Form",
+            summary: `Public enquiry from ${data.name} via contact.html`,
+            recipients: ["andy@cash4houses.co.uk"]
+        });
+
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error("Inquiry Process Error:", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
