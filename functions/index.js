@@ -435,7 +435,7 @@ exports.verifyMetaConnection = onRequest({
 
 async function publishToGBP(content, imageUrl) {
   try {
-    const locationId = GBP_LOCATION_ID.value();
+    const locations = [GBP_LOCATION_ID.value(), "11040427386174604764"];
     const clientId = GBP_CLIENT_ID.value();
     const clientSecret = GBP_CLIENT_SECRET.value();
     const refreshToken = GBP_REFRESH_TOKEN.value();
@@ -445,47 +445,59 @@ async function publishToGBP(content, imageUrl) {
     
     const { token: accessToken } = await auth.getAccessToken();
     
-    // Manual fetch to the v4 Local Post API (since v1 is split and legacy v4 helper is removed in recent library versions)
-    const url = `https://mybusiness.googleapis.com/v4/locations/${locationId}/localPosts`;
+    const results = [];
     
-    const postBody = {
-      languageCode: "en-GB",
-      summary: content,
-      callToAction: {
-        actionType: "LEARN_MORE",
-        url: "https://c4h-website.web.app"
+    for (const locationId of locations) {
+      console.log(`Publishing to GBP location: ${locationId}`);
+      const url = `https://mybusiness.googleapis.com/v4/locations/${locationId}/localPosts`;
+      
+      const postBody = {
+        languageCode: "en-GB",
+        summary: content,
+        callToAction: {
+          actionType: "LEARN_MORE",
+          url: "https://c4h-website.web.app"
+        }
+      };
+
+      if (imageUrl) {
+        postBody.media = [{
+          mediaFormat: "PHOTO",
+          sourceUrl: imageUrl
+        }];
       }
-    };
 
-    if (imageUrl) {
-      postBody.media = [{
-        mediaFormat: "PHOTO",
-        sourceUrl: imageUrl
-      }];
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json' 
+          },
+          body: JSON.stringify(postBody)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.warn(`GBP API Warning for ${locationId}:`, errorData);
+            results.push({ locationId, status: "Failed", error: errorData });
+        } else {
+            const resData = await response.json();
+            results.push({ locationId, status: "Success", data: resData });
+        }
+      } catch (innerError) {
+        console.error(`Network error for location ${locationId}:`, innerError);
+        results.push({ locationId, status: "Error", error: innerError.message });
+      }
     }
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json' 
-      },
-      body: JSON.stringify(postBody)
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Google API Error: ${JSON.stringify(errorData)}`);
-    }
-
-    const resData = await response.json();
-    return resData;
+    return results;
   } catch (error) {
-    console.error("GBP Publish Error:", error);
+    console.error("GBP Overall Publish Error:", error);
     await db.collection("systemAlerts").add({
       type: "GBP_PUBLISH_FAILURE",
       reason: error.message,
-      content: `Failed to publish to Google Business Profile: ${error.stack}`,
+      content: `Failed to publish to Google Business Profiles: ${error.stack}`,
       status: "unread",
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
