@@ -19,7 +19,8 @@
         <aside class="dashboard-sidebar">
             <div class="profile-section">
                 <div class="profile-pic-container">
-                    <i class="fas fa-user-circle" style="font-size: 80px; color: #10b981; margin-top: 10px; display: block;"></i>
+                    <img id="profile-img" src="/andy-avatar.jpg" alt="Profile" class="profile-img" style="display: none;">
+                    <i id="profile-placeholder" class="fas fa-user-circle" style="font-size: 80px; color: #10b981; margin-top: 10px; display: block;"></i>
                 </div>
                 <h3>Andrew Stallard</h3>
                 <p>Global Administrator</p>
@@ -200,6 +201,35 @@
                     </div>
                 </section>
             </div>
+
+            <!-- Forensic System Logs Section -->
+            <section class="admin-panel logs-panel" id="logs-section" style="margin-top: 2rem;">
+                <div class="panel-header" style="background: #0f172a; color: white;">
+                    <h2><i class="fas fa-terminal"></i> Forensic System Logs</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="clear-logs" class="btn btn-sm" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">Clear View</button>
+                        <button id="refresh-logs" class="btn btn-sm btn-primary">Refresh Logs</button>
+                    </div>
+                </div>
+                <div class="table-container" style="background: #1e293b; color: #94a3b8; font-family: 'Courier New', Courier, monospace; min-height: 300px; max-height: 500px; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead style="position: sticky; top: 0; background: #0f172a; color: #38bdf8;">
+                            <tr>
+                                <th style="padding: 10px; text-align: left; width: 180px;">Timestamp</th>
+                                <th style="padding: 10px; text-align: left; width: 120px;">Level</th>
+                                <th style="padding: 10px; text-align: left; width: 150px;">Component</th>
+                                <th style="padding: 10px; text-align: left;">Message</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-body">
+                            <!-- Logs will be populated here -->
+                            <tr>
+                                <td colspan="4" style="padding: 2rem; text-align: center;">Initialising forensic tracer...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </main>
     </div>
 

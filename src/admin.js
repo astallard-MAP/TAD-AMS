@@ -2,6 +2,8 @@ import { authReady, db, auth, storage, functions } from './firebase-config.js';
 import { 
     collection, 
     getDocs, 
+    addDoc,
+    serverTimestamp,
     query, 
     orderBy,
     getCountFromServer,
@@ -26,8 +28,65 @@ authReady.then(async (user) => {
         loadAdminNews();
         loadAdminProfile(user.uid);
         pollSecurityAlerts();
+        loadForensicLogs();
     }
 });
+
+// --- GLOBAL ERROR INTERCEPTION ---
+window.onerror = function(message, source, lineno, colno, error) {
+    logToForensics("Browser", "Frontend", `Uncaught: ${message} at ${source}:${lineno}`, "Error");
+};
+
+window.onunhandledrejection = function(event) {
+    logToForensics("Browser", "Async", `Unhandled Rejection: ${event.reason}`, "Error");
+};
+
+// --- FORENSIC LOGGING ENGINE ---
+async function logToForensics(level, component, message, severity = "Info") {
+    try {
+        await addDoc(collection(db, "systemLogs"), {
+            timestamp: serverTimestamp(),
+            level: level,
+            component: component,
+            message: message,
+            severity: severity
+        });
+    } catch (e) { console.warn("Forensic Log Injection Failed:", e); }
+}
+
+async function loadForensicLogs() {
+    const logsBody = document.getElementById('logs-body');
+    if (!logsBody) return;
+
+    try {
+        const q = query(collection(db, "systemLogs"), orderBy("timestamp", "desc"), limit(50));
+        const snap = await getDocs(q);
+        
+        if (snap.empty) {
+            logsBody.innerHTML = '<tr><td colspan="4" style="padding: 2rem; text-align: center; color: #64748b;">No forensic logs recorded in current epoch.</td></tr>';
+            return;
+        }
+
+        logsBody.innerHTML = snap.docs.map(doc => {
+            const log = doc.data();
+            const date = log.timestamp?.toDate ? log.timestamp.toDate() : new Date();
+            const timeStr = date.toLocaleDateString('en-GB') + ' ' + date.toLocaleTimeString('en-GB');
+            const color = log.severity === 'Error' ? '#ef4444' : log.severity === 'Warning' ? '#f59e0b' : '#38bdf8';
+            
+            return `
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 10px; color: #64748b;">${timeStr}</td>
+                    <td style="padding: 10px; font-weight: bold; color: ${color};">${log.severity || 'INFO'}</td>
+                    <td style="padding: 10px; color: #e2e8f0;">${log.component || 'General'}</td>
+                    <td style="padding: 10px; word-break: break-all;">${log.message}</td>
+                </tr>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error("Forensic Load Fail:", err);
+        logsBody.innerHTML = `<tr><td colspan="4" style="padding: 1rem; color: #ef4444;">Forensic trace failed: ${err.message}</td></tr>`;
+    }
+}
 
 // Mobile Sidebar Toggle
 const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
@@ -94,10 +153,20 @@ document.addEventListener('click', async (e) => {
 async function loadAdminProfile(uid) {
     try {
         const userDoc = await getDoc(doc(db, "users", uid));
+        const imgEl = document.getElementById('profile-img');
+        const placeholder = document.getElementById('profile-placeholder');
+        
         if (userDoc.exists() && userDoc.data().photoURL) {
-            document.getElementById('profile-img').src = userDoc.data().photoURL;
+            if (imgEl) {
+                imgEl.src = userDoc.data().photoURL;
+                imgEl.style.display = 'block';
+            }
+            if (placeholder) placeholder.style.display = 'none';
         }
-    } catch (err) { console.error("Profile Error:", err); }
+    } catch (err) { 
+        console.error("Profile Load Error:", err); 
+        logToForensics("Auth", "System", `Failed to load admin profile image: ${err.message}`, "Warning");
+    }
 }
 
 async function loadDashboardStats() {
@@ -591,4 +660,17 @@ if (efficiencyBtn) {
 const socialSentinelBtn = document.getElementById('btn-social-sentinel');
 if (socialSentinelBtn) {
     socialSentinelBtn.onclick = showSocialReport;
+}
+
+const refreshLogsBtn = document.getElementById('refresh-logs');
+if (refreshLogsBtn) {
+    refreshLogsBtn.onclick = loadForensicLogs;
+}
+
+const clearLogsBtn = document.getElementById('clear-logs');
+if (clearLogsBtn) {
+    clearLogsBtn.onclick = () => {
+        const body = document.getElementById('logs-body');
+        if (body) body.innerHTML = '<tr><td colspan="4" style="padding: 2rem; text-align: center; color: #64748b;">Cache cleared. Refresh to fetch from source.</td></tr>';
+    };
 }
