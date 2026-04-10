@@ -1,8 +1,36 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    
+    // Helper: Checks if the user is the Global Admin
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'Djh7uHK2yZYHC4Ta4xhbguaCJVl1';
+    }
+
+    // USER-SPECIFIC STORAGE: Avatars and Property Photos
+    match /avatars/{userId}/{allPaths=**} {
+      allow read: if true; // Avatars are public to allow admin to see them
+      allow write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+    }
+    
+    match /property_photos/{userId}/{allPaths=**} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+      allow write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+    }
+
+    match /profiles/{userId}/{allPaths=**} {
+       allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+    }
+
+    // PUBLIC ASSETS (Logo, etc.)
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ADMIN OVERRIDE
     match /{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if isAdmin();
     }
   }
 }

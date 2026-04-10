@@ -43,49 +43,61 @@
         </aside>
 
         <main class="dashboard-main">
-            <header class="dash-top-bar">
-                <a href="/" class="logo" style="display: none;">
-                    <img src="/logo.jpg" alt="Logo" style="height: 50px;">
-                </a>
-                <h1>My Property Portfolio</h1>
-                <div class="top-bar-right">
-                    <div id="portal-date" class="header-date">Tuesday 7th of April 2026</div>
+            <!-- Top Command Row -->
+            <div class="top-row-grid">
+                <!-- 1. Address & Offer Card -->
+                <div class="card address-card" id="active-address-card">
+                    <div class="loading-component"><i class="fas fa-spinner fa-spin"></i> Initialising Property data...</div>
                 </div>
-            </header>
 
-            <section class="dashboard-header">
-                <h2>Welcome back!</h2>
-                <p>Manage your property inquiries and view active cash offers below.</p>
-            </section>
-
-            <section class="properties-grid" id="properties-list">
-                <!-- Property cards will be injected here -->
-                <div class="loading">
-                    <i class="fas fa-spinner fa-spin"></i> Loading your properties...
-                </div>
-            </section>
-
-            <section class="dashboard-actions" id="dashboard-main-actions">
-                <a href="/#get-offer" class="btn btn-primary">Add Property</a>
-            </section>
-
-            <!-- Personal Messaging Hub (Hidden by Default) -->
-            <section id="personal-messages-hub" style="display: none;">
-                <div class="message-hub-header">
-                    <h2><i class="fas fa-comments"></i> Direct Message to Admin</h2>
-                    <p>Exchange messages with Andrew Stallard and the team regarding your valuation or property sale.</p>
-                </div>
-                <div class="personal-chat-container">
-                    <div id="personal-chat-log" class="chat-log-area">
-                        <!-- Real-time messages will appear here -->
+                <!-- 2. Interactive Street View -->
+                <div class="card map-card">
+                    <div id="active-street-view"></div>
+                    <div class="street-view-overlay" id="street-view-fallback">
+                        <i class="fas fa-map-location-dot"></i>
+                        <p>Locating Property...</p>
                     </div>
-                    <form id="personal-message-form" class="personal-message-input">
-                        <textarea id="personal-msg-input" placeholder="Type your message to the team..." required></textarea>
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Message</button>
+                </div>
+
+                <!-- 3. Direct Admin Chat (Human-to-Human) -->
+                <div class="card direct-chat-card">
+                    <div class="chat-header-mini">
+                        <i class="fas fa-user-shield"></i> <strong>Andrew Stallard</strong>
+                        <small>Direct Line</small>
+                    </div>
+                    <div id="personal-chat-log" class="chat-log-area" style="height: 180px; margin-bottom: 10px;">
+                        <!-- Messages loaded via JS -->
+                    </div>
+                    <form id="personal-message-form" class="personal-message-input" style="padding: 0; border: none;">
+                        <input type="text" id="personal-msg-input" placeholder="Ask Andrew a question..." required style="flex: 1; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i></button>
                     </form>
                 </div>
+            </div>
+
+            <!-- Forensic Dossier Matrix (6 Columns) -->
+            <h2 class="section-title"><i class="fas fa-vault"></i> Property Assets & Forensic Data</h2>
+            <div class="dossier-matrix-grid" id="dossier-matrix">
+                <!-- JS will inject 18+ components here (6x3 grid) -->
+                <div class="loading"><i class="fas fa-spinner fa-spin"></i> Synchronising data vault...</div>
+            </div>
+
+            <section class="dashboard-actions" id="dashboard-main-actions" style="margin-top: 40px;">
+                <a href="/#get-offer" class="btn btn-secondary"><i class="fas fa-plus"></i> Add Another Property</a>
             </section>
+
         </main>
+    </div>
+
+    <!-- Dossier Component Detail Modal -->
+    <div id="matrix-modal" class="matrix-modal">
+        <div class="matrix-modal-content">
+            <span class="close-matrix" id="close-matrix">&times;</span>
+            <div id="matrix-modal-body">
+                <!-- Detailed component data injected here -->
+            </div>
+        </div>
+    </div>
     </div>
 
     <div class="chat-widget">

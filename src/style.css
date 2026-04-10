@@ -105,7 +105,154 @@ nav {
   box-shadow: var(--shadow-md);
 }
 
-/* PERSONAL MESSAGING HUB (User & Admin) */
+/* ELITE MATRIX DASHBOARD LAYOUT */
+.top-row-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px var(--shadow);
+    padding: 24px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+}
+
+.address-card {
+    justify-content: center;
+    border-left: 6px solid var(--secondary);
+}
+
+.address-card h1 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.address-card .prop-status {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #fdf2f8;
+    color: var(--secondary);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.map-card {
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+}
+
+#active-street-view {
+    width: 100%;
+    height: 100%;
+}
+
+.direct-chat-card {
+    padding: 15px;
+    height: 320px; /* Fixed height for consistent grid */
+}
+
+.direct-chat-card .chat-log-area {
+    height: 200px;
+}
+
+/* Dossier Matrix Grid (6 Columns) */
+.dossier-matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.dossier-matrix-grid .matrix-btn {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 20px 10px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 140px;
+}
+
+.dossier-matrix-grid .matrix-btn:hover {
+    border-color: var(--secondary);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.dossier-matrix-grid .matrix-btn i {
+    font-size: 1.8rem;
+    color: var(--secondary);
+}
+
+.dossier-matrix-grid .matrix-btn span {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary);
+    line-height: 1.2;
+}
+
+.dossier-matrix-grid .matrix-btn .matrix-val {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #1e293b;
+}
+
+/* Detail View Modal (Overlay) */
+.matrix-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    backdrop-filter: blur(8px);
+}
+
+.matrix-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 700px;
+    padding: 40px;
+    border-radius: 20px;
+    position: relative;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close-matrix {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #64748b;
+}
+
+@media (max-width: 1200px) {
+    .dossier-matrix-grid { grid-template-columns: repeat(3, 1fr); }
+    .top-row-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .dossier-matrix-grid { grid-template-columns: repeat(2, 1fr); }
+}
 .messages-hub-layout {
     display: grid;
     grid-template-columns: 320px 1fr;

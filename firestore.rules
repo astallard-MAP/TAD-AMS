@@ -1,28 +1,53 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // Helper: Checks if the user is the Global Admin (Andrew Stallard)
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'Djh7uHK2yZYHC4Ta4xhbguaCJVl1';
+    }
+
+    // Helper: Checks if the authenticated user owns the data via Email mapping
+    function isEmailOwner(email) {
+      return request.auth != null && request.auth.token.email == email;
+    }
+
+    // LEADS: Public can only create. Admin can do all. Users can read/update their own by email.
     match /leads/{leadId} {
       allow create: if true;
-      allow read, update, delete: if request.auth != null;
+      allow read, update: if isAdmin() || isEmailOwner(resource.data.email);
+      allow delete: if isAdmin();
     }
     
-    // Communication Interaction Records (IMMUTABLE)
-    match /communications/{msgId} {
-      allow create: if request.auth != null;
-      allow read: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid || request.auth.uid == 'Djh7uHK2yZYHC4Ta4xhbguaCJVl1');
-      allow update, delete: if false; // STRICT IMMUTABILITY
+    // PROPERTIES: Forensic data access.
+    match /properties/{propId} {
+      allow read: if isAdmin() || isEmailOwner(resource.data.ownerEmail);
+      allow write: if isAdmin();
     }
 
+    // MESSAGING: Strict per-user isolation.
+    match /userMessages/{userId}/{document=**} {
+      allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+    }
+    
+    match /conversations/{userId} {
+      allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+    }
+
+    // USER PROFILES
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
     }
 
+    // PUBLIC DATA (News, etc.)
     match /marketUpdates/{docId} {
       allow read: if true;
+      allow write: if isAdmin();
     }
 
+    // GLOBAL CATCH-ALL: Lock down everything else to Admin only
     match /{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == 'Djh7uHK2yZYHC4Ta4xhbguaCJVl1';
+      allow read, write: if isAdmin();
     }
   }
 }
