@@ -165,7 +165,7 @@ async function generateSocialPost(timeOfDay) {
     const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: prompt });
     const imageUrl = await generateSocialImage(town, newsContext, "Social Post");
     
-    await db.collection("socialPosts").add({ 
+    const docRef = await db.collection("socialPosts").add({ 
       content: text, 
       imageUrl: imageUrl,
       scheduledTime: timeOfDay, 
@@ -173,6 +173,24 @@ async function generateSocialPost(timeOfDay) {
       timestamp: admin.firestore.FieldValue.serverTimestamp(), 
       published: false 
     });
+
+    // --- AGENTIC AUTOMATION: AUTO-PUBLISH TO ALL CHANNELS ---
+    console.log(`[AGENT] Auto-publishing post ${docRef.id} to Meta and GBP...`);
+    
+    // 1. Publish to Meta (FB & IG)
+    try {
+      await publishToMetaInternal(docRef.id);
+    } catch (metaErr) {
+      console.error(`[AGENT] Meta auto-publish failed for ${docRef.id}:`, metaErr.message);
+    }
+
+    // 2. Publish to GBP (Dual Locations)
+    try {
+      await publishToGBP(text, imageUrl);
+    } catch (gbpErr) {
+      console.error(`[AGENT] GBP auto-publish failed for ${docRef.id}:`, gbpErr.message);
+    }
+
     return text;
   } catch (error) {
     console.error("AI Error (Social):", error);
@@ -180,9 +198,23 @@ async function generateSocialPost(timeOfDay) {
   }
 }
 
-exports.socialMorningPost = onSchedule({ schedule: "0 9 * * *", timeZone: "Europe/London", secrets: ["GBP_LOCATION_ID"] }, async (event) => { await generateSocialPost("Morning"); });
-exports.socialLunchPost = onSchedule({ schedule: "0 12 * * *", timeZone: "Europe/London", secrets: ["GBP_LOCATION_ID"] }, async (event) => { await generateSocialPost("Lunch"); });
-exports.socialEveningPost = onSchedule({ schedule: "0 18 * * *", timeZone: "Europe/London", secrets: ["GBP_LOCATION_ID"] }, async (event) => { await generateSocialPost("Evening"); });
+exports.socialMorningPost = onSchedule({ 
+  schedule: "0 9 * * *", 
+  timeZone: "Europe/London", 
+  secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
+}, async (event) => { await generateSocialPost("Morning"); });
+
+exports.socialLunchPost = onSchedule({ 
+  schedule: "0 12 * * *", 
+  timeZone: "Europe/London", 
+  secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
+}, async (event) => { await generateSocialPost("Lunch"); });
+
+exports.socialEveningPost = onSchedule({ 
+  schedule: "0 18 * * *", 
+  timeZone: "Europe/London", 
+  secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
+}, async (event) => { await generateSocialPost("Evening"); });
 
 // --- MARKET NEWS SUITE ---
 const RSS_FEEDS = [
@@ -222,19 +254,22 @@ async function updateMarketNews() {
     
     await db.collection("marketUpdates").doc("latest").set(payload);
 
-    // AUTO-PUBLISH TO SOCIAL MEDIA
-    const postRef = await db.collection("socialPosts").add({
-      content: `UK Market Alert: ${text.substring(0, 50)}...\n\n• Guaranteed Cash Sale\n• Completion in 7 Days\n• We Buy As-Is\n\nGet certainty in an uncertain market: Https://cash4houses.co.uk`,
-      imageUrl: imageUrl,
-      scheduledTime: "Daily News",
-      town: "South East Essex",
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      published: false
-    });
+    // --- AGENTIC AUTOMATION: AUTO-PUBLISH NEWS TO ALL CHANNELS ---
+    console.log(`[AGENT] Auto-publishing market alert ${postRef.id} to Meta and GBP...`);
+    
+    // 1. Publish to Meta
+    try {
+      await publishToMetaInternal(postRef.id);
+    } catch (metaErr) {
+      console.error(`[AGENT] News Meta publish failed:`, metaErr.message);
+    }
 
-    // We can't easily wait for the Meta req in this function safely if it takes too long,
-    // but we'll try a quick publish hook here or let a background task handle it.
-    // For now, we'll just log it. The Admin can also manually publish.
+    // 2. Publish to GBP
+    try {
+      await publishToGBP(payload.content, payload.imageUrl);
+    } catch (gbpErr) {
+      console.error(`[AGENT] News GBP publish failed:`, gbpErr.message);
+    }
     
     return { success: true, content: text, imageUrl: imageUrl };
   } catch (error) {
@@ -247,12 +282,16 @@ async function updateMarketNews() {
 exports.dailyMarketAnalysis = onSchedule({ 
   schedule: "0 8 * * *", 
   timeZone: "Europe/London",
-  secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
+  secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
 }, async (event) => { 
   await updateMarketNews(); 
 });
 
-exports.manualMarketUpdate = onRequest({ cors: true, memory: "512MiB" }, async (req, res) => {
+exports.manualMarketUpdate = onRequest({ 
+  cors: true, 
+  memory: "512MiB",
+  secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
+}, async (req, res) => {
   const result = await updateMarketNews();
   res.status(200).send(result.content);
 });
@@ -282,7 +321,11 @@ exports.processLead = onDocumentCreated({
     }
 });
 
-exports.manualSocialGenerate = onRequest({ cors: true, memory: "512MiB" }, async (req, res) => {
+exports.manualSocialGenerate = onRequest({ 
+  cors: true, 
+  memory: "512MiB",
+  secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
+}, async (req, res) => {
   const text = await generateSocialPost("Manual");
   res.status(200).send(text);
 });
@@ -311,113 +354,98 @@ exports.testEmailConnection = onRequest({
 });
 
 // --- META GRAPH API (FB & IG) ---
+// --- INTERNAL META HANDLER (Reusable by Agents & UI) ---
+async function publishToMetaInternal(postId) {
+  const postDoc = await db.collection("socialPosts").doc(postId).get();
+  if (!postDoc.exists) throw new Error("Post not found");
+  const postData = postDoc.data();
+  const content = postData.content;
+  const imageUrl = postData.imageUrl;
+
+  const pageId = META_PAGE_ID.value();
+  const token = META_PERMANENT_PAGE_TOKEN.value();
+
+  // --- 1. FACEBOOK ---
+  let fbUrl = `https://graph.facebook.com/v19.0/${pageId}/feed`;
+  let fbPayload = { 
+    message: content, 
+    published: true,
+    access_token: token 
+  };
+
+  if (imageUrl) {
+    fbUrl = `https://graph.facebook.com/v19.0/${pageId}/photos`;
+    fbPayload = { 
+      url: imageUrl, 
+      caption: content,
+      published: true,
+      access_token: token 
+    };
+  }
+
+  const fbResp = await fetch(fbUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(fbPayload)
+  });
+  const fbResult = await fbResp.json();
+
+  // --- 2. INSTAGRAM ---
+  const igAccountUrl = `https://graph.facebook.com/v19.0/${pageId}?fields=instagram_business_account&access_token=${token}`;
+  const igAccountResp = await fetch(igAccountUrl);
+  const igAccountData = await igAccountResp.json();
+  const igAccountId = igAccountData.instagram_business_account?.id;
+
+  let igResult = { status: "Skipped" };
+  
+  if (igAccountId && imageUrl) {
+    try {
+      const containerUrl = `https://graph.facebook.com/v19.0/${igAccountId}/media`;
+      const containerResp = await fetch(containerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image_url: imageUrl, caption: content, access_token: token })
+      });
+      const containerData = await containerResp.json();
+      
+      if (containerData.id) {
+        const publishUrl = `https://graph.facebook.com/v19.0/${igAccountId}/media_publish`;
+        const publishResp = await fetch(publishUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ creation_id: containerData.id, access_token: token })
+        });
+        igResult = await publishResp.json();
+      } else {
+        igResult = { error: containerData.error || "Container Fail" };
+      }
+    } catch (igErr) { igResult = { error: igErr.message }; }
+  }
+
+  // Final Database Update
+  await db.collection("socialPosts").doc(postId).update({ 
+    published: true, 
+    fbPostId: fbResult.id || null,
+    igPostId: igResult.id || null,
+    metaPublishedAt: admin.firestore.FieldValue.serverTimestamp(),
+    metaStatus: {
+      facebook: fbResult.id ? "Success" : "Error",
+      instagram: igResult.id ? "Success" : (igAccountId ? "Failed" : "No IG Account")
+    }
+  });
+
+  return { facebook: fbResult, instagram: igResult };
+}
+
 exports.publishToMeta = onRequest({ 
   cors: true, 
   secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "META_APP_ID", "META_APP_SECRET"] 
 }, async (req, res) => {
   const { postId } = req.body;
   if (!postId) return res.status(400).send("Missing postId");
-
   try {
-    const postDoc = await db.collection("socialPosts").doc(postId).get();
-    if (!postDoc.exists) return res.status(404).send("Post not found");
-    const postData = postDoc.data();
-    const content = postData.content;
-    const imageUrl = postData.imageUrl; // Optional image
-
-    const pageId = META_PAGE_ID.value();
-    const token = META_PERMANENT_PAGE_TOKEN.value();
-
-    // --- 1. FACEBOOK PUBLISHING ---
-    let fbUrl = `https://graph.facebook.com/v19.0/${pageId}/feed`;
-    let fbPayload = { 
-      message: content, 
-      published: true,
-      access_token: token 
-    };
-
-    if (imageUrl) {
-      // Create a native PHOTO post instead of a link post
-      fbUrl = `https://graph.facebook.com/v19.0/${pageId}/photos`;
-      fbPayload = { 
-        url: imageUrl, 
-        caption: content,
-        published: true,
-        access_token: token 
-      };
-    }
-
-    const fbResp = await fetch(fbUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(fbPayload)
-    });
-    const fbResult = await fbResp.json();
-
-    // --- 2. INSTAGRAM PUBLISHING ---
-    const igAccountUrl = `https://graph.facebook.com/v19.0/${pageId}?fields=instagram_business_account&access_token=${token}`;
-    const igAccountResp = await fetch(igAccountUrl);
-    const igAccountData = await igAccountResp.json();
-    const igAccountId = igAccountData.instagram_business_account?.id;
-
-    let igResult = { status: "Skipped" };
-    
-    // Instagram requires an image/video for publishing via API
-    if (igAccountId && imageUrl) {
-      try {
-        // Step A: Create Media Container
-        const containerUrl = `https://graph.facebook.com/v19.0/${igAccountId}/media`;
-        const containerResp = await fetch(containerUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            image_url: imageUrl,
-            caption: content,
-            access_token: token
-          })
-        });
-        const containerData = await containerResp.json();
-        
-        if (containerData.id) {
-          // Step B: Publish Media
-          const publishUrl = `https://graph.facebook.com/v19.0/${igAccountId}/media_publish`;
-          const publishResp = await fetch(publishUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              creation_id: containerData.id,
-              access_token: token
-            })
-          });
-          igResult = await publishResp.json();
-        } else {
-          igResult = { error: containerData.error || "Failed to create container" };
-        }
-      } catch (igErr) {
-        igResult = { error: igErr.message };
-      }
-    } else if (igAccountId && !imageUrl) {
-      igResult = { status: "Skipped - Text only posts not supported on IG API" };
-    }
-
-    // Update the post record
-    await db.collection("socialPosts").doc(postId).update({ 
-      published: true, 
-      fbPostId: fbResult.id || null,
-      igPostId: igResult.id || null,
-      metaPublishedAt: admin.firestore.FieldValue.serverTimestamp(),
-      metaStatus: {
-        facebook: fbResult.id ? "Success" : "Error",
-        instagram: igResult.id ? "Success" : (igAccountId ? "Failed/Skipped" : "No IG Account")
-      }
-    });
-
-    res.status(200).json({ 
-      success: true, 
-      facebook: fbResult,
-      instagram: igResult
-    });
-
+    const result = await publishToMetaInternal(postId);
+    res.status(200).json({ success: true, ...result });
   } catch (error) {
     console.error("Meta Publishing Error:", error);
     res.status(500).json({ success: false, error: error.message });
