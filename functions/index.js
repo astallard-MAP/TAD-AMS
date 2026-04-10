@@ -913,12 +913,7 @@ exports.seoSubmissionAgent = onSchedule({
     }
 });
 
-// --- SOCIAL MEDIA SENTINEL: PERFORMANCE & POLICY AUDIT AGENT ---
-exports.socialMediaSentinel = onSchedule({
-    schedule: "every 4 hours",
-    timeZone: "Europe/London",
-    memory: "1GiB"
-}, async (event) => {
+async function performSocialAudit() {
     console.log("Social Media Sentinel: Commencing Audit...");
     const auditId = `social-audit-${Date.now()}`;
     let efficiencyScore = 100;
@@ -932,17 +927,17 @@ exports.socialMediaSentinel = onSchedule({
             .get();
         
         if (recentPosts.empty) {
-            issues.push("No social posts identified in recent history.");
+            issues.push({ component: "Content Velocity", severity: "High", issue: "No social posts identified in recent history.", plan: "Trigger AI Social Agent to generate local town updates." });
             efficiencyScore -= 20;
         } else {
             recentPosts.forEach(doc => {
                 const post = doc.data();
                 if (!post.imageUrl) {
-                    issues.push(`Post ${doc.id} missing visual asset.`);
+                    issues.push({ component: "Visual Assets", severity: "Medium", issue: `Post ${doc.id} missing visual asset.`, plan: "Regenerate missing image via Imagen-3." });
                     efficiencyScore -= 10;
                 }
                 if (!post.content || post.content.length < 50) {
-                    issues.push(`Post ${doc.id} contains thin or failed content.`);
+                    issues.push({ component: "Copywriting", severity: "Medium", issue: `Post ${doc.id} contains thin content.`, plan: "Re-run Gemini-2.5-Flash copy generation." });
                     efficiencyScore -= 5;
                 }
             });
@@ -955,13 +950,11 @@ exports.socialMediaSentinel = onSchedule({
             .get();
         
         if (librarySnap.empty) {
-            issues.push("Image Library synchronization failure detected.");
+            issues.push({ component: "Asset Library", severity: "High", issue: "Image Library synchronization failure detected.", plan: "Verify Firestore index/collection availability." });
             efficiencyScore -= 15;
         }
 
         // 3. POLICY AUDIT: Anti-Abuse & Professional Conduct
-        // We audit the prompts and metadata of the last 5 images to ensure 
-        // the generation agent isn't drifting into inappropriate territory.
         const auditPayload = librarySnap.docs.slice(0, 5).map(d => ({
             prompt: d.data().prompt,
             source: d.data().source,
@@ -983,7 +976,7 @@ exports.socialMediaSentinel = onSchedule({
         });
 
         if (!policyResult.includes("PASSED")) {
-            issues.push(`Policy Violation: ${policyResult}`);
+            issues.push({ component: "Policy Drift", severity: "Critical", issue: `Policy Violation: ${policyResult}`, plan: "Instant Agent Quarantine & Prompt Realignment." });
             efficiencyScore -= 40;
             // High intensity alert
             await db.collection("systemAlerts").add({
@@ -1002,15 +995,36 @@ exports.socialMediaSentinel = onSchedule({
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             score: finalScore,
             issues: issues,
-            status: finalScore > 90 ? "Excellent" : finalScore > 70 ? "Needs Monitoring" : "Critical Intervention"
+            status: finalScore > 90 ? "Excellent" : finalScore > 70 ? "Needs Monitoring" : "Critical Intervention",
+            summary: `Social Media Audit complete. Score: ${finalScore}%`
         };
 
         await db.collection("componentAudits").doc("socialMedia").set(report);
-        console.log(`Social Media Audit Complete. Score: ${finalScore}%`);
+        return report;
 
     } catch (error) {
         console.error("Sentinel Audit Error:", error);
+        throw error;
     }
+}
+
+// --- SOCIAL MEDIA SENTINEL: PERFORMANCE & POLICY AUDIT AGENT ---
+exports.socialMediaSentinel = onSchedule({
+    schedule: "every 4 hours",
+    timeZone: "Europe/London",
+    memory: "1GiB"
+}, async (event) => {
+    await performSocialAudit();
+});
+
+// Manual social audit trigger
+exports.manualSocialAudit = onRequest({ cors: true, memory: "1GiB" }, async (req, res) => {
+  try {
+    const report = await performSocialAudit();
+    res.status(200).json(report);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 // --- MOBILE EXPERIENCE SENTINEL: FORENSIC RESPONSIVE AUDIT AGENT ---

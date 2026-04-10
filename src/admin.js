@@ -123,6 +123,7 @@ async function loadDashboardStats() {
         const auditSnap = await getDocs(auditQuery);
         if (!auditSnap.empty) {
             const audit = auditSnap.docs[0].data();
+            latestAudit = audit;
             const effEl = document.getElementById('stat-efficiency');
             if (effEl) {
                 effEl.textContent = `${audit.score}%`;
@@ -140,10 +141,10 @@ async function loadDashboardStats() {
 
         // 7. Social Media Efficiency (From Social Sentinel)
         try {
-            const socialAuditDoc = await getDoc(doc(db, "componentAudits", "socialMedia"));
             const socialEffEl = document.getElementById('stat-social-efficiency');
             if (socialAuditDoc.exists() && socialEffEl) {
-                const audit = socialAuditDoc.data();
+                latestSocialAudit = socialAuditDoc.data();
+                const audit = latestSocialAudit;
                 socialEffEl.textContent = `${audit.score}%`;
                 socialEffEl.style.color = audit.score >= 90 ? "#10b981" : audit.score >= 70 ? "#f59e0b" : "#ef4444";
             } else if (socialEffEl) {
@@ -227,6 +228,111 @@ async function loadLeads() {
     } catch (error) {
         console.error("Error loading leads:", error);
     }
+}
+
+// Efficiency Report Logic
+let latestAudit = null;
+let latestSocialAudit = null;
+
+async function showEfficiencyReport() {
+    const modal = document.getElementById('efficiency-modal');
+    const content = document.getElementById('efficiency-report-content');
+    if (!modal || !content) {
+        // Create modal if it doesn't exist
+        const modalHtml = `
+            <div id="efficiency-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; align-items:center; justify-content:center;">
+                <div class="modal-content" style="background:#fff; width:90%; max-width:600px; padding:2rem; border-radius:12px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5); position:relative;">
+                    <button id="close-eff-modal" style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.5rem; cursor:pointer; color:#64748b;">&times;</button>
+                    <h2 id="eff-modal-title" style="margin-bottom:1rem; display:flex; align-items:center; gap:10px;"><i class="fas fa-microchip" style="color:#3b82f6;"></i> System Efficiency Audit</h2>
+                    <div id="efficiency-report-content"></div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        document.getElementById('close-eff-modal').onclick = () => document.getElementById('efficiency-modal').style.display = 'none';
+    }
+
+    const reportModal = document.getElementById('efficiency-modal');
+    const reportContent = document.getElementById('efficiency-report-content');
+    const titleEl = document.getElementById('eff-modal-title');
+
+    titleEl.innerHTML = `<i class="fas fa-microchip" style="color:#3b82f6;"></i> System Efficiency Audit`;
+
+    if (!latestAudit) {
+        reportContent.innerHTML = "<p>Data not yet synchronized. Please wait...</p>";
+    } else {
+        renderAuditContent(reportContent, latestAudit, "Optimization Roadmap (Target 99.99%)");
+    }
+
+    reportModal.style.display = 'flex';
+}
+
+async function showSocialReport() {
+    const modal = document.getElementById('efficiency-modal');
+    const content = document.getElementById('efficiency-report-content');
+    if (!modal || !content) {
+        await showEfficiencyReport(); // Initialize modal
+    }
+
+    const reportModal = document.getElementById('efficiency-modal');
+    const reportContent = document.getElementById('efficiency-report-content');
+    const titleEl = document.getElementById('eff-modal-title');
+
+    titleEl.innerHTML = `<i class="fas fa-hashtag" style="color:#a21caf;"></i> Social Media Sentinel Audit`;
+
+    if (!latestSocialAudit) {
+        reportContent.innerHTML = `
+            <div style="text-align:center; padding:2rem;">
+                <p>Social Sentinel data is currently offline (N/A).</p>
+                <button id="trigger-social-audit" class="btn btn-primary">Run Manual Audit Now</button>
+            </div>
+        `;
+        document.getElementById('trigger-social-audit').onclick = async () => {
+            document.getElementById('trigger-social-audit').disabled = true;
+            document.getElementById('trigger-social-audit').innerText = "Analyzing Content...";
+            try {
+                const resp = await fetch('https://manualsocialaudit-vjikc6hdhq-uc.a.run.app');
+                latestSocialAudit = await resp.json();
+                await loadDashboardStats();
+                showSocialReport();
+            } catch (e) {
+                alert("Audit failed. Social Agent is currently isolated.");
+            }
+        };
+    } else {
+        renderAuditContent(reportContent, latestSocialAudit, "Social Compliance & Performance");
+    }
+
+    reportModal.style.display = 'flex';
+}
+
+function renderAuditContent(container, audit, title) {
+    const issuesHtml = audit.issues && audit.issues.length > 0 
+        ? audit.issues.map(issue => `
+            <div class="issue-item" style="border-left:4px solid ${issue.severity === 'High' || issue.severity === 'Critical' ? '#ef4444' : '#f59e0b'}; padding:1rem; margin-bottom:1rem; background:#f8fafc;">
+                <h4 style="margin:0; color:#1e293b;">${issue.component} [${issue.severity}]</h4>
+                <p style="margin:0.5rem 0; font-size:0.9rem; color:#475569;"><strong>Issue:</strong> ${issue.issue}</p>
+                <p style="margin:0.5rem 0; font-size:0.9rem; color:#0f172a;"><strong>Course of Action:</strong> ${issue.plan}</p>
+            </div>
+        `).join('')
+        : `<div style="text-align:center; padding:2rem; color:#10b981;">
+            <i class="fas fa-check-circle" style="font-size:3rem; margin-bottom:1rem;"></i>
+            <p><strong>Sentinel Status: Optimal.</strong> All compliance checks passed.</p>
+           </div>`;
+
+    container.innerHTML = `
+        <div class="efficiency-summary" style="margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid #e2e8f0;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:600; color:#64748b;">Sentinel Health Score</span>
+                <span style="font-size:2rem; font-weight:bold; color:${audit.score >= 90 ? '#10b981' : '#f59e0b'}">${audit.score}%</span>
+            </div>
+            <p style="margin:0.5rem 0; font-size:0.85rem; color:#94a3b8;">Refreshed: ${audit.timestamp?.toDate ? audit.timestamp.toDate().toLocaleString() : new Date().toLocaleString()}</p>
+        </div>
+        <h3 style="font-size:1.1rem; margin-bottom:1rem;">${title}</h3>
+        <div class="issues-list" style="max-height:400px; overflow-y:auto;">
+            ${issuesHtml}
+        </div>
+    `;
 }
 
 document.getElementById('refresh-leads').onclick = loadLeads;
@@ -451,4 +557,14 @@ if (mobileAuditAction) {
         mobileAuditAction.style.opacity = '1';
         mobileAuditAction.style.pointerEvents = 'auto';
     };
+}
+
+const efficiencyBtn = document.getElementById('btn-show-efficiency');
+if (efficiencyBtn) {
+    efficiencyBtn.onclick = showEfficiencyReport;
+}
+
+const socialSentinelBtn = document.getElementById('btn-social-sentinel');
+if (socialSentinelBtn) {
+    socialSentinelBtn.onclick = showSocialReport;
 }
