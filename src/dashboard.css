@@ -20,6 +20,11 @@
     width: 100%;
 }
 
+/* Hide Mobile Toggles on Desktop */
+.mobile-nav-toggle {
+    display: none !important;
+}
+
 /* SIDEBAR */
 .dashboard-sidebar {
     width: var(--sidebar-width);
@@ -535,7 +540,7 @@
 
     /* Mobile Menu Toggle Button */
     .mobile-nav-toggle {
-        display: flex;
+        display: flex !important;
         align-items: center;
         gap: 10px;
         background: white;

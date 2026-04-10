@@ -70,9 +70,9 @@ nav {
   height: 50px;
 }
 
-/* Header Toggle (Mobile Only) */
+/* Header Toggle (Mobile Only) - Strict Desktop Suppression */
 .menu-toggle {
-    display: none;
+    display: none !important;
 }
 
 .nav-links {
@@ -630,9 +630,9 @@ footer {
         gap: 1.5rem;
     }
 
-    /* Hamburger Menu Toggle */
+    /* Hamburger Menu Toggle - Mobile Only */
     .menu-toggle {
-        display: block;
+        display: block !important;
         font-size: 1.5rem;
         color: var(--primary);
         cursor: pointer;
