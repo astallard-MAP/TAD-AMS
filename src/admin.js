@@ -130,6 +130,19 @@ async function loadDashboardStats() {
         document.getElementById('social-month').textContent = "58";
         document.getElementById('social-year').textContent = "214";
 
+        // 7. Social Media Efficiency (From Social Sentinel)
+        try {
+            const socialAuditDoc = await getDoc(doc(db, "componentAudits", "socialMedia"));
+            const socialEffEl = document.getElementById('stat-social-efficiency');
+            if (socialAuditDoc.exists() && socialEffEl) {
+                const audit = socialAuditDoc.data();
+                socialEffEl.textContent = `${audit.score}%`;
+                socialEffEl.style.color = audit.score >= 90 ? "#10b981" : audit.score >= 70 ? "#f59e0b" : "#ef4444";
+            } else if (socialEffEl) {
+                socialEffEl.textContent = "N/A";
+            }
+        } catch (e) { console.warn("Social Audit Load Fail"); }
+
     } catch (err) { console.error("Stats Error:", err); }
 }
 
