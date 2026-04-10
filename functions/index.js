@@ -253,6 +253,18 @@ async function updateMarketNews() {
     };
     
     await db.collection("marketUpdates").doc("latest").set(payload);
+    await db.collection("marketUpdatesArchive").add(payload);
+
+    // 2. Create Social Post for News
+    const postRef = await db.collection("socialPosts").add({
+      town: town,
+      content: text,
+      imageUrl: imageUrl,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      published: false,
+      type: "Market News",
+      metaStatus: { facebook: "Pending", instagram: "Pending" }
+    });
 
     // --- AGENTIC AUTOMATION: AUTO-PUBLISH NEWS TO ALL CHANNELS ---
     console.log(`[AGENT] Auto-publishing market alert ${postRef.id} to Meta and GBP...`);
@@ -266,7 +278,20 @@ async function updateMarketNews() {
 
     // 2. Publish to GBP
     try {
-      await publishToGBP(payload.content, payload.imageUrl);
+      const accessToken = await getGBPAuth();
+      const locations = [GBP_LOCATION_ID.value(), "11040427386174604764"];
+      for (const locId of locations) {
+        await fetch(`https://mybusiness.googleapis.com/v4/accounts/self/locations/${locId}/localPosts`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            languageCode: "en-GB",
+            summary: text.substring(0, 1500),
+            callToAction: { actionType: "LEARN_MORE", url: "https://cash4houses.co.uk" },
+            media: [{ mediaFormat: "PHOTO", sourceUrl: imageUrl }]
+          })
+        });
+      }
     } catch (gbpErr) {
       console.error(`[AGENT] News GBP publish failed:`, gbpErr.message);
     }
@@ -929,20 +954,6 @@ async function performSpotlightGeneration() {
     }
 }
 
-async function updateMarketNews() {
-    try {
-        const prompt = "Analyse current UK property market trends and provide a concise, professional summary for Cash 4 Houses clients.";
-        const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt });
-        await db.collection("marketUpdates").doc("latest").set({
-            content: text,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-        return { success: true };
-    } catch (error) {
-        console.error("Market News Helper Error:", error);
-        throw error;
-    }
-}
 
 // --- THE REGULATOR: SELF-REPAIR & SYSTEM AUDIT AGENT ---
 exports.portalSentinel = onSchedule({
