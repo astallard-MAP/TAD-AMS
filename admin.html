@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -34,11 +34,12 @@
                 <a href="/documents.html"><i class="fas fa-folder-tree"></i> Documents Hub</a>
                 <a href="/picture-library.html"><i class="fas fa-images"></i> Picture Library</a>
                 <a href="/social.html"><i class="fas fa-hashtag"></i> Social Agent</a>
-                <a href="/audit-log.html"><i class="fas fa-shield-halved"></i> Security & Audit</a>
-                <a href="/admin.html#leads-section"><i class="fas fa-list-ul"></i> Enquiries</a>
-                <a href="/admin.html#news-section"><i class="fas fa-robot"></i> AI News Suite</a>
+                <a href="/admin.html#messages-section" id="nav-admin-messages"><i class="fas fa-comment-dots"></i> Messages Hub</a>
+                <a href="/admin.html#leads-section" id="nav-leads"><i class="fas fa-list-ul"></i> Enquiries</a>
+                <a href="/admin.html#news-section" id="nav-news"><i class="fas fa-robot"></i> AI News Suite</a>
                 <a href="/performance.html#gbp-section"><i class="fas fa-store"></i> GBP Control</a>
                 <a href="/performance.html#users-section"><i class="fas fa-users-gear"></i> User Manager</a>
+                <a href="/audit-log.html"><i class="fas fa-shield-halved"></i> Security & Audit</a>
             </nav>
 
             <div class="sidebar-footer">
@@ -198,6 +199,27 @@
                 </section>
             </div>
 
+            <!-- Messages Hub Section -->
+            <section id="messages-section" class="admin-section" style="margin-top: 40px; display: none;">
+                <div class="section-header">
+                    <h2><i class="fas fa-comment-dots"></i> User Messages Hub</h2>
+                    <p>Recent exchanges with portal users.</p>
+                </div>
+                <div class="messages-hub-layout">
+                    <div class="messages-user-list card" id="msg-user-list">
+                        <!-- User list with message previews -->
+                    </div>
+                    <div class="messages-chat-pane card" id="admin-chat-pane">
+                        <div id="admin-chat-log" class="chat-log-area">
+                            <div class="msg-hint">Select a user to view conversation</div>
+                        </div>
+                        <form id="admin-chat-form" class="personal-message-input" style="display: none;">
+                            <textarea id="admin-msg-input" placeholder="Type response..."></textarea>
+                            <button type="submit" class="btn btn-primary">Send Response</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
             <!-- Forensic System Logs Section -->
             <section class="admin-panel logs-panel" id="logs-section" style="margin-top: 2rem;">
                 <div class="panel-header" style="background: #0f172a; color: white;">

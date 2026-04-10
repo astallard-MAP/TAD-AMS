@@ -16,6 +16,7 @@ import {
 import { signOut } from "firebase/auth";
 import { ref, getDownloadURL } from "firebase/storage";
 import { httpsCallable } from "firebase/functions";
+import { onSnapshot } from "firebase/firestore";
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
@@ -29,6 +30,7 @@ authReady.then(async (user) => {
         loadAdminProfile(user.uid);
         pollSecurityAlerts();
         loadForensicLogs();
+        setupAdminMessagingHub();
     }
 });
 
@@ -673,4 +675,95 @@ if (clearLogsBtn) {
         const body = document.getElementById('logs-body');
         if (body) body.innerHTML = '<tr><td colspan="4" style="padding: 2rem; text-align: center; color: #64748b;">Cache cleared. Refresh to fetch from source.</td></tr>';
     };
+}
+// --- ADMIN MESSAGING HUB ---
+function setupAdminMessagingHub() {
+    const navMessages = document.getElementById('nav-admin-messages');
+    const sections = document.querySelectorAll('.admin-section, .admin-panel, .dashboard-stats, .market-news-container');
+    const messagesSection = document.getElementById('messages-section');
+    const userListEl = document.getElementById('msg-user-list');
+    const chatLog = document.getElementById('admin-chat-log');
+    const chatForm = document.getElementById('admin-chat-form');
+    const chatInput = document.getElementById('admin-msg-input');
+
+    if (!navMessages) return;
+
+    navMessages.onclick = (e) => {
+        e.preventDefault();
+        sections.forEach(s => s.style.display = 'none');
+        messagesSection.style.display = 'block';
+        loadConversations();
+    };
+
+    let activeUserId = null;
+    let unsubscribeChat = null;
+
+    function loadConversations() {
+        const q = query(collection(db, "conversations"), orderBy("lastTimestamp", "desc"));
+        onSnapshot(q, (snapshot) => {
+            userListEl.innerHTML = "";
+            snapshot.forEach(doc => {
+                const conv = doc.data();
+                const userId = doc.id;
+                const div = document.createElement('div');
+                div.className = `user-item ${activeUserId === userId ? 'active' : ''}`;
+                div.innerHTML = `
+                    <strong>${conv.userName || conv.userEmail}</strong>
+                    <p style="font-size: 0.8rem; margin-top: 5px; opacity: 0.8;">${conv.lastMessage?.substring(0, 40)}...</p>
+                `;
+                div.onclick = () => {
+                    activeUserId = userId;
+                    loadUserChat(userId);
+                    // Mark as read
+                    setDoc(doc(db, "conversations", userId), { unread: false }, { merge: true });
+                };
+                userListEl.appendChild(div);
+            });
+        });
+    }
+
+    function loadUserChat(uid) {
+        if (unsubscribeChat) unsubscribeChat();
+        chatForm.style.display = 'flex';
+        const q = query(collection(db, `userMessages/${uid}/messages`), orderBy("timestamp", "asc"));
+        
+        unsubscribeChat = onSnapshot(q, (snapshot) => {
+            chatLog.innerHTML = "";
+            snapshot.forEach(doc => {
+                const msg = doc.data();
+                const div = document.createElement('div');
+                div.className = `msg-bubble ${msg.sender === 'admin' ? 'msg-user' : 'msg-admin'}`;
+                const time = msg.timestamp?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || '...';
+                div.innerHTML = `
+                    <div class="msg-text">${msg.text}</div>
+                    <span class="msg-time">${time}</span>
+                `;
+                chatLog.appendChild(div);
+            });
+            chatLog.scrollTop = chatLog.scrollHeight;
+        });
+    }
+
+    if (chatForm) {
+        chatForm.onsubmit = async (e) => {
+            e.preventDefault();
+            if (!activeUserId) return;
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            chatInput.value = "";
+            try {
+                await addDoc(collection(db, `userMessages/${activeUserId}/messages`), {
+                    text: text,
+                    sender: 'admin',
+                    timestamp: serverTimestamp()
+                });
+                await setDoc(doc(db, "conversations", activeUserId), {
+                    lastMessage: text,
+                    lastTimestamp: serverTimestamp(),
+                    unread: false
+                }, { merge: true });
+            } catch (err) { console.error("Admin send fail:", err); }
+        };
+    }
 }

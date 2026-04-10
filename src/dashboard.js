@@ -11,6 +11,11 @@ import {
     getDoc
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { 
+    onSnapshot,
+    addDoc,
+    serverTimestamp 
+} from "firebase/firestore";
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
@@ -28,6 +33,7 @@ onAuthStateChanged(auth, async (user) => {
         loadUserProperties(activeEmail);
         loadUserProfile(user.uid);
         setupDashboardListeners(user);
+        setupMessagingHub(user);
 
         if (user.uid === ADMIN_UID) {
             showImpersonationBar();
@@ -237,7 +243,6 @@ async function loadUserProfile(uid) {
         }
     } catch (err) { console.error("Profile Error:", err); }
 }
-
 function setupDashboardListeners(user) {
     const fileInput = document.getElementById('profile-upload');
     if (fileInput) {
@@ -261,6 +266,95 @@ function setupDashboardListeners(user) {
                 alert("Failed to upload profile picture.");
             }
         });
+    }
+}
+
+// --- PERSONAL MESSAGING HUB INTEGRATION ---
+function setupMessagingHub(user) {
+    const navMessages = document.getElementById('nav-messages');
+    const navDashboard = document.getElementById('nav-dashboard');
+    const propertiesList = document.getElementById('properties-list');
+    const dashHeader = document.querySelector('.dashboard-header');
+    const mainActions = document.getElementById('dashboard-main-actions');
+    const messagesHub = document.getElementById('personal-messages-hub');
+    const chatLog = document.getElementById('personal-chat-log');
+    const messageForm = document.getElementById('personal-message-form');
+    const messageInput = document.getElementById('personal-msg-input');
+
+    if (!navMessages) return;
+
+    navMessages.onclick = (e) => {
+        e.preventDefault();
+        navMessages.classList.add('active');
+        navDashboard.classList.remove('active');
+        propertiesList.style.display = 'none';
+        dashHeader.style.display = 'none';
+        mainActions.style.display = 'none';
+        messagesHub.style.display = 'block';
+        loadRealtimeMessages(user.uid);
+    };
+
+    navDashboard.onclick = (e) => {
+        e.preventDefault();
+        navDashboard.classList.add('active');
+        navMessages.classList.remove('active');
+        propertiesList.style.display = 'grid';
+        dashHeader.style.display = 'block';
+        mainActions.style.display = 'flex';
+        messagesHub.style.display = 'none';
+    };
+
+    let unsubscribe = null;
+    function loadRealtimeMessages(uid) {
+        if (unsubscribe) unsubscribe();
+        const q = query(collection(db, `userMessages/${uid}/messages`), orderBy("timestamp", "asc"));
+        
+        unsubscribe = onSnapshot(q, (snapshot) => {
+            chatLog.innerHTML = "";
+            if (snapshot.empty) {
+                chatLog.innerHTML = `<div class="msg-hint">No messages yet. Send a message to start the conversation with the team.</div>`;
+            }
+            snapshot.forEach(doc => {
+                const msg = doc.data();
+                const div = document.createElement('div');
+                div.className = `msg-bubble ${msg.sender === 'admin' ? 'msg-admin' : 'msg-user'}`;
+                const time = msg.timestamp?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || 'Sending...';
+                div.innerHTML = `
+                    <div class="msg-text">${msg.text}</div>
+                    <span class="msg-time">${time}</span>
+                `;
+                chatLog.appendChild(div);
+            });
+            chatLog.scrollTop = chatLog.scrollHeight;
+        });
+    }
+
+    if (messageForm) {
+        messageForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const text = messageInput.value.trim();
+            if (!text) return;
+
+            messageInput.value = "";
+            try {
+                // Ensure the conversation exists in the admin list
+                await setDoc(doc(db, "conversations", user.uid), {
+                    lastMessage: text,
+                    lastTimestamp: serverTimestamp(),
+                    userName: user.email.split('@')[0],
+                    userEmail: user.email,
+                    unread: true
+                }, { merge: true });
+
+                await addDoc(collection(db, `userMessages/${user.uid}/messages`), {
+                    text: text,
+                    sender: 'user',
+                    timestamp: serverTimestamp()
+                });
+            } catch (err) {
+                console.error("Message send error:", err);
+            }
+        };
     }
 }
 // --- ANDY AI CHAT INTEGRATION ---

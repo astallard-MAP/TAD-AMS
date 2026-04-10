@@ -303,21 +303,109 @@ exports.processLead = onDocumentCreated({
 }, async (event) => {
     const data = event.data.data();
     if (!data) return;
+    
+    // 1. ADMIN NOTIFICATION (Immediate)
     const client = getGraphClient();
     try {
       await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
         message: {
-          subject: "Inquiry Confirmation",
-          body: { contentType: "HTML", content: `<p>Hello ${data.firstName}, Andrew Stallard here. Received your details for <strong>${data.address}</strong>. Analysing now. Guaranteed offer within 48 hours.</p>` },
-          toRecipients: [{ emailAddress: { address: data.email } }]
+          subject: `NEW LEAD: ${data.address} - ${data.firstName}`,
+          body: { 
+            contentType: "HTML", 
+            content: `
+              <h3>New Lead Details</h3>
+              <p><strong>Name:</strong> ${data.firstName} ${data.lastName}</p>
+              <p><strong>Mobile:</strong> ${data.phone}</p>
+              <p><strong>Email:</strong> ${data.email}</p>
+              <p><strong>Address:</strong> ${data.address}</p>
+              <p><strong>Reason for Sale:</strong> ${data.reason}</p>
+              <p><strong>Timeline:</strong> ${data.timeline}</p>
+            ` 
+          },
+          toRecipients: [
+            { emailAddress: { address: "andy@cash4houses.co.uk" } },
+            { emailAddress: { address: "andrew@stallard.co" } }
+          ]
         },
         saveToSentItems: true
       });
-      await db.collection("communicationLogs").add({ leadId: event.params.leadId, timestamp: admin.firestore.FieldValue.serverTimestamp(), type: "Enquiry", summary: `Graph API: sent to ${data.email}` });
-    } catch (error) { 
-      console.error("Graph Error:", error);
-      if (error.requestId) console.log("Graph Request ID:", error.requestId);
-      if (error.clientRequestId) console.log("Graph Client Request ID:", error.clientRequestId);
+    } catch (adminErr) {
+      console.error("Admin Notify Error:", adminErr);
+    }
+
+    // 2. USER PROFILE READINESS
+    // Create or find user to link property. 
+    // We'll let the signup agent handle the actual Auth creation, 
+    // but we can prepare the 'property' record now.
+    try {
+      await db.collection("properties").add({
+        address: data.address,
+        ownerEmail: data.email,
+        ownerName: data.firstName,
+        status: "Reviewing",
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        leadId: event.params.leadId
+      });
+    } catch (propErr) {
+      console.error("Property Linking Error:", propErr);
+    }
+
+    // 3. QUEUE 10-MINUTE FOLLOW UP EMAIL
+    const scheduledTime = new Date(Date.now() + 10 * 60 * 1000); // +10 minutes
+    await db.collection("pendingEmails").add({
+      to: data.email,
+      firstName: data.firstName,
+      type: "TEN_MINUTE_FOLLOWUP",
+      status: "pending",
+      scheduledFor: admin.firestore.FieldValue.serverTimestamp(), // We use serverTimestamp then fix it or just use JS Date
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      sendAt: scheduledTime
+    });
+});
+
+// --- DELAYED EMAIL AGENT ---
+exports.emailQueueAgent = onSchedule({ 
+  schedule: "every 5 minutes", 
+  timeZone: "Europe/London",
+  secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"] 
+}, async (event) => {
+    const now = new Date();
+    const pending = await db.collection("pendingEmails")
+      .where("status", "==", "pending")
+      .where("sendAt", "<=", now)
+      .limit(10)
+      .get();
+
+    if (pending.empty) return;
+
+    const client = getGraphClient();
+    
+    for (const doc of pending.docs) {
+        const mail = doc.data();
+        try {
+            await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
+                message: {
+                    subject: "Your Property Valuation Request - Next Steps",
+                    body: { 
+                        contentType: "HTML", 
+                        content: `
+                            <p>Hello ${mail.firstName},</p>
+                            <p>Thank you for your request, our team have started working on it and we will get an offer to you within 24 working hours (working hours are Monday to Friday 9am to 5pm).</p>
+                            <p>If you want to see the progress follow this link to create your secure portal access:</p>
+                            <p><a href="https://cash4houses.co.uk/index.html#signup">Create Your Portal Password</a></p>
+                            <p>There is an area on the portal where you can exchange messages with our team if you want to add some more information to your initial request or would like to ask a question.</p>
+                            <p>Thanks,<br>Andy</p>
+                        ` 
+                    },
+                    toRecipients: [{ emailAddress: { address: mail.to } }]
+                },
+                saveToSentItems: true
+            });
+            await doc.ref.update({ status: "sent", sentAt: admin.firestore.FieldValue.serverTimestamp() });
+        } catch (err) {
+            console.error(`Queue Send Fail for ${mail.to}:`, err);
+            await doc.ref.update({ status: "failed", error: err.message });
+        }
     }
 });
 

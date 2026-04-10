@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -28,12 +28,12 @@
             </div>
             
             <nav class="sidebar-nav">
-                <a href="/dashboard.html" class="active"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="/dashboard.html" id="nav-dashboard" class="active"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="#" id="nav-messages"><i class="fas fa-envelope"></i> Personal Messages</a>
                 <a href="/communications.html"><i class="fas fa-history"></i> Communications Log</a>
                 <a href="/profile.html"><i class="fas fa-user-edit"></i> My Profile</a>
                 <a href="/#get-offer"><i class="fas fa-plus"></i> Add Property</a>
                 <a href="#"><i class="fas fa-newspaper"></i> Market News</a>
-                <a href="#"><i class="fas fa-envelope"></i> Messages</a>
                 <a href="#"><i class="fas fa-cog"></i> Settings</a>
             </nav>
 
@@ -65,8 +65,25 @@
                 </div>
             </section>
 
-            <section class="dashboard-actions">
+            <section class="dashboard-actions" id="dashboard-main-actions">
                 <a href="/#get-offer" class="btn btn-primary">Add Property</a>
+            </section>
+
+            <!-- Personal Messaging Hub (Hidden by Default) -->
+            <section id="personal-messages-hub" style="display: none;">
+                <div class="message-hub-header">
+                    <h2><i class="fas fa-comments"></i> Direct Message to Admin</h2>
+                    <p>Exchange messages with Andrew Stallard and the team regarding your valuation or property sale.</p>
+                </div>
+                <div class="personal-chat-container">
+                    <div id="personal-chat-log" class="chat-log-area">
+                        <!-- Real-time messages will appear here -->
+                    </div>
+                    <form id="personal-message-form" class="personal-message-input">
+                        <textarea id="personal-msg-input" placeholder="Type your message to the team..." required></textarea>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Message</button>
+                    </form>
+                </div>
             </section>
         </main>
     </div>
