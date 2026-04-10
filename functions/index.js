@@ -8,6 +8,7 @@ require("isomorphic-fetch");
 const Parser = require("rss-parser");
 const { genkit } = require("genkit");
 const { vertexAI } = require("@genkit-ai/vertexai");
+const { google } = require("googleapis");
 const { defineSecret } = require("firebase-functions/params");
 
 // Initialize Firebase Admin
@@ -392,6 +393,117 @@ exports.verifyMetaConnection = onRequest({
     }
     
     res.status(200).json({ success: true, pageDetails: data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+async function publishToGBP(content, imageUrl) {
+  try {
+    const locationId = GBP_LOCATION_ID.value();
+    const auth = new google.auth.GoogleAuth({
+      scopes: ['https://www.googleapis.com/auth/business.manage']
+    });
+    const authClient = await auth.getClient();
+    
+    // Using the modern Business Profile API (mybusinessplaces v1)
+    const mybusiness = google.mybusinessplaces({ version: 'v1', auth: authClient });
+    
+    const postBody = {
+      languageCode: "en-GB",
+      summary: content,
+      callToAction: {
+        actionType: "LEARN_MORE",
+        url: "https://c4h-wesbite.web.app"
+      }
+    };
+
+    if (imageUrl) {
+      postBody.media = [{
+        mediaFormat: "PHOTO",
+        sourceUrl: imageUrl
+      }];
+    }
+
+    const res = await mybusiness.locations.localPosts.create({
+      parent: `locations/${locationId}`,
+      requestBody: postBody
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("GBP Publish Error:", error);
+    await db.collection("systemAlerts").add({
+      type: "GBP_PUBLISH_FAILURE",
+      reason: error.message,
+      content: `Failed to publish to Google Business Profile: ${error.stack}`,
+      status: "unread",
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+    throw error;
+  }
+}
+
+// Scheduled GBP Agents
+exports.gbpMorningPost = onSchedule({ 
+  schedule: "0 9 * * *", 
+  timeZone: "Europe/London", 
+  secrets: ["GBP_LOCATION_ID"] 
+}, async (event) => {
+  const newsDoc = await db.collection("marketUpdates").doc("latest").get();
+  if (newsDoc.exists) {
+    const data = newsDoc.data();
+    await publishToGBP(`DAILY MARKET UPDATE: ${data.content.substring(0, 1500)}`, data.imageUrl);
+  }
+});
+
+exports.gbpLunchPost = onSchedule({ 
+  schedule: "0 12 * * *", 
+  timeZone: "Europe/London", 
+  secrets: ["GBP_LOCATION_ID"] 
+}, async (event) => {
+  const postsSnap = await db.collection("socialPosts")
+    .where("scheduledTime", "==", "Morning")
+    .orderBy("timestamp", "desc")
+    .limit(1)
+    .get();
+  
+  if (!postsSnap.empty) {
+    const post = postsSnap.docs[0].data();
+    await publishToGBP(post.content, post.imageUrl);
+  }
+});
+
+exports.gbpEveningPost = onSchedule({ 
+  schedule: "0 18 * * *", 
+  timeZone: "Europe/London", 
+  secrets: ["GBP_LOCATION_ID"] 
+}, async (event) => {
+  const postsSnap = await db.collection("socialPosts")
+    .where("scheduledTime", "==", "Lunch")
+    .orderBy("timestamp", "desc")
+    .limit(1)
+    .get();
+  
+  if (!postsSnap.empty) {
+    const post = postsSnap.docs[0].data();
+    await publishToGBP(post.content, post.imageUrl);
+  }
+});
+
+exports.testGBPPost = onRequest({ 
+  cors: true, 
+  secrets: ["GBP_LOCATION_ID"] 
+}, async (req, res) => {
+  try {
+    const newsDoc = await db.collection("marketUpdates").doc("latest").get();
+    if (newsDoc.exists) {
+      const data = newsDoc.data();
+      const result = await publishToGBP(`[TEST] DAILY NEWS: ${data.content.substring(0, 500)}`, data.imageUrl);
+      res.status(200).json({ success: true, result: result });
+    } else {
+      res.status(404).send("Latest news story not found for testing.");
+    }
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
