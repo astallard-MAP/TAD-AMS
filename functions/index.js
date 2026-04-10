@@ -330,7 +330,11 @@ exports.publishToMeta = onRequest({
 
     // --- 1. FACEBOOK PUBLISHING ---
     let fbUrl = `https://graph.facebook.com/v19.0/${pageId}/feed`;
-    let fbPayload = { message: content, access_token: token };
+    let fbPayload = { 
+      message: content, 
+      published: true,
+      access_token: token 
+    };
 
     if (imageUrl) {
       // Create a native PHOTO post instead of a link post
@@ -338,6 +342,7 @@ exports.publishToMeta = onRequest({
       fbPayload = { 
         url: imageUrl, 
         caption: content,
+        published: true,
         access_token: token 
       };
     }
@@ -503,7 +508,10 @@ async function fetchGoogleReviews() {
 
 async function publishToGBP(content, imageUrl) {
   try {
-    const locations = [GBP_LOCATION_ID.value(), "11040427386174604764"];
+    const locations = [
+      GBP_LOCATION_ID.value(), 
+      "11040427386174604764" // London Rd
+    ];
     const accessToken = await getGBPAuth();
     
     const results = [];
