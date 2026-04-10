@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .contact-hero {
-            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #7c6c84 100%);
             color: white;
             padding: 6rem 2rem;
             text-align: center;
@@ -33,7 +33,7 @@
             margin-bottom: 2.5rem;
         }
         .office-card h3 {
-            color: #065f46;
+            color: var(--primary);
             margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
@@ -76,8 +76,8 @@
         }
         .form-control:focus {
             outline: none;
-            border-color: #10b981;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(235, 40, 122, 0.1);
         }
         .radio-group {
             display: flex;
@@ -91,7 +91,7 @@
             cursor: pointer;
         }
         .submit-btn {
-            background: #10b981;
+            background: var(--secondary);
             color: white;
             border: none;
             padding: 1rem 2rem;
@@ -102,17 +102,18 @@
             transition: all 0.2s;
         }
         .submit-btn:hover {
-            background: #059669;
+            background: #d11265;
             transform: translateY(-2px);
         }
         .success-message {
             display: none;
-            background: #d1fae5;
-            color: #065f46;
+            background: #fdf2f8;
+            color: var(--primary);
             padding: 1.5rem;
             border-radius: 12px;
             text-align: center;
             margin-bottom: 2rem;
+            border: 1px solid var(--secondary);
         }
         @media (max-width: 968px) {
             .contact-container {
@@ -123,7 +124,7 @@
     </style>
 </head>
 <body>
-    <header class="main-header">
+    <header>
         <div class="container">
             <nav>
                 <a href="/" class="logo">
@@ -133,7 +134,17 @@
                     <a href="/#about">About</a>
                     <a href="/#locations">Locations</a>
                     <a href="/contact.html" class="active">Contact</a>
-                    <a href="/dashboard.html" class="btn btn-primary">Seller Portal</a>
+                    
+                    <button id="login-btn" class="btn btn-outline">Login</button>
+                    <div id="user-profile" class="user-profile" style="display: none;">
+                        <span class="user-name">User</span>
+                        <div class="user-dropdown">
+                            <a id="admin-toggle" href="/admin.html" style="display: none; color: #d32f2f;">Admin Dashboard</a>
+                            <a id="portfolio-link" href="/dashboard.html" style="display: none;">My Portfolio</a>
+                            <a href="#profile">My Profile</a>
+                            <button id="logout-btn" class="logout-btn">Sign Out</button>
+                        </div>
+                    </div>
                 </div>
             </nav>
         </div>
@@ -149,7 +160,7 @@
     <div class="contact-container container">
         <aside class="contact-info-panel">
             <div class="office-card">
-                <h3><i class="fas fa-map-marker-alt" style="color: #10b981;"></i> London Road Office</h3>
+                <h3><i class="fas fa-map-marker-alt" style="color: var(--secondary);"></i> London Road Office</h3>
                 <p>
                     124 London Road<br>
                     Southend-on-Sea<br>
@@ -242,7 +253,7 @@
                         <li><a href="/#about">About Our Service</a></li>
                         <li><a href="/#locations">Areas We Buy</a></li>
                         <li><a href="/contact.html">Contact Us</a></li>
-                        <li><a href="/dashboard.html">Seller Portal</a></li>
+                        <li><a href="/dashboard.html">Login</a></li>
                     </ul>
                 </div>
                 <div class="footer-links">
@@ -265,6 +276,32 @@
         </div>
     </footer>
 
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Sign In to Portal</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" required placeholder="andy@cash4houses.co.uk">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
+                <p id="auth-error" style="color: #d32f2f; font-size: 0.8rem;"></p>
+                <div id="auth-actions">
+                    <button type="submit" id="main-auth-btn" class="btn btn-primary" style="width: 100%;">Sign In</button>
+                    <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem;">
+                        Don't have an account? <a href="#" id="toggle-signup">Create Login</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
     <script type="module" src="/src/contact.js"></script>
 </body>
 </html>

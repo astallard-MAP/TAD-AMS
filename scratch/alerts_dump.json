@@ -1,0 +1,180 @@
+﻿{
+    "documents":  [
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/systemAlerts/2o9Lz3GeZHnVi2Uwm3Xd",
+                          "fields":  {
+                                         "reason":  {
+                                                        "stringValue":  "The Regulator performed an autonomous repair on 2 components."
+                                                    },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-10T00:13:16.990Z"
+                                                       },
+                                         "type":  {
+                                                      "stringValue":  "SYSTEM REPAIR EVENT"
+                                                  },
+                                         "content":  {
+                                                         "stringValue":  "Portal efficiency was identified at 75%. The Self-Repairing Module has normalized the system. Details in Audit audit-2026-04-10-1775779995047."
+                                                     },
+                                         "status":  {
+                                                        "stringValue":  "unread"
+                                                    }
+                                     },
+                          "createTime":  "2026-04-10T00:13:17.009418Z",
+                          "updateTime":  "2026-04-10T00:13:17.009418Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/systemAlerts/DeIbZARzHvmNX6LJg1Ym",
+                          "fields":  {
+                                         "status":  {
+                                                        "stringValue":  "unread"
+                                                    },
+                                         "content":  {
+                                                         "stringValue":  "Portal efficiency was identified at 75%. The Self-Repairing Module has normalized the system. Details in Audit audit-2026-04-09-1775765594097."
+                                                     },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-09T20:13:16.513Z"
+                                                       },
+                                         "type":  {
+                                                      "stringValue":  "SYSTEM REPAIR EVENT"
+                                                  },
+                                         "reason":  {
+                                                        "stringValue":  "The Regulator performed an autonomous repair on 2 components."
+                                                    }
+                                     },
+                          "createTime":  "2026-04-09T20:13:16.536552Z",
+                          "updateTime":  "2026-04-09T20:13:16.536552Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/systemAlerts/J32Ds3LjrN0D0ED2ODs5",
+                          "fields":  {
+                                         "type":  {
+                                                      "stringValue":  "SYSTEM REPAIR EVENT"
+                                                  },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-10T06:13:15.317Z"
+                                                       },
+                                         "reason":  {
+                                                        "stringValue":  "The Regulator performed an autonomous repair on 2 components."
+                                                    },
+                                         "content":  {
+                                                         "stringValue":  "Portal efficiency was identified at 75%. The Self-Repairing Module has normalized the system. Details in Audit audit-2026-04-10-1775801593377."
+                                                     },
+                                         "status":  {
+                                                        "stringValue":  "unread"
+                                                    }
+                                     },
+                          "createTime":  "2026-04-10T06:13:15.350108Z",
+                          "updateTime":  "2026-04-10T06:13:15.350108Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/systemAlerts/NA9CEtBqaxmH7Tcuifvs",
+                          "fields":  {
+                                         "status":  {
+                                                        "stringValue":  "unread"
+                                                    },
+                                         "reason":  {
+                                                        "stringValue":  "google.mybusinessplaces is not a function"
+                                                    },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-10T08:00:02.760Z"
+                                                       },
+                                         "type":  {
+                                                      "stringValue":  "GBP_PUBLISH_FAILURE"
+                                                  },
+                                         "content":  {
+                                                         "stringValue":  "Failed to publish to Google Business Profile: TypeError: google.mybusinessplaces is not a function\n    at publishToGBP (/workspace/index.js:410:31)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async /workspace/index.js:456:5\n    at async httpFunc (/workspace/node_modules/firebase-functions/lib/v2/providers/scheduler.js:62:4)"
+                                                     }
+                                     },
+                          "createTime":  "2026-04-10T08:00:02.785059Z",
+                          "updateTime":  "2026-04-10T08:00:02.785059Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/systemAlerts/Razhee1dFkK5Prh946DR",
+                          "fields":  {
+                                         "status":  {
+                                                        "stringValue":  "unread"
+                                                    },
+                                         "type":  {
+                                                      "stringValue":  "SYSTEM REPAIR EVENT"
+                                                  },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-10T04:13:12.632Z"
+                                                       },
+                                         "reason":  {
+                                                        "stringValue":  "The Regulator performed an autonomous repair on 2 components."
+                                                    },
+                                         "content":  {
+                                                         "stringValue":  "Portal efficiency was identified at 75%. The Self-Repairing Module has normalized the system. Details in Audit audit-2026-04-10-1775794390164."
+                                                     }
+                                     },
+                          "createTime":  "2026-04-10T04:13:12.651666Z",
+                          "updateTime":  "2026-04-10T04:13:12.651666Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/systemAlerts/WWc15sl1f4mLXMbPn6HS",
+                          "fields":  {
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-09T18:13:08.446Z"
+                                                       },
+                                         "type":  {
+                                                      "stringValue":  "SYSTEM REPAIR EVENT"
+                                                  },
+                                         "reason":  {
+                                                        "stringValue":  "The Regulator performed an autonomous repair on 2 components."
+                                                    },
+                                         "content":  {
+                                                         "stringValue":  "Portal efficiency was identified at 75%. The Self-Repairing Module has normalized the system. Details in Audit audit-2026-04-09-1775758386063."
+                                                     },
+                                         "status":  {
+                                                        "stringValue":  "unread"
+                                                    }
+                                     },
+                          "createTime":  "2026-04-09T18:13:08.473844Z",
+                          "updateTime":  "2026-04-09T18:13:08.473844Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/systemAlerts/ba8422IERAl3wWFDFtWA",
+                          "fields":  {
+                                         "type":  {
+                                                      "stringValue":  "SYSTEM REPAIR EVENT"
+                                                  },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-10T02:13:15.824Z"
+                                                       },
+                                         "reason":  {
+                                                        "stringValue":  "The Regulator performed an autonomous repair on 2 components."
+                                                    },
+                                         "content":  {
+                                                         "stringValue":  "Portal efficiency was identified at 75%. The Self-Repairing Module has normalized the system. Details in Audit audit-2026-04-10-1775787193372."
+                                                     },
+                                         "status":  {
+                                                        "stringValue":  "unread"
+                                                    }
+                                     },
+                          "createTime":  "2026-04-10T02:13:15.852051Z",
+                          "updateTime":  "2026-04-10T02:13:15.852051Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/systemAlerts/dXDTBDseg30UIOJFEJTP",
+                          "fields":  {
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-09T22:13:13.085Z"
+                                                       },
+                                         "type":  {
+                                                      "stringValue":  "SYSTEM REPAIR EVENT"
+                                                  },
+                                         "reason":  {
+                                                        "stringValue":  "The Regulator performed an autonomous repair on 2 components."
+                                                    },
+                                         "content":  {
+                                                         "stringValue":  "Portal efficiency was identified at 75%. The Self-Repairing Module has normalized the system. Details in Audit audit-2026-04-09-1775772790587."
+                                                     },
+                                         "status":  {
+                                                        "stringValue":  "unread"
+                                                    }
+                                     },
+                          "createTime":  "2026-04-09T22:13:13.109109Z",
+                          "updateTime":  "2026-04-09T22:13:13.109109Z"
+                      }
+                  ]
+}

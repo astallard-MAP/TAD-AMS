@@ -1,0 +1,214 @@
+﻿{
+    "documents":  [
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/socialPosts/BOTq63ks1WpmWuf63RNe",
+                          "fields":  {
+                                         "scheduledTime":  {
+                                                               "stringValue":  "Manual"
+                                                           },
+                                         "published":  {
+                                                           "booleanValue":  true
+                                                       },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-09T17:06:13.931Z"
+                                                       },
+                                         "igPostId":  {
+                                                          "nullValue":  null
+                                                      },
+                                         "metaStatus":  {
+                                                            "mapValue":  {
+                                                                             "fields":  {
+                                                                                            "facebook":  {
+                                                                                                             "stringValue":  "Error"
+                                                                                                         },
+                                                                                            "instagram":  {
+                                                                                                              "stringValue":  "No IG Account"
+                                                                                                          }
+                                                                                        }
+                                                                         }
+                                                        },
+                                         "fbPostId":  {
+                                                          "nullValue":  null
+                                                      },
+                                         "imageUrl":  {
+                                                          "stringValue":  "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format\u0026fit=crop\u0026q=80\u0026w=1200"
+                                                      },
+                                         "content":  {
+                                                         "stringValue":  "HEADLINE: Shoebury Stress? Your Fast Cash Solution.\n\nCONTENT:\nFeeling the weight of your Shoeburyness property? We understand the financial and personal pressures many face right now. Think of us as that \u0027warm blanket on a cold night\u0027 – offering a discreet, supportive solution right here in your South East Essex community.\n\nImagine the freedom: shedding the burden of your home, allowing you to truly breathe again. Picture yourself enjoying stress-free walks along East Beach or more time with loved ones, rather than property worries. In a world where market sentiment shifts daily and costs continue to rise, making a swift, SMART decision to secure your future is paramount. Choosing a fast cash sale with us is the CORRECT choice to reclaim control of your life.\n\nCash 4 Houses is your trusted local direct cash buyer. No chains, no banks, no hassle. We offer a guaranteed cash sale, often completing in as little as 7 days. Reclaim your peace of mind and embrace the rewarding life you deserve, here in Shoeburyness.\n\nHASHTAGS:\n#ShoeburynessProperty #EssexHomes #SellHouseFastEssex #SouthEastEssex #CashForHomes #NoChainNoStress #ShoeburyCommunity #PropertySolution"
+                                                     },
+                                         "town":  {
+                                                      "stringValue":  "Shoeburyness"
+                                                  },
+                                         "metaPublishedAt":  {
+                                                                 "timestampValue":  "2026-04-09T17:10:04.946Z"
+                                                             }
+                                     },
+                          "createTime":  "2026-04-09T17:06:13.956024Z",
+                          "updateTime":  "2026-04-09T17:10:04.971184Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/socialPosts/LremNcFWmMZZZtHn5wcH",
+                          "fields":  {
+                                         "town":  {
+                                                      "stringValue":  "Shoeburyness"
+                                                  },
+                                         "content":  {
+                                                         "stringValue":  "HEADLINE: Shoebury Home Stress? We\u0027re Your Blanket.\n\nCONTENT:\nAs the evening lights twinkle across Shoeburyness, are property worries keeping you from true peace of mind? In uncertain times, when UK housing sentiment can shift with global headlines, many local homeowners are wisely seeking a secure, certain exit. You\u0027re making a smart, valid choice to reclaim control.\n\nImagine enjoying those tranquil moments by Shoebury East Beach or spending quality time at Gunners Park, free from the weight of property anxieties.\n\nThat\u0027s where Cash 4 Houses steps in. We\u0027re your local \u0027warm blanket\u0027 solution right here in South East Essex. As a direct cash buyer, we cut out the lengthy chains, bank delays, and endless hassles. We can complete your sale in as little as 7 days, giving you immediate freedom and a fresh start. Don\u0027t wait for the market to decide your future; choose a guaranteed, discreet exit with us tonight.\n\nHASHTAGS:\n#Shoeburyness #EssexProperty #SellHouseFast #Cash4Houses #SouthendOnSea #ShoeburyLife #PropertyFreedom #LocalExpert"
+                                                     },
+                                         "imageUrl":  {
+                                                          "stringValue":  "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format\u0026fit=crop\u0026q=80\u0026w=1200"
+                                                      },
+                                         "metaStatus":  {
+                                                            "mapValue":  {
+                                                                             "fields":  {
+                                                                                            "facebook":  {
+                                                                                                             "stringValue":  "Error"
+                                                                                                         },
+                                                                                            "instagram":  {
+                                                                                                              "stringValue":  "No IG Account"
+                                                                                                          }
+                                                                                        }
+                                                                         }
+                                                        },
+                                         "fbPostId":  {
+                                                          "nullValue":  null
+                                                      },
+                                         "igPostId":  {
+                                                          "nullValue":  null
+                                                      },
+                                         "metaPublishedAt":  {
+                                                                 "timestampValue":  "2026-04-09T17:07:05.388Z"
+                                                             },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-09T17:00:24.782Z"
+                                                       },
+                                         "published":  {
+                                                           "booleanValue":  true
+                                                       },
+                                         "scheduledTime":  {
+                                                               "stringValue":  "Evening"
+                                                           }
+                                     },
+                          "createTime":  "2026-04-09T17:00:24.830770Z",
+                          "updateTime":  "2026-04-09T17:07:05.414473Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/socialPosts/Tze1iB6YXOxCmyqmICS9",
+                          "fields":  {
+                                         "scheduledTime":  {
+                                                               "stringValue":  "Morning"
+                                                           },
+                                         "published":  {
+                                                           "booleanValue":  true
+                                                       },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-09T08:00:22.752Z"
+                                                       },
+                                         "igPostId":  {
+                                                          "nullValue":  null
+                                                      },
+                                         "metaStatus":  {
+                                                            "mapValue":  {
+                                                                             "fields":  {
+                                                                                            "facebook":  {
+                                                                                                             "stringValue":  "Error"
+                                                                                                         },
+                                                                                            "instagram":  {
+                                                                                                              "stringValue":  "No IG Account"
+                                                                                                          }
+                                                                                        }
+                                                                         }
+                                                        },
+                                         "fbPostId":  {
+                                                          "nullValue":  null
+                                                      },
+                                         "content":  {
+                                                         "stringValue":  "Here are a few options for a high-quality social media post, choose the one that best fits your brand\u0027s specific tone!\n\n---\n\n**Option 1: Direct \u0026 Benefit-Oriented**\n\n☀️ Good morning, Southend-on-Sea! Is selling your home feeling like a mountain to climb? 🏡\n\nAt Cash 4 Houses, we offer a refreshingly simple and stress-free way to sell your property. Get a FAST, CERTAIN cash exit, no matter its condition!\n\n✅ We buy ANY house, ANY condition.\n💰 ALL legal fees covered by us.\n⏰ Guaranteed offer within 48 working hours (Mon-Fri, 9am-5pm).\n🚀 Completion in as little as 7 days!\n🚫 Absolutely NO pressure, NO obligation to proceed.\n\nReady for a hassle-free sale? Take the first step today!\n👉 Visit: https://cash4houses.co.uk\n\n#SouthendOnSea #CashForHouses #SellHouseFast #PropertySouthend #NoFees #QuickSale #EssexProperty #SellMyHome\n\n---\n\n**Option 2: Problem/Solution Focused**\n\nMorning, Southend! 🌅 Is an unwanted property weighing you down? Whether it\u0027s tired, neglected, or just time for a change, Cash 4 Houses is your local solution for a swift and easy sale.\n\nWe provide a guaranteed cash offer for ANY house in Southend-on-Sea, regardless of its condition. Say goodbye to agent fees and lengthy chains!\n\n✨ Here’s what makes us different:\n*   **Cash in Hand:** Fast, certain cash exit.\n*   **We Pay Legal Fees:** Keep more of your money.\n*   **Rapid Offer:** Guaranteed within 48 working hours (Mon-Fri).\n*   **Lightning-Fast Completion:** From offer to completion in as little as 7 days.\n*   **Zero Pressure:** No obligation to accept our offer.\n\nGet your free, no-obligation quote this morning!\n🌐 Learn more: https://cash4houses.co.uk\n\n#SouthendProperty #Cash4Houses #SellYourHouse #SouthendHomes #FastCashSale #PropertySolutions #EssexHomes #MorningMotivation #NoObligation\n\n---\n\n**Option 3: Engaging \u0026 Concise**\n\nHey Southend-on-Sea! 👋 Kickstart your morning with the thought of an easy property sale!\n\nGot a house you need to sell quickly, in *any* condition? Cash 4 Houses makes it simple:\n➡️ **Guaranteed Cash Offer** in 48 working hours (Mon-Fri)\n➡️ **ALL Legal Fees Paid**\n➡️ **Completion in 7 Days** (yes, really!)\n➡️ **Zero Pressure, Zero Obligation**\n\nExperience the stress-free way to sell. Get your fast, certain cash exit today!\nClick for your FREE quote: https://cash4houses.co.uk\n\n#Southend #CashBuyer #SellHouse #PropertyInvestment #QuickSale #CashForHomes #Essex #SouthendLife #HomeSale\n\n---\n\n**Key elements used in these posts:**\n\n*   **Catchy Opening:** \"Good morning, Southend-on-Sea!\" or \"Morning, Southend!\" to match the time and location.\n*   **Clear Value Proposition:** \"We buy any house in any condition for a fast, certain cash exit.\" is prominently featured.\n*   **Bullet Points/Eminent Features:** Makes the key benefits easy to digest.\n*   **Benefit-Oriented Language:** Focuses on what the customer *gains* (e.g., \"saving you thousands\" implied with legal fees paid).\n*   **Urgency/Speed:** Highlights \"fast,\" \"48 working hours,\" \"7 days.\"\n*   **Reassurance:** \"No pressure,\" \"no obligation.\"\n*   **Strong Call to Action (CTA):** \"Visit,\" \"Learn more,\" \"Click for your FREE quote.\"\n*   **Website Link:** Clearly displayed.\n*   **Relevant Emojis:** Add visual appeal and break up text.\n*   **Location-Specific Hashtags:** Increase local visibility.\n*   **General Hashtags:** Broaden reach."
+                                                     },
+                                         "town":  {
+                                                      "stringValue":  "Southend-on-Sea"
+                                                  },
+                                         "metaPublishedAt":  {
+                                                                 "timestampValue":  "2026-04-09T17:09:29.868Z"
+                                                             }
+                                     },
+                          "createTime":  "2026-04-09T08:00:22.818718Z",
+                          "updateTime":  "2026-04-09T17:09:29.892763Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/socialPosts/cCBzWtHeWLiF47H2aNb1",
+                          "fields":  {
+                                         "imageUrl":  {
+                                                          "stringValue":  "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format\u0026fit=crop\u0026q=80\u0026w=1200"
+                                                      },
+                                         "town":  {
+                                                      "stringValue":  "South East Essex"
+                                                  },
+                                         "content":  {
+                                                         "stringValue":  "DAILY NEWS UPDATE: Hello there, I\u0027m Andy. I understand that selling a property can be incredibly stressful, and when you\u0027re feeling under pressure, it\u0027s natural to look for clarity and the best path forward. Let\u0027s take ... Read more on our portal."
+                                                     },
+                                         "published":  {
+                                                           "booleanValue":  false
+                                                       },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-10T07:00:25.799Z"
+                                                       },
+                                         "scheduledTime":  {
+                                                               "stringValue":  "Daily News"
+                                                           }
+                                     },
+                          "createTime":  "2026-04-10T07:00:25.820904Z",
+                          "updateTime":  "2026-04-10T07:00:25.820904Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/socialPosts/l0RzpSSddh9UvD7G5Pej",
+                          "fields":  {
+                                         "scheduledTime":  {
+                                                               "stringValue":  "Morning"
+                                                           },
+                                         "published":  {
+                                                           "booleanValue":  false
+                                                       },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-10T08:00:20.245Z"
+                                                       },
+                                         "imageUrl":  {
+                                                          "stringValue":  "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format\u0026fit=crop\u0026q=80\u0026w=1200"
+                                                      },
+                                         "content":  {
+                                                         "stringValue":  "HEADLINE: Stanford-le-Hope: Freedom From Property Worries\n\nCONTENT: Good morning, Stanford-le-Hope! As the sun rises over our vibrant community, perhaps near King George\u0027s Field or Stanford-le-Hope railway station, are lingering property concerns weighing heavy on your mind? We understand. The news is full of market shifts – from major development deals shaping Essex to iconic estate agencies closing after 130 years, it’s clear the traditional path isn\u0027t always certain.\n\nIf you’re feeling the pressure of bills, economic uncertainty, or simply need a fresh start, imagine the relief of a \u0027warm blanket\u0027 on a cold morning. Cash 4 Houses offers just that: a discreet, supportive solution to shed your property burden. This isn\u0027t just a sale; it\u0027s regaining control, breathing easy, and stepping into the rewarding life you deserve, right here in Stanford-le-Hope.\n\nChoosing a direct cash sale is the *smartest* decision to reclaim your peace of mind. No chains, no banks, no endless viewings. Just a committed local buyer, ready to complete in as little as 7 days. Take control of your future, today.\n\nHASHTAGS: #StanfordLeHope #EssexProperty #Cash4Houses #SellMyHouseFast #ThurrockHomes #LocalBuyer #PropertySolutions #NoChainSale"
+                                                     },
+                                         "town":  {
+                                                      "stringValue":  "Stanford Le Hope"
+                                                  }
+                                     },
+                          "createTime":  "2026-04-10T08:00:20.275853Z",
+                          "updateTime":  "2026-04-10T08:00:20.275853Z"
+                      },
+                      {
+                          "name":  "projects/c4h-wesbite/databases/(default)/documents/socialPosts/zHwKTh0zWZ03q20OXg7o",
+                          "fields":  {
+                                         "content":  {
+                                                         "stringValue":  "Chain broken on your Rayleigh Weir flat or house sale? Feeling stuck?\n\n✅ Get a fast, fair cash offer.\n✅ No estate agent fees, no lengthy viewings.\n✅ We Buy As-Is: no repairs or cleaning needed.\n\nCash 4 Houses - Direct Cash Buyer. No chains, no fees, no hassle. Visit Https://cash4houses.co.uk for your lifeline.\n\n#RayleighWeir #CashBuyer #QuickHouseSale #EssexProperty #NoChain #SellYourHomeFast #WeBuyAsIs"
+                                                     },
+                                         "town":  {
+                                                      "stringValue":  "Rayleigh Weir"
+                                                  },
+                                         "imageUrl":  {
+                                                          "stringValue":  "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format\u0026fit=crop\u0026q=80\u0026w=1200"
+                                                      },
+                                         "timestamp":  {
+                                                           "timestampValue":  "2026-04-10T11:00:18.410Z"
+                                                       },
+                                         "published":  {
+                                                           "booleanValue":  false
+                                                       },
+                                         "scheduledTime":  {
+                                                               "stringValue":  "Lunch"
+                                                           }
+                                     },
+                          "createTime":  "2026-04-10T11:00:18.441417Z",
+                          "updateTime":  "2026-04-10T11:00:18.441417Z"
+                      }
+                  ]
+}

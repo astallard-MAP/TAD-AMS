@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --sidebar-width: 280px;
     --sidebar-bg: #1a1a1b;
     --sidebar-accent: #2c2c2e;
@@ -53,7 +53,7 @@
     height: 110px;
     margin: 0 auto 1.5rem;
     position: relative;
-    border: 3px solid #10b981;
+    border: 3px solid #EB287A;
     border-radius: 50%;
     padding: 4px;
     background: #2c2c2e;
@@ -70,7 +70,7 @@
     position: absolute;
     bottom: 5px;
     right: 5px;
-    background: #10b981;
+    background: #EB287A;
     color: white;
     width: 32px;
     height: 32px;
@@ -104,7 +104,7 @@
     flex-direction: column;
     align-items: stretch;
     scrollbar-width: thin;
-    scrollbar-color: #10b981 transparent;
+    scrollbar-color: #EB287A transparent;
 }
 
 .sidebar-nav::-webkit-scrollbar {
@@ -112,7 +112,7 @@
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb {
-    background-color: #10b981;
+    background-color: #EB287A;
     border-radius: 10px;
 }
 
@@ -137,7 +137,7 @@
 .sidebar-nav a:hover, .sidebar-nav a.active {
     background-color: rgba(255,255,255,0.05);
     color: #f8fafc;
-    border-left-color: #10b981;
+    border-left-color: #EB287A;
 }
 
 .sidebar-footer {
@@ -200,7 +200,7 @@
     content: '\f133';
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
-    color: #10b981;
+    color: #EB287A;
 }
 
 .dashboard-header {
@@ -246,7 +246,7 @@
 
 .kpi-card i {
     font-size: 2rem;
-    color: #10b981;
+    color: #EB287A;
     background: #f0fdf4;
     padding: 1rem;
     border-radius: 12px;
@@ -291,13 +291,13 @@
 
 .action-card:hover {
     background: #0f172a;
-    border-color: #10b981;
+    border-color: #EB287A;
     transform: scale(1.02);
 }
 
 .action-card i {
     font-size: 1.75rem;
-    color: #10b981;
+    color: #EB287A;
 }
 
 .action-info h3 {
@@ -553,7 +553,7 @@
         z-index: 1500;
         margin-bottom: 1rem;
         font-weight: bold;
-        color: #10b981;
+        color: #EB287A;
     }
 }
 

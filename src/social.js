@@ -54,11 +54,21 @@ async function loadSocialPosts() {
         snap.forEach(d => {
             const post = d.data();
             const date = post.timestamp?.toDate().toLocaleString('en-GB') || 'Just now';
+            const fbId = post.fbPostId || (post.metaResult && post.metaResult.fb && post.metaResult.fb.id);
+            const igId = post.igPostId || (post.metaResult && post.metaResult.ig && post.metaResult.ig.id);
+            const metaStr = [
+                fbId ? `FB: ${fbId}` : null,
+                igId ? `IG: ${igId}` : null
+            ].filter(Boolean).join(' | ');
+
             const card = document.createElement('div');
             card.className = 'post-card';
             card.innerHTML = `
                 <div class="post-meta">
-                    <span><i class="fas fa-calendar-alt"></i> ${date} - <strong>${post.town}</strong></span>
+                    <span>
+                        <i class="fas fa-calendar-alt"></i> ${date} - <strong>${post.town}</strong>
+                        ${metaStr ? ` <span style="font-family: monospace; opacity: 0.6; font-size: 0.75rem; margin-left: 10px; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">[${metaStr}]</span>` : ''}
+                    </span>
                     <span class="${post.published ? 'badge-published' : 'badge-pending'}">${post.published ? 'PUBLISHED' : 'PENDING'}</span>
                 </div>
                 ${post.imageUrl ? `<div class="post-preview-img"><img src="${post.imageUrl}" alt="AI generated" style="width: 100%; border-radius: 8px; margin-bottom: 1rem; max-height: 200px; object-fit: cover;"></div>` : ''}

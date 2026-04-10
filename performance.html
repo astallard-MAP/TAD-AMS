@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -47,7 +47,7 @@
         }
         .keyword-table { width: 100%; border-collapse: collapse; }
         .keyword-table td { padding: 0.5rem 0; font-size: 0.85rem; }
-        .keyword-count { text-align: right; font-weight: bold; color: #10b981; }
+        .keyword-count { text-align: right; font-weight: bold; color: #EB287A; }
         .performance-header { margin-bottom: 2rem; }
         .performance-header h2 { font-size: 1.4rem; color: #1e293b; margin-bottom: 5px; }
         .performance-header p { font-size: 0.9rem; color: #64748b; }
@@ -58,7 +58,7 @@
         <aside class="dashboard-sidebar">
             <div class="profile-section">
                 <div class="profile-pic-container">
-                    <i class="fas fa-user-circle" style="font-size: 80px; color: #10b981; margin-top: 10px; display: block;"></i>
+                    <i class="fas fa-user-circle" style="font-size: 80px; color: #EB287A; margin-top: 10px; display: block;"></i>
                 </div>
                 <h3>Andrew Stallard</h3>
                 <p>Global Administrator</p>
@@ -69,13 +69,14 @@
                 <a href="/admin.html"><i class="fas fa-chart-line"></i> Command Centre</a>
                 <a href="/profile.html"><i class="fas fa-user-edit"></i> My Profile</a>
                 <a href="/performance.html" class="active"><i class="fas fa-microchip"></i> Performance Hub</a>
-                <a href="/library.html"><i class="fas fa-folder-open"></i> Document Library</a>
+                <a href="/documents.html"><i class="fas fa-folder-tree"></i> Documents Hub</a>
+                <a href="/picture-library.html"><i class="fas fa-images"></i> Picture Library</a>
                 <a href="/social.html"><i class="fas fa-hashtag"></i> Social Agent</a>
+                <a href="/audit-log.html"><i class="fas fa-shield-halved"></i> Security & Audit</a>
                 <a href="/admin.html#leads-section"><i class="fas fa-list-ul"></i> Enquiries</a>
                 <a href="/admin.html#news-section"><i class="fas fa-robot"></i> AI News Suite</a>
-                <a href="#"><i class="fas fa-store"></i> GBP Control</a>
-                <a href="#"><i class="fas fa-users-gear"></i> User Manager</a>
-                <a href="#"><i class="fas fa-shield-halved"></i> Security</a>
+                <a href="/performance.html#gbp-section"><i class="fas fa-store"></i> GBP Control</a>
+                <a href="/performance.html#users-section"><i class="fas fa-users-gear"></i> User Manager</a>
             </nav>
 
             <div class="sidebar-footer">
@@ -105,7 +106,7 @@
 
             <!-- Row 1: Users, Geography, Engagement Time -->
             <div class="performance-grid">
-                <div class="metric-card">
+                <div class="metric-card" id="users-section">
                     <div class="performance-header">
                         <h2>Registered Users</h2>
                         <p>Total verified portal profiles.</p>
@@ -115,10 +116,10 @@
                     </div>
                     <div id="user-growth-chart"></div>
                 </div>
-                <div class="metric-card">
+                <div class="metric-card" id="gbp-section">
                     <div class="performance-header">
                         <h2>Geographical Reach</h2>
-                        <p>User origins by IP analysis.</p>
+                        <p>User origins by IP analysis (GBP Insights).</p>
                     </div>
                     <div class="location-list">
                         <li class="location-item"><span>Southend, Essex</span> <span>35%</span></li>
@@ -164,7 +165,7 @@
                         <h2>Valuation Volume</h2>
                         <p>Requested property assessments.</p>
                     </div>
-                    <div style="font-size: 2.5rem; font-weight: 800; color: #10b981; text-align: center; margin: 2rem 0;">
+                    <div style="font-size: 2.5rem; font-weight: 800; color: #EB287A; text-align: center; margin: 2rem 0;">
                         89
                     </div>
                     <div id="valuation-volume-chart"></div>
@@ -223,11 +224,11 @@
                 </div>
                 <div class="metric-card" style="background: #0f172a; color: white;">
                     <div class="performance-header">
-                        <h2 style="color: #10b981;">SEO Daily Pulse</h2>
+                        <h2 style="color: #EB287A;">SEO Daily Pulse</h2>
                         <p style="color: #94a3b8;">Agentic Content Health.</p>
                     </div>
                     <div style="text-align: center; padding: 1rem;">
-                        <i class="fas fa-satellite-dish" style="font-size: 3rem; color: #10b981;"></i>
+                        <i class="fas fa-satellite-dish" style="font-size: 3rem; color: #EB287A;"></i>
                         <h3 style="margin-top: 1rem; color: white;">Next Page Build</h3>
                         <p style="font-size: 0.8rem; color: #94a3b8;">Tomorrow @ 06:00 AM</p>
                     </div>
