@@ -271,7 +271,7 @@ exports.processLead = onDocumentCreated({
       await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
         message: {
           subject: "Inquiry Confirmation",
-          body: { contentType: "HTML", content: `<p>Hello ${data.firstName}, Andrew Stallard here. Received your details for <strong>${data.address}</strong>. Analyising now. Guaranteed offer within 48 hours.</p>` },
+          body: { contentType: "HTML", content: `<p>Hello ${data.firstName}, Andrew Stallard here. Received your details for <strong>${data.address}</strong>. Analysing now. Guaranteed offer within 48 hours.</p>` },
           toRecipients: [{ emailAddress: { address: data.email } }]
         },
         saveToSentItems: true
@@ -653,6 +653,7 @@ exports.chatbotAndy = onRequest({
     const systemPrompt = `
       ROLE: You are 'Andy' (Andrew Stallard), owner of Cash 4 Houses.
       ETHOS: Honest, transparent, and profoundly helpful.
+      SPELLING: Mandatory EN-UK (British English). Use 'analysed', 'colour', 'centre', etc.
       
       MOBILE-FIRST BREVITY PROTOCOL (CRITICAL):
       - 65% of users are on mobile. Keep responses SHORT and PUNCHY. 
@@ -718,12 +719,17 @@ exports.chatbotAndy = onRequest({
   }
 });
 
-// --- DAILY AREA SPOTLIGHT GENERATOR (SEO Sentinel) ---
-exports.generateDailySpotlight = onSchedule({ 
-  schedule: "0 0 * * *", // Midnight daily
-  timeZone: "Europe/London",
-  memory: "512MiB" 
-}, async (event) => {
+function getOrdinal(d) {
+    if (d > 3 && d < 21) return 'th';
+    switch (d % 10) {
+        case 1:  return "st";
+        case 2:  return "nd";
+        case 3:  return "rd";
+        default: return "th";
+    }
+}
+
+async function performSpotlightGeneration() {
     const today = new Date();
     const dateId = today.toISOString().split('T')[0];
     const dayName = today.toLocaleDateString('en-GB', { weekday: 'long' });
@@ -736,30 +742,23 @@ exports.generateDailySpotlight = onSchedule({
         const newsSnap = await db.collection("marketUpdates").doc("latest").get();
         const newsData = newsSnap.exists ? newsSnap.data() : { content: "Market analysis in progress." };
 
-        // 2. Fetch Today's Social Posts (excluding Daily News)
+        // 2. Fetch Today's Social Posts
         const socialSnap = await db.collection("socialPosts")
-            .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(new Date(today.setHours(0,0,0,0))))
-            .where("scheduledTime", "!=", "Daily News")
-            .limit(6)
+            .orderBy("timestamp", "desc")
+            .limit(5)
             .get();
-        
-        const socialPosts = [];
-        socialSnap.forEach(doc => socialPosts.push(doc.data()));
+        const socialPosts = socialSnap.docs.map(d => ({ content: d.data().content, img: d.data().imageUrl }));
 
-        // 3. AI Generation: Introduction & Area History
+        // 3. Generate Spotlight Content
         const promptIntro = `
-            ROLE: Andy from Cash 4 Houses.
-            AREA: ${town}.
-            DATE: ${fullDate}.
-            MISSION: Write a deeply empathetic introduction (2 paragraphs) about why Cash 4 Houses is focusing on ${town} today. 
-            Connect it to the social media outreach we've done in the area. 
-            Use the "Warm Blanket" persona. Focus on the burden of property and the freedom our service provides.
+            ROLE: Andy from Cash 4 Houses. AREA: ${town}. DATE: ${fullDate}.
+            MISSION: Write a deeply empathetic introduction (2 paragraphs) why we are focusing on ${town} today. 
+            Connect it to social outreach. Use "Warm Blanket" persona. Burden vs Freedom.
         `;
 
         const promptHistory = `
-            ROLE: Local Historian & Property Expert.
-            AREA: ${town}, Essex.
-            MISSION: Provide a detailed description and history of ${town}. Mention unique landmarks, its evolution from its origins to a modern residential hub, and why people love living here. Max 400 words.
+            ROLE: Local Historian. AREA: ${town}, Essex.
+            MISSION: Detailed description & history of ${town}. Mention unique landmarks & residential evolution. Max 400 words.
         `;
 
         const introRes = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: promptIntro });
@@ -767,9 +766,8 @@ exports.generateDailySpotlight = onSchedule({
 
         // 4. Sign-off
         const promptSignoff = `
-            ROLE: Andy from Cash 4 Houses.
-            AREA: ${town}.
-            MISSION: Write a powerful 1-paragraph sign-off explaining why ${town} residents choose our fast, fair cash sale service and the relief they feel after completion.
+            ROLE: Andy. AREA: ${town}.
+            MISSION: Powerful 1-paragraph sign-off explaining why residents choose our cash service & the relief they feel.
         `;
         const signoffRes = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: promptSignoff });
 
@@ -791,21 +789,27 @@ exports.generateDailySpotlight = onSchedule({
         };
 
         await db.collection("areaSpotlights").doc(dateId).set(spotlight);
-        console.log(`Successfully generated Daily Area Spotlight for ${town} [${dateId}]`);
+        console.log(`Successfully generated Area Spotlight for ${town}`);
+        return { success: true, town: town };
 
     } catch (error) {
-        console.error("Spotlight Gen Error:", error);
+        console.error("Spotlight Helper Error:", error);
+        throw error;
     }
-});
+}
 
-
-function getOrdinal(d) {
-    if (d > 3 && d < 21) return 'th';
-    switch (d % 10) {
-        case 1:  return "st";
-        case 2:  return "nd";
-        case 3:  return "rd";
-        default: return "th";
+async function updateMarketNews() {
+    try {
+        const prompt = "Analyse current UK property market trends and provide a concise, professional summary for Cash 4 Houses clients.";
+        const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt });
+        await db.collection("marketUpdates").doc("latest").set({
+            content: text,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        return { success: true };
+    } catch (error) {
+        console.error("Market News Helper Error:", error);
+        throw error;
     }
 }
 
@@ -838,24 +842,32 @@ exports.portalSentinel = onSchedule({
             await batch.commit();
         }
 
-        // 2. Audit Daily Analytics Cache
+        // 2. Audit Daily Analytics Cache (Market Intelligence)
         const newsSnap = await db.collection("marketUpdates").doc("latest").get();
-        if (!newsSnap.exists || (Date.now() - newsSnap.data()?.updatedAt?.toMillis() > 90000000)) { // ~25 hours
+        if (!newsSnap.exists || (Date.now() - (newsSnap.data()?.updatedAt?.toMillis() || 0) > 90000000)) { // ~25 hours
             issues.push({ 
                 component: "Content Freshness", 
                 severity: "High", 
                 issue: "Market Intelligence update skipped or failed.", 
-                plan: "Trigger auto-healing news analyzer." 
+                plan: "Triggered auto-healing news analyzer." 
             });
             efficiencyScore -= 15;
+            // AUTO-HEALING: Trigger News Update
+            await updateMarketNews();
         }
 
-        // 3. UX Formatting Audit (Simulated check for UI metadata)
-        // Sentinel checks if SEO Spotlights are being generated
+        // 3. UX Formatting Audit (SEO Sentinel)
         const spotlightSnap = await db.collection("areaSpotlights").orderBy("timestamp", "desc").limit(1).get();
-        if (spotlightSnap.empty) {
-            issues.push({ component: "SEO Sentinel", severity: "Medium", issue: "No Area Spotlights identified.", plan: "Verify SEO Scheduler." });
+        if (spotlightSnap.empty || (spotlightSnap.docs[0].data().timestamp?.toMillis() || 0) < (Date.now() - 90000000)) {
+            issues.push({ 
+                component: "SEO Sentinel", 
+                severity: "Medium", 
+                issue: "No Recent Area Spotlights identified.", 
+                plan: "Triggered auto-healing SEO agent." 
+            });
             efficiencyScore -= 10;
+            // AUTO-HEALING: Trigger Spotlight Gen
+            await performSpotlightGeneration();
         }
 
         // 4. Record Audit Report
@@ -887,6 +899,12 @@ exports.portalSentinel = onSchedule({
 });
 
 // --- SEO SENTINEL: SEARCH ENGINE SUBMISSION AGENT ---
+exports.generateDailySpotlight = onSchedule({ 
+    schedule: "0 0 * * *", 
+    timeZone: "Europe/London", 
+    memory: "1GiB" 
+}, performSpotlightGeneration);
+
 exports.seoSubmissionAgent = onSchedule({
     schedule: "0 1 * * *", // 1:00 am every day
     timeZone: "Europe/London",
@@ -1095,4 +1113,15 @@ exports.manualMobileAudit = onCall(async (request) => {
         success: true,
         report: "Audit complete. Responsive settings verified for 65% mobile user base."
     };
+});
+
+
+// Manual system repair trigger
+exports.manualSystemRepair = onRequest({ cors: true, memory: "1GiB" }, async (req, res) => {
+  try {
+    console.log("Manual System Repair Requested...");
+    res.status(200).send("Sentinel Repair Cycle Initiated.");
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });

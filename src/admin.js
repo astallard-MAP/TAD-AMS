@@ -332,7 +332,31 @@ function renderAuditContent(container, audit, title) {
         <div class="issues-list" style="max-height:400px; overflow-y:auto;">
             ${issuesHtml}
         </div>
+        <div style="margin-top:1.5rem; display:flex; gap:10px;">
+            <button id="btn-trigger-repair" class="btn btn-primary" style="flex:1; background:#ef4444;">Perform Full System Repair</button>
+        </div>
+        <div style="margin-top:1rem; padding:1rem; background:#eff6ff; border-radius:8px; border:1px solid #bfdbfe;">
+            <p style="margin:0; font-size:0.85rem; color:#1e40af;"><i class="fas fa-info-circle"></i> <strong>Sentinel Note:</strong> The system autonomously implements major repairs every 2 hours. High severity issues may require manual infrastructure inspection.</p>
+        </div>
     `;
+
+    const repairBtn = document.getElementById('btn-trigger-repair');
+    if (repairBtn) {
+        repairBtn.onclick = async () => {
+            repairBtn.disabled = true;
+            repairBtn.innerText = "Heal Initiated...";
+            try {
+                await fetch('https://manualmarketupdate-vjikc6hdhq-uc.a.run.app'); // One heal
+                await fetch('https://manualsocialaudit-vjikc6hdhq-uc.a.run.app'); // Another heal
+                alert("Self-Repair Sequence Complete. Reloading stats...");
+                location.reload();
+            } catch (e) {
+                alert("Repair failed. Infrastructure isolate detected.");
+                repairBtn.disabled = false;
+                repairBtn.innerText = "Retry Repair";
+            }
+        };
+    }
 }
 
 document.getElementById('refresh-leads').onclick = loadLeads;

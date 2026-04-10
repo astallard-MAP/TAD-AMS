@@ -132,7 +132,7 @@ async function loadUserProperties(email) {
                             </div>
                         </div>` : 
                         `<div>
-                            <p class="waiting-msg"><i class="fas fa-cog fa-spin"></i> Andy is analyzing local data for this property. Your offer is being calculated.</p>
+                            <p class="waiting-msg"><i class="fas fa-cog fa-spin"></i> Andy is analysing local data for this property. Your offer is being calculated.</p>
                             <button class="btn btn-secondary btn-sm toggle-dossier" data-id="${doc.id}" style="width: 100%; margin-top: 10px; border: 1px solid #3b82f6; color: #3b82f6; background: white;">View Property Dossier</button>
                         </div>`
                     }
