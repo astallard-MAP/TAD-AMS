@@ -25,6 +25,9 @@ const AZURE_TENANT_ID = defineSecret("AZURE_TENANT_ID");
 const AZURE_CLIENT_ID = defineSecret("AZURE_CLIENT_ID");
 const AZURE_CLIENT_SECRET = defineSecret("AZURE_CLIENT_SECRET");
 const GBP_LOCATION_ID = defineSecret("GBP_LOCATION_ID");
+const GBP_CLIENT_ID = defineSecret("GBP_CLIENT_ID");
+const GBP_CLIENT_SECRET = defineSecret("GBP_CLIENT_SECRET");
+const GBP_REFRESH_TOKEN = defineSecret("GBP_REFRESH_TOKEN");
 const META_PAGE_ID = defineSecret("META_PAGE_ID");
 const META_PERMANENT_PAGE_TOKEN = defineSecret("META_PERMANENT_PAGE_TOKEN");
 const META_APP_ID = defineSecret("META_APP_ID");
@@ -433,20 +436,24 @@ exports.verifyMetaConnection = onRequest({
 async function publishToGBP(content, imageUrl) {
   try {
     const locationId = GBP_LOCATION_ID.value();
-    const auth = new google.auth.GoogleAuth({
-      scopes: ['https://www.googleapis.com/auth/business.manage']
-    });
-    const authClient = await auth.getClient();
+    const clientId = GBP_CLIENT_ID.value();
+    const clientSecret = GBP_CLIENT_SECRET.value();
+    const refreshToken = GBP_REFRESH_TOKEN.value();
+
+    const auth = new google.auth.OAuth2(clientId, clientSecret);
+    auth.setCredentials({ refresh_token: refreshToken });
     
-    // Using the modern Business Profile API (mybusinessplaces v1)
-    const mybusiness = google.mybusinessplaces({ version: 'v1', auth: authClient });
+    const { token: accessToken } = await auth.getAccessToken();
+    
+    // Manual fetch to the v4 Local Post API (since v1 is split and legacy v4 helper is removed in recent library versions)
+    const url = `https://mybusiness.googleapis.com/v4/locations/${locationId}/localPosts`;
     
     const postBody = {
       languageCode: "en-GB",
       summary: content,
       callToAction: {
         actionType: "LEARN_MORE",
-        url: "https://c4h-wesbite.web.app"
+        url: "https://c4h-website.web.app"
       }
     };
 
@@ -457,12 +464,22 @@ async function publishToGBP(content, imageUrl) {
       }];
     }
 
-    const res = await mybusiness.locations.localPosts.create({
-      parent: `locations/${locationId}`,
-      requestBody: postBody
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json' 
+      },
+      body: JSON.stringify(postBody)
     });
 
-    return res.data;
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Google API Error: ${JSON.stringify(errorData)}`);
+    }
+
+    const resData = await response.json();
+    return resData;
   } catch (error) {
     console.error("GBP Publish Error:", error);
     await db.collection("systemAlerts").add({
@@ -480,7 +497,7 @@ async function publishToGBP(content, imageUrl) {
 exports.gbpMorningPost = onSchedule({ 
   schedule: "0 9 * * *", 
   timeZone: "Europe/London", 
-  secrets: ["GBP_LOCATION_ID"] 
+  secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
 }, async (event) => {
   const newsDoc = await db.collection("marketUpdates").doc("latest").get();
   if (newsDoc.exists) {
@@ -492,7 +509,7 @@ exports.gbpMorningPost = onSchedule({
 exports.gbpLunchPost = onSchedule({ 
   schedule: "0 12 * * *", 
   timeZone: "Europe/London", 
-  secrets: ["GBP_LOCATION_ID"] 
+  secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
 }, async (event) => {
   const postsSnap = await db.collection("socialPosts")
     .where("scheduledTime", "==", "Morning")
@@ -509,7 +526,7 @@ exports.gbpLunchPost = onSchedule({
 exports.gbpEveningPost = onSchedule({ 
   schedule: "0 18 * * *", 
   timeZone: "Europe/London", 
-  secrets: ["GBP_LOCATION_ID"] 
+  secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
 }, async (event) => {
   const postsSnap = await db.collection("socialPosts")
     .where("scheduledTime", "==", "Lunch")
@@ -525,7 +542,7 @@ exports.gbpEveningPost = onSchedule({
 
 exports.testGBPPost = onRequest({ 
   cors: true, 
-  secrets: ["GBP_LOCATION_ID"] 
+  secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
 }, async (req, res) => {
   try {
     const newsDoc = await db.collection("marketUpdates").doc("latest").get();
