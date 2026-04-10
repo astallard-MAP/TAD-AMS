@@ -9,13 +9,28 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
+const ADMIN_NAV = `
+    <a href="/admin.html"><i class="fas fa-chart-line"></i> Command Centre</a>
+    <a href="/profile.html" class="active"><i class="fas fa-user-edit"></i> My Profile</a>
+    <a href="/performance.html"><i class="fas fa-microchip"></i> Performance Hub</a>
+    <a href="/documents.html"><i class="fas fa-folder-tree"></i> Documents Hub</a>
+    <a href="/picture-library.html"><i class="fas fa-images"></i> Picture Library</a>
+    <a href="/social.html"><i class="fas fa-hashtag"></i> Social Agent</a>
+    <a href="/admin.html#messages-section"><i class="fas fa-comment-dots"></i> Messages Hub</a>
+    <a href="/admin.html#leads-section"><i class="fas fa-list-ul"></i> Enquiries</a>
+    <a href="/admin.html#news-section"><i class="fas fa-robot"></i> AI News Suite</a>
+    <a href="/performance.html#gbp-section"><i class="fas fa-store"></i> GBP Control</a>
+    <a href="/performance.html#users-section"><i class="fas fa-users-gear"></i> User Manager</a>
+    <a href="/audit-log.html"><i class="fas fa-shield-halved"></i> Security & Audit</a>
+`;
 
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = "/";
     } else {
         if (user.uid === ADMIN_UID) {
-            document.getElementById('admin-nav-link').style.display = 'block';
+            const sideNav = document.querySelector('.sidebar-nav');
+            if (sideNav) sideNav.innerHTML = ADMIN_NAV;
             document.getElementById('sidebar-user-role').textContent = "Global Admin";
         }
         loadProfile(user.uid);

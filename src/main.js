@@ -219,6 +219,7 @@ document.addEventListener('click', async (e) => {
         console.log("Global Sign Out Sequence Initiated...");
         try {
             await signOut(auth);
+            localStorage.removeItem('impersonate_seller');
             window.location.replace("/");
         } catch (err) {
             console.error("Logout error", err);

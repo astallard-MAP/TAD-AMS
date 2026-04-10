@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -173,11 +173,14 @@
         <aside class="dashboard-sidebar">
             <div class="profile-section">
                 <div class="profile-pic-container">
-                    <i class="fas fa-user-circle" style="font-size: 80px; color: #EB287A; margin-top: 10px; display: block;"></i>
+                    <img id="profile-img" src="/andy-avatar.jpg" alt="Profile" class="profile-img" style="display: none;">
+                    <i id="profile-placeholder" class="fas fa-user-circle" style="font-size: 80px; color: #EB287A; margin-top: 10px; display: block;"></i>
                 </div>
                 <h3>Andrew Stallard</h3>
                 <p>Global Administrator</p>
+                <p style="font-size: 0.75rem; opacity: 0.7;">andy@cash4houses.co.uk</p>
             </div>
+            
             <nav class="sidebar-nav">
                 <a href="/admin.html"><i class="fas fa-chart-line"></i> Command Centre</a>
                 <a href="/profile.html"><i class="fas fa-user-edit"></i> My Profile</a>
@@ -185,12 +188,17 @@
                 <a href="/documents.html"><i class="fas fa-folder-tree"></i> Documents Hub</a>
                 <a href="/picture-library.html" class="active"><i class="fas fa-images"></i> Picture Library</a>
                 <a href="/social.html"><i class="fas fa-hashtag"></i> Social Agent</a>
-                <a href="/audit-log.html"><i class="fas fa-shield-halved"></i> Security & Audit</a>
-                <a href="/admin.html#leads-section"><i class="fas fa-list-ul"></i> Enquiries</a>
-                <a href="/admin.html#news-section"><i class="fas fa-robot"></i> AI News Suite</a>
+                <a href="/admin.html#messages-section" id="nav-admin-messages"><i class="fas fa-comment-dots"></i> Messages Hub</a>
+                <a href="/admin.html#leads-section" id="nav-leads"><i class="fas fa-list-ul"></i> Enquiries</a>
+                <a href="/admin.html#news-section" id="nav-news"><i class="fas fa-robot"></i> AI News Suite</a>
                 <a href="/performance.html#gbp-section"><i class="fas fa-store"></i> GBP Control</a>
                 <a href="/performance.html#users-section"><i class="fas fa-users-gear"></i> User Manager</a>
+                <a href="/audit-log.html"><i class="fas fa-shield-halved"></i> Security & Audit</a>
             </nav>
+
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-secondary btn-full"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+            </div>
         </aside>
 
         <main class="dashboard-main">

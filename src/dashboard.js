@@ -22,7 +22,26 @@ const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = "/";
-    } else if (user.uid === ADMIN_UID && localStorage.getItem('impersonate_seller') !== 'true') {
+        return;
+    }
+
+    // Handle Admin Impersonation Banner
+    const isImpersonating = localStorage.getItem('impersonate_seller') === 'true';
+    if (user.uid === ADMIN_UID && isImpersonating) {
+        const banner = document.getElementById('admin-return-banner');
+        if (banner) banner.style.display = 'block';
+        
+        const stopBtn = document.getElementById('stop-impersonation');
+        if (stopBtn) {
+            stopBtn.onclick = (e) => {
+                e.preventDefault();
+                localStorage.removeItem('impersonate_seller');
+                window.location.href = "/admin.html";
+            };
+        }
+    }
+
+    if (user.uid === ADMIN_UID && localStorage.getItem('impersonate_seller') !== 'true') {
         window.location.href = "/admin.html";
     } else {
         const impersonateEmail = localStorage.getItem('impersonate_email');
