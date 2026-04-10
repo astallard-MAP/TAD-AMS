@@ -433,17 +433,71 @@ exports.verifyMetaConnection = onRequest({
   }
 });
 
+async function getGBPAuth() {
+  const clientId = GBP_CLIENT_ID.value();
+  const clientSecret = GBP_CLIENT_SECRET.value();
+  const refreshToken = GBP_REFRESH_TOKEN.value();
+
+  const auth = new google.auth.OAuth2(clientId, clientSecret);
+  auth.setCredentials({ refresh_token: refreshToken });
+  
+  const { token: accessToken } = await auth.getAccessToken();
+  return accessToken;
+}
+
+async function fetchGoogleReviews() {
+  try {
+    const accessToken = await getGBPAuth();
+    const locations = [GBP_LOCATION_ID.value(), "11040427386174604764"];
+    
+    // 1. Get Account ID
+    const accountsResp = await fetch("https://mybusiness.googleapis.com/v4/accounts", {
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+    const { accounts } = await accountsResp.json();
+    if (!accounts || accounts.length === 0) throw new Error("No GBP accounts found.");
+    const accountId = accounts[0].name.split("/")[1];
+
+    let allReviews = [];
+
+    for (const locationId of locations) {
+      console.log(`Fetching reviews for location: ${locationId}`);
+      try {
+        const url = `https://mybusiness.googleapis.com/v4/accounts/${accountId}/locations/${locationId}/reviews`;
+        const resp = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+        
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.reviews) {
+            const formatted = data.reviews.map(r => ({
+              ...r,
+              locationId: locationId,
+              source: locationId === "11040427386174604764" ? "London Rd" : "Southchurch Rd"
+            }));
+            allReviews.push(...formatted);
+          }
+        }
+      } catch (e) {
+        console.warn(`Could not fetch reviews for ${locationId}:`, e.message);
+      }
+    }
+
+    // Sort by Date (newest first)
+    allReviews.sort((a, b) => new Date(b.createTime) - new Date(a.createTime));
+    
+    return allReviews;
+  } catch (error) {
+    console.error("Review Fetch Error:", error);
+    return [];
+  }
+}
+
 async function publishToGBP(content, imageUrl) {
   try {
     const locations = [GBP_LOCATION_ID.value(), "11040427386174604764"];
-    const clientId = GBP_CLIENT_ID.value();
-    const clientSecret = GBP_CLIENT_SECRET.value();
-    const refreshToken = GBP_REFRESH_TOKEN.value();
-
-    const auth = new google.auth.OAuth2(clientId, clientSecret);
-    auth.setCredentials({ refresh_token: refreshToken });
-    
-    const { token: accessToken } = await auth.getAccessToken();
+    const accessToken = await getGBPAuth();
     
     const results = [];
     
@@ -568,6 +622,14 @@ exports.testGBPPost = onRequest({
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
+});
+
+exports.getGoogleReviews = onRequest({
+  cors: true,
+  secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"]
+}, async (req, res) => {
+  const reviews = await fetchGoogleReviews();
+  res.status(200).json(reviews);
 });
 
 // --- AGENTIC CHATBOT (ANDY) ---
@@ -711,7 +773,10 @@ exports.generateDailySpotlight = onSchedule({
         `;
         const signoffRes = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: promptSignoff });
 
-        // 5. Store Spotlight
+        // 5. Fetch Reviews
+        const reviews = await fetchGoogleReviews();
+
+        // 6. Store Spotlight
         const spotlight = {
             town: town,
             dateId: dateId,
@@ -721,7 +786,7 @@ exports.generateDailySpotlight = onSchedule({
             news: newsData.content,
             socialMedia: socialPosts,
             signoff: signoffRes.text,
-            reviews: [], // Would fetch from GMB in production
+            reviews: reviews, 
             timestamp: admin.firestore.FieldValue.serverTimestamp()
         };
 
@@ -828,7 +893,7 @@ exports.seoSubmissionAgent = onSchedule({
     memory: "512MiB"
 }, async (event) => {
     console.log("SEO Submission Agent Active...");
-    const siteUrl = "https://c4h-wesbite.web.app";
+    const siteUrl = "https://c4h-website.web.app";
     const sitemapUrl = `${siteUrl}/sitemap.xml`;
     try {
         // Bing (IndexNow Protocol)
