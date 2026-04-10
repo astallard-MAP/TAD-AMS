@@ -569,16 +569,69 @@ footer {
   color: var(--secondary);
 }
 
-@media (max-width: 968px) {
-  .hero-content {
-    grid-template-columns: 1fr;
-  }
-  .feature-grid {
-    grid-template-columns: 1fr;
-  }
-  .footer-content {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    header {
+        padding: 1rem 0;
+    }
+
+    nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .nav-links {
+        display: none; /* We'll use a hamburger menu */
+        width: 100%;
+        flex-direction: column;
+        padding: 1rem 0;
+        gap: 1rem;
+    }
+
+    .nav-links.mobile-active {
+        display: flex;
+    }
+
+    .hero-content {
+        padding: 2rem 0;
+    }
+
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .trust-badges {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .form-card {
+        padding: 1.5rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-grid {
+        gap: 1.5rem;
+    }
+
+    /* Hamburger Menu Toggle */
+    .menu-toggle {
+        display: block;
+        font-size: 1.5rem;
+        color: var(--primary);
+        cursor: pointer;
+    }
 }
 
 /* Dashboard & Property Cards */

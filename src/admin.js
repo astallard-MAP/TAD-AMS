@@ -1,4 +1,4 @@
-import { authReady, db, auth, storage } from './firebase-config.js';
+import { authReady, db, auth, storage, functions } from './firebase-config.js';
 import { 
     collection, 
     getDocs, 
@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { ref, getDownloadURL } from "firebase/storage";
+import { httpsCallable } from "firebase/functions";
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
@@ -27,6 +28,13 @@ authReady.then(async (user) => {
         pollSecurityAlerts();
     }
 });
+
+// Mobile Sidebar Toggle
+const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+const sidebar = document.querySelector('.dashboard-sidebar');
+if (mobileSidebarToggle && sidebar) {
+    mobileSidebarToggle.onclick = () => sidebar.classList.toggle('active');
+}
 
 async function pollSecurityAlerts() {
     const alertsQuery = query(
@@ -375,5 +383,31 @@ if (chatForm && chatInput && chatMessages) {
         const typing = document.getElementById(typingId);
         if (typing) typing.remove();
         addMessage(response, 'bot');
+    };
+}
+
+// Mobile Audit Action
+const mobileAuditAction = document.getElementById('btn-mobile-audit');
+if (mobileAuditAction) {
+    mobileAuditAction.onclick = async () => {
+        const icon = mobileAuditAction.querySelector('i');
+        const originalIcon = icon.className;
+        
+        icon.className = 'fas fa-spinner fa-spin';
+        mobileAuditAction.style.opacity = '0.7';
+        mobileAuditAction.style.pointerEvents = 'none';
+
+        try {
+            const auditFn = httpsCallable(functions, 'manualMobileAudit');
+            const result = await auditFn();
+            alert(`Forensic Audit Result: ${result.data.report}`);
+        } catch (err) {
+            console.error("Mobile Audit Trace Fail:", err);
+            alert("Handshake failed. Sentinel is currently busy.");
+        }
+        
+        icon.className = originalIcon;
+        mobileAuditAction.style.opacity = '1';
+        mobileAuditAction.style.pointerEvents = 'auto';
     };
 }

@@ -62,6 +62,13 @@ if (chatToggle && chatWindow) {
     chatToggle.onclick = () => chatWindow.classList.toggle('active');
 }
 
+// Mobile Menu Toggle
+const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+const navLinks = document.querySelector('.nav-links');
+if (mobileMenuToggle && navLinks) {
+    mobileMenuToggle.onclick = () => navLinks.classList.toggle('mobile-active');
+}
+
 function addMessage(text, sender) {
     if (!chatMessages) return;
     const msgDiv = document.createElement('div');

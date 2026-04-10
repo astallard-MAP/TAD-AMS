@@ -2,8 +2,9 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getStorage } from "firebase/storage";
+import { getFunctions } from "firebase/functions";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -26,6 +27,7 @@ const analytics = isSupported().then(yes => yes ? getAnalytics(app) : null).catc
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
+const functions = getFunctions(app);
 
 // New: Auth State Resolution Promise for data synchronisation
 const authReady = new Promise((resolve) => {
@@ -35,4 +37,4 @@ const authReady = new Promise((resolve) => {
     });
 });
 
-export { app, analytics, db, auth, storage, authReady };
+export { app, analytics, db, auth, storage, functions, authReady };
