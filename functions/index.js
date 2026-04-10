@@ -89,7 +89,7 @@ async function saveToImageLibrary(imageUrl, prompt, source, metadata = {}) {
 async function generateSocialImage(town, context, source = "Social Post") {
   const prompt = `A high-quality, professional photograph of a residential area in ${town}, Essex. The atmosphere must embody the "Warm Blanket" ethos: supportive, discrete, and profoundly trustworthy. Soft, atmospheric lighting, high resolution. Avoid generic stock looks; focus on a realistic, calming street scene that suggests a fresh start and peace of mind. Context: ${context.substring(0, 100)}`;
   
-  // For demo purposes, we vary the placeholder image to show the library functionality
+  // Automated asset generation fallbacks for resiliency
   const fallbacks = [
     "https://images.unsplash.com/photo-1570129477492-45c003edd2be",
     "https://images.unsplash.com/photo-1560518883-ce09059eeffa",
@@ -100,11 +100,9 @@ async function generateSocialImage(town, context, source = "Social Post") {
   const randomImg = fallbacks[Math.floor(Math.random() * fallbacks.length)] + "?auto=format&fit=crop&q=80&w=1200";
 
   try {
-    // In actual production with Vertex AI configured:
-    // const result = await ai.generate({ model: 'vertexai/imagen-3', prompt: prompt });
-    // const imageUrl = result.media[0].url; 
-    
-    const imageUrl = randomImg; 
+    // Production Asset Generation via Vertex AI
+    const result = await ai.generate({ model: 'vertexai/imagen-3', prompt: prompt });
+    const imageUrl = result.media[0].url; 
     await saveToImageLibrary(imageUrl, prompt, source, { town });
     return imageUrl;
   } catch (error) {
@@ -510,7 +508,7 @@ async function publishToGBP(content, imageUrl) {
         summary: content,
         callToAction: {
           actionType: "LEARN_MORE",
-          url: "https://c4h-website.web.app"
+          url: "https://cash4houses.co.uk"
         }
       };
 
@@ -911,7 +909,7 @@ exports.seoSubmissionAgent = onSchedule({
     memory: "512MiB"
 }, async (event) => {
     console.log("SEO Submission Agent Active...");
-    const siteUrl = "https://c4h-website.web.app";
+    const siteUrl = "https://cash4houses.co.uk";
     const sitemapUrl = `${siteUrl}/sitemap.xml`;
     try {
         // Bing (IndexNow Protocol)

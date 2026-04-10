@@ -177,7 +177,7 @@ async function loadDashboardStats() {
 
         // 2. Registered Users (Simulated/Firestore query if users collection exists)
         // For now, let's assume we count unique emails in leads as a proxy if we haven't built a users collection
-        document.getElementById('stat-users').textContent = "12"; // Placeholder until user directory built
+        document.getElementById('stat-users').textContent = "Active"; 
 
         // 3. Offers Made (Leads with offerAmount)
         const offersQuery = query(collection(db, "leads"), where("offerAmount", ">", 0));
@@ -185,7 +185,7 @@ async function loadDashboardStats() {
         document.getElementById('stat-offers').textContent = offersSnap.data().count;
 
         // 4. Site Visitors (Placeholder)
-        document.getElementById('stat-visitors').textContent = "382";
+        document.getElementById('stat-visitors').textContent = "Live";
 
         // 5. System Efficiency (From Sentinel)
         const auditQuery = query(collection(db, "systemAudits"), orderBy("timestamp", "desc"), limit(1));

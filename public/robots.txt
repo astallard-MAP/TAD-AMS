@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
-Sitemap: https://c4h-wesbite.web.app/sitemap.xml
-Sitemap: https://c4h-wesbite.web.app/sitemap.html
+Sitemap: https://cash4houses.co.uk/sitemap.xml
+Sitemap: https://cash4houses.co.uk/sitemap.html
 
 # Priority Areas
 Disallow: /admin.html
