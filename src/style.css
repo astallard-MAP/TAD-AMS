@@ -70,10 +70,15 @@ nav {
   height: 50px;
 }
 
+/* Header Toggle (Mobile Only) */
+.menu-toggle {
+    display: none;
+}
+
 .nav-links {
-  display: flex;
-  gap: 2rem;
-  align-items: center;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
 }
 
 .nav-links a:hover {
