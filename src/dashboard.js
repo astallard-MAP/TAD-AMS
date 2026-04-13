@@ -400,6 +400,36 @@ async function runValuationIntelligence(prop) {
         const data = await resp.json();
         if (!data.success) throw new Error(data.error);
 
+        if (data.limitedData) {
+            grid.innerHTML = `
+                <div class="val-column address-col" style="grid-column: span 3; text-align: center; padding: 3rem 1rem;">
+                    <i class="fas fa-circle-exclamation" style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;"></i>
+                    <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; color: #1e293b;">Forensic Data Limitation</h3>
+                    <p style="font-size: 1.1rem; color: #64748b; max-width: 600px; margin: 0 auto 2rem; line-height: 1.6;">${data.message}</p>
+                    <button id="book-appraisal-fallback" class="btn btn-primary" style="padding: 12px 32px; font-size: 1.1rem;">Request Manual Site Appraisal</button>
+                </div>
+            `;
+            
+            const fallbackBtn = document.getElementById('book-appraisal-fallback');
+            if (fallbackBtn) {
+                fallbackBtn.onclick = async () => {
+                    fallbackBtn.disabled = true;
+                    fallbackBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Request...';
+                    await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/processValuationRequest', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userData: { name: user.email.split('@')[0], email: user.email },
+                            propertyAddress: prop.address
+                        })
+                    });
+                    fallbackBtn.innerHTML = '<i class="fas fa-check"></i> Request Sent';
+                    alert("Sent! Andy will contact you personally to arrange your site visit.");
+                };
+            }
+            return;
+        }
+
         grid.innerHTML = `
             <div class="val-column address-col">
                 <i class="fas fa-location-dot"></i>

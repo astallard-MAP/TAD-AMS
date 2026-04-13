@@ -39,6 +39,37 @@ const parser = new Parser({
   }
 });
 
+const GLOBAL_SIGNATURE = `
+<div style="margin-top: 30px; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #1e293b; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+    <p style="margin: 0; font-weight: 700; font-size: 1.1rem; color: #1e293b;">Andrew Stallard</p>
+    <p style="margin: 0; color: #EB287A; font-weight: 600; font-size: 0.9rem;">Managing Director | Cash 4 Houses</p>
+    
+    <div style="margin-top: 15px; font-size: 0.9rem;">
+        <p style="margin: 2px 0;"><strong>Tel:</strong> 01704 416 323</p>
+        <p style="margin: 2px 0;"><strong>E:</strong> <a href="mailto:andy@cash4houses.co.uk" style="color: #EB287A; text-decoration: none;">andy@cash4houses.co.uk</a></p>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <p style="margin: 0 0 10px 0; font-weight: 700; font-size: 0.9rem; color: #475569;">Feeling social then follow us!</p>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <a href="https://www.facebook.com/Cash4Houses.co" style="text-decoration: none; display: inline-block;">
+                <img src="https://img.icons8.com/color/48/facebook-new.png" width="28" height="28" alt="Facebook">
+            </a>
+            <a href="https://www.instagram.com/cash.4houses/" style="text-decoration: none; display: inline-block; margin-left: 10px;">
+                <img src="https://img.icons8.com/color/48/instagram-new--v1.png" width="28" height="28" alt="Instagram">
+            </a>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px; font-size: 0.75rem; color: #64748b; font-style: italic; border-left: 4px solid #e2e8f0;">
+        <p style="margin: 0 0 10px 0;">This document, including any attachments to it, contains information that is private and confidential and should be read only by persons to whom it is addressed.</p>
+        <p style="margin: 0 0 10px 0;">This document is sent for information purposes only and shall not have the effect of creating a contract. No person should rely upon its contents.</p>
+        <p style="margin: 0 0 10px 0;">Any views or opinions presented are solely those of the author and do not necessarily represent those of Cash 4 Houses who shall not be under any liability in damages or otherwise for any reliance that may be placed upon such views by any person.</p>
+        <p style="margin: 0;">If you have received this e-mail in error, please notify the sender(s) immediately by telephone. Please also destroy and delete the message from your computer.</p>
+    </div>
+</div>
+`;
+
 // --- MICROSOFT GRAPH API CLIENT ---
 function getGraphClient() {
   const credential = new ClientSecretCredential(
@@ -55,6 +86,40 @@ function getGraphClient() {
     }
   });
 }
+
+/**
+ * Dispatches an email via Graph API and automatically appends the Global Signature.
+ */
+async function dispatchEmail({ to, subject, body, importance = "Normal" }) {
+  const client = getGraphClient();
+  const fullBody = `${body}${GLOBAL_SIGNATURE}`;
+  
+  await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
+    message: {
+      subject,
+      importance,
+      body: { contentType: "HTML", content: fullBody },
+      toRecipients: [{ emailAddress: { address: to } }]
+    },
+    saveToSentItems: true
+  });
+}
+
+exports.seedSignatureTemplate = onRequest({ cors: true }, async (req, res) => {
+    try {
+        await db.collection("emailTemplates").doc("globalSignature").set({
+            name: "Global Email Signature",
+            subject: "N/A - System Signature",
+            content: GLOBAL_SIGNATURE,
+            version: 1,
+            history: [],
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        res.status(200).send("Signature template seeded into Documents Hub.");
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
 
 // --- SOCIAL MEDIA AGENT LOGIC ---
 const ESSEX_TOWNS = [
@@ -554,14 +619,10 @@ exports.testEmailConnection = onRequest({
   secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"] 
 }, async (req, res) => {
   try {
-    const client = getGraphClient();
-    await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
-      message: {
-        subject: "Office 365 Configuration: GRAPH API SUCCESS",
-        body: { contentType: "HTML", content: `<p>Diagnostic check complete at ${new Date().toISOString()}. Secure OAuth2 link active.</p>` },
-        toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
-      },
-      saveToSentItems: true
+    await dispatchEmail({
+      to: "andy@cash4houses.co.uk",
+      subject: "Office 365 Configuration: GRAPH API SUCCESS",
+      body: `<p>Diagnostic check complete at ${new Date().toISOString()}. Secure OAuth2 link active.</p>`
     });
     res.status(200).json({ success: true, message: "Graph Auth verified. Test email dispatched." });
   } catch (err) { 
@@ -1880,14 +1941,10 @@ exports.weeklyPerformanceDigest = onSchedule({
         const { text: emailBody } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: digestPrompt });
 
         // 3. Dispatch via Office 365 Graph API
-        const client = getGraphClient();
-        await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
-            message: {
-                subject: `Weekly Social Intelligence Digest: ${new Date().toLocaleDateString('en-GB')}`,
-                body: { contentType: "HTML", content: emailBody },
-                toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
-            },
-            saveToSentItems: true
+        await dispatchEmail({
+            to: "andy@cash4houses.co.uk",
+            subject: `Weekly Social Intelligence Digest: ${new Date().toLocaleDateString('en-GB')}`,
+            body: emailBody
         });
 
         console.log("[DIGEST AGENT] Performance Digest Dispatched.");
@@ -1942,14 +1999,10 @@ exports.manualWeeklyDigest = onRequest({
         const { text: emailBody } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: digestPrompt });
 
         // 3. Dispatch
-        const client = getGraphClient();
-        await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
-            message: {
-                subject: `PRE-LAUNCH: Weekly Social Intelligence Digest`,
-                body: { contentType: "HTML", content: emailBody },
-                toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
-            },
-            saveToSentItems: true
+        await dispatchEmail({
+            to: "andy@cash4houses.co.uk",
+            subject: `PRE-LAUNCH: Weekly Social Intelligence Digest`,
+            body: emailBody
         });
 
         res.status(200).json({ 
@@ -1985,20 +2038,33 @@ exports.researchPropertyValuation = onRequest({
         2. Current regional market trends (Essex/Hertfordshire/London).
         3. Local 'Sold' price baselines (Rightmove/Land Registry context).
         
+        FAIL-SAFE CONDITION:
+        If you identify that there is insufficient local sales evidence (e.g., highly rural, unique property, or data blackout) to provide a high-confidence OMV, you MUST set "limitedData" to true in the JSON response.
+        
         RETURN FORMAT (JSON):
         {
           "propertySummary": "string (40-60 words forensic overview)",
           "omv": number (Full market value in GBP),
           "confidenceScore": "string (e.g. 94%)",
-          "marketCondition": "string (Rising/Stable/Declining)"
+          "marketCondition": "string (Rising/Stable/Declining)",
+          "limitedData": boolean
         }
         `;
 
         const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: researchPrompt });
         const result = JSON.parse(text.replace(/```json|```/g, "").trim());
 
+        if (result.limitedData) {
+            return res.status(200).json({
+                success: true,
+                limitedData: true,
+                message: "Market data is limited for this specific location. Please book a manual appraisal for an accurate valuation."
+            });
+        }
+
         res.status(200).json({
             success: true,
+            limitedData: false,
             address: propertyAddress,
             summary: result.propertySummary,
             valuations: {
@@ -2030,23 +2096,17 @@ exports.processPurchaseEnquiry = onRequest({
 }, async (req, res) => {
     const { userData, propertyAddress, optionType, price } = req.body;
     try {
-        const client = getGraphClient();
-        await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
-            message: {
-                subject: "HIGH IMPORTANCE: New Purchase Enquiry",
-                importance: "High",
-                body: { 
-                    contentType: "HTML", 
-                    content: `
-                        <h2>Purchase Option Selected</h2>
-                        <p><strong>User:</strong> ${userData.name} (${userData.email})</p>
-                        <p><strong>Property:</strong> ${propertyAddress}</p>
-                        <p><strong>Selected Option:</strong> ${optionType}</p>
-                        <p><strong>Target Price:</strong> £${price.toLocaleString()}</p>
-                    `
-                },
-                toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
-            }
+        await dispatchEmail({
+            to: "andy@cash4houses.co.uk",
+            subject: "HIGH IMPORTANCE: New Purchase Enquiry",
+            importance: "High",
+            body: `
+                <h2>Purchase Option Selected</h2>
+                <p><strong>User:</strong> ${userData.name} (${userData.email})</p>
+                <p><strong>Property:</strong> ${propertyAddress}</p>
+                <p><strong>Selected Option:</strong> ${optionType}</p>
+                <p><strong>Target Price:</strong> £${price.toLocaleString()}</p>
+            `
         });
         res.status(200).json({ success: true });
     } catch (error) {
@@ -2063,21 +2123,15 @@ exports.processValuationRequest = onRequest({
 }, async (req, res) => {
     const { userData, propertyAddress } = req.body;
     try {
-        const client = getGraphClient();
-        await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
-            message: {
-                subject: "HIGH IMPORTANCE: New Valuation Request",
-                importance: "High",
-                body: { 
-                    contentType: "HTML", 
-                    content: `
-                        <h2>On-Site Appraisal Requested</h2>
-                        <p><strong>Name:</strong> ${userData.name} (${userData.email})</p>
-                        <p><strong>Property Address:</strong> ${propertyAddress}</p>
-                    `
-                },
-                toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
-            }
+        await dispatchEmail({
+            to: "andy@cash4houses.co.uk",
+            subject: "HIGH IMPORTANCE: New Valuation Request",
+            importance: "High",
+            body: `
+                <h2>On-Site Appraisal Requested</h2>
+                <p><strong>Name:</strong> ${userData.name} (${userData.email})</p>
+                <p><strong>Property Address:</strong> ${propertyAddress}</p>
+            `
         });
         res.status(200).json({ success: true });
     } catch (error) {
