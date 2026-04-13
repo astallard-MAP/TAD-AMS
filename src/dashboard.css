@@ -582,6 +582,36 @@
     gap: 2.5rem;
 }
 
+/* AI PULSE ANIMATION */
+@keyframes aiPulse {
+    0% { transform: scale(0.98); opacity: 0.6; }
+    50% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.98); opacity: 0.6; }
+}
+
+.val-loading {
+    grid-column: 1 / span 3;
+    padding: 3rem;
+    text-align: center;
+    color: #64748b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    animation: aiPulse 2s infinite ease-in-out;
+}
+
+.val-loading i {
+    font-size: 3rem;
+    color: #EB287A;
+}
+
+.val-loading span {
+    font-weight: 600;
+    font-size: 1.1rem;
+    max-width: 400px;
+}
+
 .val-column {
     display: flex;
     flex-direction: column;
@@ -596,7 +626,7 @@
 .val-column h3 {
     font-size: 0.9rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     color: #64748b;
     margin-bottom: 15px;
 }
@@ -612,17 +642,19 @@
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 1.25rem;
+    padding: 1.5rem;
     margin-bottom: 1rem;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
 }
 
 .val-option-row:hover {
     border-color: #EB287A;
-    transform: translateX(5px);
+    transform: translateX(8px);
     background: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .val-option-row.highlight {
@@ -634,13 +666,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .val-label {
     font-size: 0.85rem;
-    font-weight: 600;
-    color: #475569;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
 }
 
 .val-price {
@@ -650,20 +683,33 @@
 }
 
 .val-option-meta {
-    font-size: 0.8rem;
-    color: #64748b;
-    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: #475569;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.success-badge {
+    background: #dcfce7;
+    color: #166534;
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
 }
 
 .btn-val {
     width: 100%;
-    padding: 10px;
+    min-height: 48px; /* TOUCH TARGET OPTIMIZED */
+    padding: 12px;
     border-radius: 8px;
     border: 1px solid #e2e8f0;
     background: white;
     color: #475569;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -679,37 +725,43 @@
     color: white;
 }
 
-.valuation-disclaimer {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #f1f5f9;
-    text-align: center;
-}
+/* MOBILE REFINEMENTS (Below 768px) */
+@media (max-width: 768px) {
+    .valuation-section {
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
 
-.valuation-disclaimer p {
-    font-size: 0.9rem;
-    color: #64748b;
-}
-
-.valuation-disclaimer a {
-    color: #EB287A;
-    font-weight: 700;
-    text-decoration: underline;
-}
-
-.val-loading {
-    grid-column: 1 / span 3;
-    padding: 3rem;
-    text-align: center;
-    color: #64748b;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-@media (max-width: 968px) {
     .valuation-grid {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 16px; /* 16px GUTTER */
+    }
+
+    .val-column {
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .val-price {
+        font-size: 1.5rem; /* 24px PRIMARY PRICE */
+        color: #EB287A;
+    }
+
+    .val-option-row {
+        margin-bottom: 16px;
+        padding: 1.5rem;
+        background: white;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        border: 2px solid #f1f5f9;
+    }
+
+    .val-option-row:hover {
+        transform: translateY(-4px);
+    }
+
+    .val-option-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
     }
 }

@@ -417,7 +417,10 @@ async function runValuationIntelligence(prop) {
                         <span class="val-label">Open Market Value (OMV)</span>
                         <span class="val-price">£${data.valuations.estateAgency.price.toLocaleString()}</span>
                     </div>
-                    <div class="val-option-meta">${data.valuations.estateAgency.subtext}</div>
+                    <div class="val-option-meta">
+                        <span class="success-badge">38.5% Success</span>
+                        <span>6-9 Month completion</span>
+                    </div>
                     <button class="btn-val">Please Proceed with Estate Agency service</button>
                 </div>
                 <div class="val-option-row" onclick="handlePurchaseSelection('Auction', ${data.valuations.auction.price})">
@@ -425,7 +428,10 @@ async function runValuationIntelligence(prop) {
                         <span class="val-label">Auction Target (80% OMV)</span>
                         <span class="val-price">£${data.valuations.auction.price.toLocaleString()}</span>
                     </div>
-                    <div class="val-option-meta">${data.valuations.auction.subtext}</div>
+                    <div class="val-option-meta">
+                        <span class="success-badge">72.8% Success</span>
+                        <span>8-10 Week completion</span>
+                    </div>
                     <button class="btn-val">Please Proceed with Auction service</button>
                 </div>
                 <div class="val-option-row highlight" onclick="handlePurchaseSelection('Cash Purchase', ${data.valuations.cashPurchase.price})">
@@ -433,7 +439,10 @@ async function runValuationIntelligence(prop) {
                         <span class="val-label">Immediate Offer (65% OMV)</span>
                         <span class="val-price">£${data.valuations.cashPurchase.price.toLocaleString()}</span>
                     </div>
-                    <div class="val-option-meta">${data.valuations.cashPurchase.subtext}</div>
+                    <div class="val-option-meta">
+                        <span class="success-badge" style="background: #EB287A; color: white;">100% Success</span>
+                        <span>Completion in 7 days</span>
+                    </div>
                     <button class="btn-val active">I would like to accept your offer / Contact Me</button>
                 </div>
             </div>
