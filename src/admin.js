@@ -213,15 +213,19 @@ async function loadDashboardStats() {
         // 7. Social Media Efficiency (From Social Sentinel)
         try {
             const socialEffEl = document.getElementById('stat-social-efficiency');
-            if (socialAuditDoc.exists() && socialEffEl) {
-                latestSocialAudit = socialAuditDoc.data();
+            const socialAuditSnap = await getDocs(query(collection(db, "socialAudits"), orderBy("timestamp", "desc"), limit(1)));
+            
+            if (!socialAuditSnap.empty && socialEffEl) {
+                latestSocialAudit = socialAuditSnap.docs[0].data();
                 const audit = latestSocialAudit;
                 socialEffEl.textContent = `${audit.score}%`;
                 socialEffEl.style.color = audit.score >= 90 ? "#10b981" : audit.score >= 70 ? "#f59e0b" : "#ef4444";
             } else if (socialEffEl) {
                 socialEffEl.textContent = "N/A";
             }
-        } catch (e) { console.warn("Social Audit Load Fail"); }
+        } catch (e) { 
+            console.warn("Social Audit Load Fail", e); 
+        }
 
     } catch (err) { console.error("Stats Error:", err); }
 }
@@ -785,60 +789,66 @@ if (btnSocialIntel) {
 }
 
 async function loadSocialIntelligence() {
-    console.log("Loading Social Intelligence Forensic Data...");
+    console.log("Loading Social Intelligence Forensic Data Tracer...");
     
+    const analysisEl = document.getElementById('social-ai-analysis');
+    const timingTable = document.getElementById('social-timing-table');
+    const geoTable = document.getElementById('geo-efficacy-table');
+
     // 1. Load Global Stats
     try {
         const statsSnap = await getDoc(doc(db, "socialStats", "global"));
         if (statsSnap.exists()) {
             const s = statsSnap.data();
-            document.getElementById('social-views').textContent = s.views.toLocaleString();
-            document.getElementById('social-shares').textContent = s.shares.toLocaleString();
-            document.getElementById('social-likes').textContent = s.likes.toLocaleString();
-            document.getElementById('social-follows').textContent = s.follows.toLocaleString();
-            document.getElementById('social-clicks').textContent = s.clicks.toLocaleString();
+            document.getElementById('social-views').textContent = (s.views || 0).toLocaleString();
+            document.getElementById('social-shares').textContent = (s.shares || 0).toLocaleString();
+            document.getElementById('social-likes').textContent = (s.likes || 0).toLocaleString();
+            document.getElementById('social-follows').textContent = (s.follows || 0).toLocaleString();
+            document.getElementById('social-clicks').textContent = (s.clicks || 0).toLocaleString();
+        } else {
+            console.warn("Forensic Baseline Missing: socialStats/global not found.");
         }
-    } catch (e) { console.error("Stats fail:", e); }
+    } catch (e) { console.error("Forensic Stats Fetch Failure:", e); }
 
     // 2. Load Strategic Analysis
     try {
         const stratSnap = await getDoc(doc(db, "socialStrategy", "latest"));
-        const analysisEl = document.getElementById('social-ai-analysis');
-        const timingTable = document.getElementById('social-timing-table');
-
         if (stratSnap.exists()) {
             const strat = stratSnap.data();
-            analysisEl.innerHTML = `
-                <div class="strategy-card" style="padding: 1.5rem; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                    <p style="margin-bottom: 0.5rem;"><strong>Primary High-Yield Hook:</strong> <span class="badge" style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">${strat.topHook}</span></p>
-                    <p style="margin-bottom: 0.5rem;"><strong>Optimal Psychological Archetype:</strong> ${strat.topPsychology}</p>
-                    <p style="margin-bottom: 1rem;"><strong>Target Motivation:</strong> ${strat.targetMotivation}</p>
-                    <div class="markdown-body" style="font-size: 0.9rem; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
-                        ${marked.parse(strat.analysisSummary || "The Intelligence Agent is currently cross-referencing engagement patterns from the last 10 posts.")}
+            if (analysisEl) {
+                analysisEl.innerHTML = `
+                    <div class="strategy-card" style="padding: 1.5rem; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <p style="margin-bottom: 0.5rem;"><strong>Primary High-Yield Hook:</strong> <span class="badge" style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">${strat.topHook || 'Fast Cash'}</span></p>
+                        <p style="margin-bottom: 0.5rem;"><strong>Optimal Psychological Archetype:</strong> ${strat.topPsychology || 'Need for Speed'}</p>
+                        <p style="margin-bottom: 1rem;"><strong>Target Motivation:</strong> ${strat.targetMotivation || 'Relief'}</p>
+                        <div class="markdown-body" style="font-size: 0.9rem; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+                            ${marked.parse(strat.analysisSummary || "The Intelligence Agent is currently cross-referencing engagement patterns from the last 10 posts.")}
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
 
-            timingTable.innerHTML = `
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                    <td style="padding: 12px;">Engagement Peak</td>
-                    <td style="padding: 12px; font-weight: 600; color: #10b981;">${strat.bestDay} at ${strat.bestTime}</td>
-                    <td style="padding: 12px;"><span class="badge" style="background: #dcfce7; color: #166534;">High</span></td>
-                </tr>
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                    <td style="padding: 12px;">Click-Through Max</td>
-                    <td style="padding: 12px; font-weight: 600;">Afternoons (2-4 PM)</td>
-                    <td style="padding: 12px;"><span class="badge" style="background: #fef9c3; color: #854d0e;">Medium</span></td>
-                </tr>
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                    <td style="padding: 12px;">Share Velocity</td>
-                    <td style="padding: 12px; font-weight: 600;">Weekends (Morning)</td>
-                    <td style="padding: 12px;"><span class="badge" style="background: #dcfce7; color: #166534;">High</span></td>
-                </tr>
-            `;
+            if (timingTable) {
+                timingTable.innerHTML = `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 12px;">Engagement Peak</td>
+                        <td style="padding: 12px; font-weight: 600; color: #10b981;">${strat.bestDay || 'Tuesday'} at ${strat.bestTime || '1:00 AM'}</td>
+                        <td style="padding: 12px;"><span class="badge" style="background: #dcfce7; color: #166534;">High</span></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 12px;">Click-Through Max</td>
+                        <td style="padding: 12px; font-weight: 600;">Afternoons (2-4 PM)</td>
+                        <td style="padding: 12px;"><span class="badge" style="background: #fef9c3; color: #854d0e;">Medium</span></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 12px;">Share Velocity</td>
+                        <td style="padding: 12px; font-weight: 600;">Weekends (Morning)</td>
+                        <td style="padding: 12px;"><span class="badge" style="background: #dcfce7; color: #166534;">High</span></td>
+                    </tr>
+                `;
+            }
 
             // 3. Populate Geo Table
-            const geoTable = document.getElementById('geo-efficacy-table');
             if (geoTable && strat.areaInsights) {
                 geoTable.innerHTML = Object.entries(strat.areaInsights).map(([town, insight]) => `
                     <tr style="border-bottom: 1px solid #f1f5f9;">
@@ -847,9 +857,16 @@ async function loadSocialIntelligence() {
                         <td style="padding: 12px;"><span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #dbeafe;">${strat.targetMotivation || 'Relief'}</span></td>
                     </tr>
                 `).join('');
+            } else if (geoTable) {
+                geoTable.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 2rem;">No area insights generated for current cycle.</td></tr>';
             }
+        } else {
+            if (analysisEl) analysisEl.innerHTML = '<p style="padding: 1rem; color: #64748b;">Strategy baseline not found. Run manual analysis to trigger Agent.</p>';
         }
-    } catch (e) { console.error("Strategy fail:", e); }
+    } catch (e) { 
+        console.error("Forensic Strategy Fetch Failure:", e); 
+        if (analysisEl) analysisEl.innerHTML = '<p style="padding: 1rem; color: #ef4444;">Handshake timeout. Social Intelligence Agent is offline.</p>';
+    }
 }
 
 const reAnalyzeSocialBtn = document.getElementById('re-analyze-social');
