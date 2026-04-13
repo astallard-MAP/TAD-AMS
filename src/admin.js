@@ -836,6 +836,18 @@ async function loadSocialIntelligence() {
                     <td style="padding: 12px;"><span class="badge" style="background: #dcfce7; color: #166534;">High</span></td>
                 </tr>
             `;
+
+            // 3. Populate Geo Table
+            const geoTable = document.getElementById('geo-efficacy-table');
+            if (geoTable && strat.areaInsights) {
+                geoTable.innerHTML = Object.entries(strat.areaInsights).map(([town, insight]) => `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 12px; font-weight: 700; text-transform: capitalize;">${town.replace(/-/g, ' ')}</td>
+                        <td style="padding: 12px; font-size: 0.9rem; color: #475569;">${insight}</td>
+                        <td style="padding: 12px;"><span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #dbeafe;">${strat.targetMotivation || 'Relief'}</span></td>
+                    </tr>
+                `).join('');
+            }
         }
     } catch (e) { console.error("Strategy fail:", e); }
 }

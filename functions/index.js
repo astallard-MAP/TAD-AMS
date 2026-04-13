@@ -209,16 +209,19 @@ async function generateSocialPost(timeOfDay) {
     newsContext = newsItems.join(". ");
   } catch (e) { console.warn("News Context Fail"); }
 
-  // --- INTEGRATED STRATEGIC INTELLIGENCE ---
-  // Read the latest AI-driven strategy if available
+  // --- INTEGRATED STRATEGIC INTELLIGENCE (GEO-AWARE) ---
   const strategySnap = await db.collection("socialStrategy").doc("latest").get();
   let strategicInjections = "";
   if (strategySnap.exists()) {
       const strategy = strategySnap.data();
+      const areaKey = town.toLowerCase();
+      const areaInsight = strategy.areaInsights ? strategy.areaInsights[areaKey] : null;
+
       strategicInjections = `
-      STRATEGIC OPTIMIZATION (BASED ON FORENSIC PERFORMANCE DATA):
-      - Best Performing Message Type: ${strategy.topHook || 'Pain-Point Pivot'}
+      STRATEGIC OPTIMIZATION (GEO-INTELLIGENCE):
+      - Best Performing Hook: ${strategy.topHook || 'Pain-Point Pivot'}
       - Recommended Psychological Angle: ${strategy.topPsychology || 'Empathy / Relief'}
+      ${areaInsight ? `- AREA-SPECIFIC INSIGHT (${town}): ${areaInsight}` : ''}
       - Content Tone Adjustment: ${strategy.toneAdjustment || 'Increase local community focus'}
       - Target Motivation: ${strategy.targetMotivation || 'Fast financial turnaround'}
       `;
@@ -1445,29 +1448,28 @@ exports.socialIntelligenceAgent = onSchedule({
         clicks: Math.floor(Math.random() * 120) + 30
     };
 
-    // 2. Load recent post history for analysis
+    // 2. Load recent post history with town-data for analysis
     const recentPosts = await db.collection("socialPosts")
         .orderBy("timestamp", "desc")
-        .limit(10)
+        .limit(20)
         .get();
     
-    const postData = recentPosts.docs.map(d => d.data().content).join("\n---\n");
+    const geoData = recentPosts.docs.map(d => {
+        const p = d.data();
+        return `TOWN: ${p.town} | CONTENT: ${p.content.substring(0, 100)}...`;
+    }).join("\n---\n");
 
-    // 3. AI Analysis: Identifying the "Why" behind the winners
+    // 3. AI Analysis: Identifying the "Why" behind the winners + "Where"
     const analysisPrompt = `
-    TASK: Analyze the following social media content performance data for Cash 4 Houses (Essex Real Estate).
-    DATA SET (Recent 10 posts):
-    ${postData}
-    
-    METRICS SUMMARY:
-    - Average Reach: ${stats.views}
-    - Engagement Rate: ${((stats.likes + stats.shares) / stats.views * 100).toFixed(2)}%
+    TASK: Analyze the following social media performance and geographical data for Cash 4 Houses.
+    DATA SET (Recent 20 posts with Location context):
+    ${geoData}
     
     OBJECTIVE: 
-    1. Identify the 'Best Performing Day/Time' based on typical UK engagement (currently testing Morning, Lunch, Evening).
-    2. Identify the 'Best Messaging Hook' (e.g. Probate, Divorce, Money Stress).
-    3. Identify the 'Psychological Motivation' (e.g. Relief, Fear of loss, Aspiration).
-    4. Provide a strategy update for the next Content Generation cycle.
+    1. Identify the 'Best Performing Day/Time'.
+    2. Identify the 'Best Messaging Hook' (e.g. Probate, Divorce).
+    3. GEOGRAPHICAL INTELLIGENCE: Identify if specific towns respond better to specific hooks (e.g. Southend likes 'Fast Cash', Romford likes 'Chain-Break relief').
+    4. Provide town-specific 'Area Insights' for future content generation.
     
     RETURN FORMAT (JSON):
     {
@@ -1477,6 +1479,12 @@ exports.socialIntelligenceAgent = onSchedule({
       "bestTime": "string",
       "toneAdjustment": "string",
       "targetMotivation": "string",
+      "areaInsights": {
+         "southend-on-sea": "string",
+         "basildon": "string",
+         "romford": "string",
+         ... (other towns in lowercase)
+      },
       "analysisSummary": "markdown string"
     }
     `;
