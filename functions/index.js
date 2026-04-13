@@ -10,6 +10,9 @@ const { genkit } = require("genkit");
 const { vertexAI } = require("@genkit-ai/vertexai");
 const { google } = require("googleapis");
 const { defineSecret } = require("firebase-functions/params");
+const { BetaAnalyticsDataClient } = require('@google-analytics/data');
+
+const GA4_PROPERTY_ID = defineSecret("GA4_PROPERTY_ID");
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -2136,5 +2139,42 @@ exports.processValuationRequest = onRequest({
         res.status(200).json({ success: true });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+exports.getLiveVisitors = onRequest({ 
+    cors: true,
+    secrets: ["GA4_PROPERTY_ID"] 
+}, async (req, res) => {
+    try {
+        const analyticsDataClient = new BetaAnalyticsDataClient();
+        const propertyId = GA4_PROPERTY_ID.value();
+
+        const [response] = await analyticsDataClient.runReport({
+            property: `properties/${propertyId}`,
+            dateRanges: [{ startDate: 'today', endDate: 'today' }],
+            metrics: [
+                { name: 'activeUsers' },
+                { name: 'screenPageViews' }
+            ],
+        });
+
+        let totalActiveUsers = 0;
+        let totalViews = 0;
+        
+        if (response.rows && response.rows.length > 0) {
+            totalActiveUsers = parseInt(response.rows[0].metricValues[0].value);
+            totalViews = parseInt(response.rows[0].metricValues[1].value);
+        }
+
+        res.status(200).json({ 
+            success: true, 
+            activeUsers: totalActiveUsers, 
+            views: totalViews,
+            timestamp: new Date().toISOString()
+        });
+    } catch (err) {
+        console.error("GA4 Fetch Error:", err);
+        res.status(200).json({ success: false, error: err.message, activeUsers: "N/A" });
     }
 });

@@ -188,8 +188,19 @@ async function loadDashboardStats() {
         const offersSnap = await getCountFromServer(offersQuery);
         document.getElementById('stat-offers').textContent = offersSnap.data().count;
 
-        // 4. Site Visitors (GA4 Telemetry)
-        document.getElementById('stat-visitors').textContent = "Live via GA4";
+        // 4. Site Visitors (Active GA4 Telemetry)
+        try {
+            const visitorsResp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/getLiveVisitors');
+            const visitorData = await visitorsResp.json();
+            if (visitorData.success) {
+                document.getElementById('stat-visitors').textContent = visitorData.activeUsers.toLocaleString();
+            } else {
+                document.getElementById('stat-visitors').textContent = "---";
+            }
+        } catch (e) { 
+            console.warn("GA4 Fetch Fail:", e);
+            document.getElementById('stat-visitors').textContent = "N/A";
+        }
 
         // 5. System Efficiency (From Sentinel)
         const auditQuery = query(collection(db, "systemAudits"), orderBy("timestamp", "desc"), limit(1));
