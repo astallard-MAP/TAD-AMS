@@ -19,6 +19,8 @@ import { httpsCallable } from "firebase/functions";
 import { onSnapshot } from "firebase/firestore";
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
+let latestAudit = null;
+let latestSocialAudit = null;
 
 authReady.then(async (user) => {
     if (!user || user.uid !== ADMIN_UID) {
@@ -213,11 +215,11 @@ async function loadDashboardStats() {
         // 7. Social Media Efficiency (From Social Sentinel)
         try {
             const socialEffEl = document.getElementById('stat-social-efficiency');
-            const socialAuditSnap = await getDocs(query(collection(db, "socialAudits"), orderBy("timestamp", "desc"), limit(1)));
+            const socialSnap = await getDoc(doc(db, "componentAudits", "socialMedia"));
             
-            if (!socialAuditSnap.empty && socialEffEl) {
-                latestSocialAudit = socialAuditSnap.docs[0].data();
-                const audit = latestSocialAudit;
+            if (socialSnap.exists() && socialEffEl) {
+                const audit = socialSnap.data();
+                latestSocialAudit = audit;
                 socialEffEl.textContent = `${audit.score}%`;
                 socialEffEl.style.color = audit.score >= 90 ? "#10b981" : audit.score >= 70 ? "#f59e0b" : "#ef4444";
             } else if (socialEffEl) {
@@ -306,8 +308,6 @@ async function loadLeads() {
 }
 
 // Efficiency Report Logic
-let latestAudit = null;
-let latestSocialAudit = null;
 
 async function showEfficiencyReport() {
     const modal = document.getElementById('efficiency-modal');

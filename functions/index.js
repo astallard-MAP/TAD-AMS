@@ -135,20 +135,22 @@ async function generateSocialImage(town, context, source = "Social Post") {
   } else {
     // Social Post Style: Authentic, Lived-in, No "Show Home" polish
     const propertyTypes = [
-      "a row of early 1900s terraced houses with aged brickwork and traditional features",
-      "a typical late 1950s or early 1960s semi-detached house with period character",
-      "a functional block of mid-century flats or a larger Victorian house converted into apartments",
-      "a derelict house showing signs of long-term neglect, perhaps with boarded windows or peeling paint",
-      "a property with very dated decoration from 40-60 years ago, tidy but clearly lived-in for decades",
-      "a realistic street view of a modest semi-detached home with 'rough edges' needing redecoration"
+      "a row of early 1900s terraced houses with traditional features and a neat, lived-in appearance",
+      "a typical late 1950s or early 1960s semi-detached house with authentic character and a standard garden",
+      "a functional block of mid-century flats or a larger Victorian house converted into well-kept apartments",
+      "a realistic street view of a modest family home with a parked car and typical residential landscaping",
+      "a professional and respectful handshake between two people on a residential doorstep, symbolizing trust",
+      "a close-up of a house key being handed over to a new owner, reflecting a transparent property completion",
+      "a neat arrangement of UK GBP Sterling banknotes next to house keys on a wooden table, symbolizing a fast cash transaction"
     ];
     const chosenType = propertyTypes[Math.floor(Math.random() * propertyTypes.length)];
 
     prompt = `A realistic, authentic photograph of ${chosenType} in ${town}, Essex. ${townContext}.
-    STYLE: Genuine street photography, looking like a real Google Street View capture or a raw smartphone photo. 
-    AESTHETIC: "Lived-in", NOT a show home. Must include "rough edges" - faded facades, slightly weathered features, or dated exterior elements. 
-    CRITICAL: It must look like a real home belonging to someone who might be a distressed seller. Tidy but not polished, staged, or luxury. No real estate filters.
-    Atmosphere: Grounded, local, and ordinary. Focus on the reality of the property. Context: ${context.substring(0, 100)}`;
+    STYLE: Genuine street photography or high-quality documentary style, looking like a real real-life moment. 
+    AESTHETIC: "Real-Life Average Condition". NOT a pristine show home and NOT a luxury estate. 
+    CRITICAL: It must reflect the true, respectful lifestyle of an average person in the area. Tidy, lived-in, and relatable. 
+    If showing transaction elements: Ensure UK GBP Sterling is used and the tone is professional, respectful, and supportive.
+    Atmosphere: Grounded, local, and ordinary. Focus on the reality of the British property market. Context: ${context.substring(0, 100)}`;
   }
   
   // Automated asset generation fallbacks for resiliency (Real Unsplash Photos)
@@ -1234,7 +1236,13 @@ async function performSocialAudit() {
         const policyPrompt = `
             ROLE: Senior Compliance Auditor.
             TASK: Review the following AI Image Generation requests for compliance with "Professional Property Conduct" and "Anti-Abuse" policies.
-            POLICIES: Rejects offensive imagery, rude content, unprofessional tone, or anything that could damage the reputation of a UK Property Cash Buyer.
+            POLICIES: Blocks offensive, rude, or unprofessional content. 
+            IMAGE GUIDELINES: We prioritize "Real-Life Average Condition". 
+            - DO NOT block images of cash if they are UK GBP Sterling being used in a respectful transaction context (e.g. next to keys).
+            - DO NOT block handshakes or key handovers.
+            - DO block "Scruffy" or "Derelict" characterizations that could be seen as disrespectful to the average resident.
+            - DO block "Pristine Show Homes" as they are unrealistic for our target audience.
+            
             DATA: ${JSON.stringify(auditPayload)}
             
             REPORT: Reply ONLY with 'PASSED' or 'FAILED: [Reason]'.
