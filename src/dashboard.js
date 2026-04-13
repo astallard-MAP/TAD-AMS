@@ -95,6 +95,15 @@ document.addEventListener('click', async (e) => {
     }
 });
 
+// Mobile Sidebar Toggle
+const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+const sidebar = document.querySelector('.dashboard-sidebar');
+if (mobileSidebarToggle && sidebar) {
+    mobileSidebarToggle.onclick = () => {
+        sidebar.classList.toggle('active');
+    };
+}
+
 // --- ELITE MATRIX ENGINE ---
 async function loadUserProperties(email) {
     const addressCard = document.getElementById('active-address-card');

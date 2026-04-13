@@ -50,6 +50,12 @@ ul {
   padding: 0 2rem;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
 /* Header */
 header {
   padding: 1.5rem 0;
@@ -70,9 +76,12 @@ nav {
   height: 50px;
 }
 
-/* Header Toggle (Mobile Only) - Strict Desktop Suppression */
+/* Header Toggle (Mobile Only) */
 .menu-toggle {
-    display: none !important;
+    display: none;
+    font-size: 1.5rem;
+    color: var(--primary);
+    cursor: pointer;
 }
 
 .nav-links {
@@ -245,13 +254,9 @@ nav {
     color: #64748b;
 }
 
-@media (max-width: 1200px) {
-    .dossier-matrix-grid { grid-template-columns: repeat(3, 1fr); }
-    .top-row-grid { grid-template-columns: 1fr; }
-}
-
 @media (max-width: 768px) {
     .dossier-matrix-grid { grid-template-columns: repeat(2, 1fr); }
+    .top-row-grid { grid-template-columns: 1fr; }
 }
 .messages-hub-layout {
     display: grid;
@@ -441,10 +446,14 @@ nav {
   box-shadow: 0 0 0 3px rgba(234, 40, 122, 0.1);
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+@media (max-width: 768px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .hero-text { text-align: center; }
+    .hero-text h1 { font-size: 2.5rem; }
+    .form-grid { grid-template-columns: 1fr; }
 }
 
 /* Market News Section */
@@ -837,67 +846,91 @@ footer {
 }
 
 @media (max-width: 768px) {
+    /* Responsive Global Container */
     .container {
-        padding: 0 1rem;
-    }
-    
-    header {
-        padding: 1rem 0;
+        padding: 0 1.5rem;
     }
 
-    nav {
-        flex-direction: row;
-        flex-wrap: wrap;
+    /* Responsive Navigation */
+    .menu-toggle {
+        display: block;
     }
 
     .nav-links {
-        display: none; /* We'll use a hamburger menu */
-        width: 100%;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 320px;
+        height: 100vh;
+        background: white;
         flex-direction: column;
-        padding: 1rem 0;
-        gap: 1rem;
+        justify-content: flex-start;
+        padding: 6rem 2rem;
+        box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        transition: var(--transition);
+        z-index: 1001;
     }
 
     .nav-links.mobile-active {
-        display: flex;
+        right: 0;
     }
 
-    .hero-content {
-        padding: 2rem 0;
+    .nav-links a {
+        font-size: 1.1rem;
+        width: 100%;
+        padding: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        text-align: left;
     }
 
-    .hero h1 {
+    /* Responsive Grid Layouts */
+    .hero-content, 
+    .feature-grid, 
+    .footer-content, 
+    .form-grid,
+    .quick-actions,
+    .reviews-grid {
+        grid-template-columns: 1fr !important;
+        gap: 2rem;
+    }
+
+    .hero-text h1 {
         font-size: 2.2rem;
     }
 
-    .hero p {
-        font-size: 1rem;
+    .section-header h2 {
+        font-size: 1.8rem;
     }
 
-    .trust-badges {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-
-    .form-card {
+    .news-card {
         padding: 1.5rem;
     }
 
-    .form-grid {
-        grid-template-columns: 1fr;
+    .footer-content {
+        text-align: center;
     }
 
-    .feature-grid {
-        gap: 1.5rem;
+    .social-links {
+        justify-content: center;
     }
 
-    /* Hamburger Menu Toggle - Mobile Only */
-    .menu-toggle {
-        display: block !important;
-        font-size: 1.5rem;
-        color: var(--primary);
-        cursor: pointer;
+    .chat-window {
+        width: 90vw;
+        height: 80vh;
+        bottom: 70px;
+        right: 5vw;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-text h1 {
+        font-size: 1.8rem;
+    }
+    
+    .btn {
+        width: 100%;
+        text-align: center;
     }
 }
 
