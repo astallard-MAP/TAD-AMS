@@ -1,4 +1,4 @@
-import { db, auth } from './firebase-config.js';
+import { db, auth, analytics, logEvent } from './firebase-config.js';
 import { 
     collection, 
     addDoc, 
@@ -145,6 +145,15 @@ if (leadForm) {
             data.createdAt = serverTimestamp();
             
             await addDoc(collection(db, "leads"), data);
+            
+            // Register Conversion Event in GA4
+            if (analytics) {
+                logEvent(analytics, 'lead_generation', {
+                    reason: data.reason,
+                    timescale: data.timescale,
+                    debug_mode: true
+                });
+            }
             
             const formCard = leadForm.closest('.form-card');
             if (formCard) {

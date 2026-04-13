@@ -1,4 +1,4 @@
-import { db, auth, storage } from './firebase-config.js';
+import { db, auth, storage, logEvent, analytics } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { 
     collection, 
@@ -505,6 +505,16 @@ window.handlePurchaseSelection = async (type, price) => {
     const propAddress = document.querySelector('.address-col p').textContent;
     
     try {
+        // Register Conversion Event in GA4
+        if (analytics) {
+            logEvent(analytics, 'purchase_option_selected', {
+                option_type: type,
+                target_price: price,
+                property_address: propAddress,
+                debug_mode: true // For Real-Time DebugView Connectivity Test
+            });
+        }
+
         await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/processPurchaseEnquiry', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

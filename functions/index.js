@@ -320,7 +320,7 @@ async function generateSocialPost(timeOfDay) {
     5. THE SOLUTION: Cash 4 Houses - Direct Cash Buyer. No chains, no fees, no hassle.
     6. PSYCHOLOGICAL TRIGGER: Explicitly use "We Buy As-Is" and mention "no repairs or cleaning needed".
     7. LOCAL FOCUS: Mention ${town} specifically. Use British English (e.g., 'flats', 'local community').
-    8. CALL TO ACTION: One clear CTA pointing to Https://cash4houses.co.uk.
+    8. CALL TO ACTION: One clear CTA pointing to Https://cash4houses.co.uk?utm_source=social&utm_medium=${timeOfDay.toLowerCase()}_post&utm_campaign=essex_outreach&utm_content=${town.toLowerCase().replace(/\s+/g, '_')}.
     
     OUTPUT FORMAT:
     [Problem-Focused Hook Line]

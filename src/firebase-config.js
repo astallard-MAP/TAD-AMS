@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics, isSupported } from "firebase/analytics";
+import { getAnalytics, isSupported, logEvent } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getStorage } from "firebase/storage";
@@ -48,4 +48,4 @@ const authReady = new Promise((resolve) => {
     });
 });
 
-export { app, analytics, db, auth, storage, functions, authReady };
+export { app, analytics, db, auth, storage, functions, authReady, logEvent };
