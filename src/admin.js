@@ -304,29 +304,20 @@ async function loadLeads() {
             const date = lead.createdAt?.toDate() || new Date();
             
             const tr = document.createElement('tr');
+            const timescaleBadge = lead.timescale === 'Within 7 Days' ? 'badge-urgent' : '';
             tr.innerHTML = `
                 <td>${date.toLocaleDateString('en-GB')}</td>
                 <td><strong>${lead.firstName} ${lead.surname}</strong><br><small>${lead.email}</small></td>
                 <td>${lead.address}<br><small>${lead.type} - ${lead.bedrooms}br</small></td>
-                <td><span class="badge ${lead.timescale === 'Within 7 Days' ? 'badge-urgent' : ''}">${lead.timescale}</span></td>
-                <td>Pending Review</td>
+                <td><span class="badge ${timescaleBadge}">${lead.timescale}</span></td>
+                <td>${lead.status || 'Pending Review'}</td>
                 <td>
                     <div style="display: flex; gap: 5px;">
-                        <button class="btn btn-primary btn-sm">Offer</button>
-                        <button class="btn btn-secondary btn-sm impersonate-lead" data-email="${lead.email}">Impersonate</button>
+                        <a href="/enquiry-detail.html?id=${doc.id}" class="btn btn-primary btn-sm" style="text-decoration:none;">View Details</a>
                     </div>
                 </td>
             `;
             leadsTable.appendChild(tr);
-        });
-        // Add click listeners for impersonation
-        document.querySelectorAll('.impersonate-lead').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const email = btn.getAttribute('data-email');
-                localStorage.setItem('impersonate_seller', 'true');
-                localStorage.setItem('impersonate_email', email);
-                window.location.href = "/dashboard.html";
-            });
         });
     } catch (error) {
         console.error("Error loading leads:", error);
@@ -526,27 +517,6 @@ if (testEmailBtn) {
     };
 }
 
-const impersonateBtn = document.getElementById('btn-impersonate');
-if (impersonateBtn) {
-    impersonateBtn.onclick = () => {
-        localStorage.setItem('impersonate_seller', 'true');
-        localStorage.setItem('impersonate_email', 'andrew@stallard.co');
-        window.location.href = "/dashboard.html";
-    };
-}
-
-
-function showImpersonationBar() {
-    const bar = document.createElement('div');
-    bar.style.cssText = "background: #ffcc00; padding: 10px; text-align: center; font-weight: bold;";
-    bar.innerHTML = `Impersonating ${localStorage.getItem('impersonate_email')} <button id="exit-impersonation">Exit</button>`;
-    document.body.prepend(bar);
-    document.getElementById('exit-impersonation').onclick = () => {
-        localStorage.removeItem('impersonate_seller');
-        localStorage.removeItem('impersonate_email');
-        window.location.href = "/admin.html";
-    };
-}
 
 // --- ANDY AI CHAT INTEGRATION ---
 const CHATBOT_URL = "https://chatbotandy-vjikc6hdhq-uc.a.run.app";
