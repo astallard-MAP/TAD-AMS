@@ -1373,6 +1373,139 @@ exports.manualSystemRepair = onRequest({ cors: true, memory: "1GiB" }, async (re
   }
 });
 
+/**
+ * PORTAL READINESS SENTINEL: SYSTEM AUDIT
+ * Performs a deep forensic diagnostic of AI and Social API integrations.
+ */
+exports.portalReadinessSentinel = onRequest({
+    cors: true,
+    memory: "512MiB",
+    secrets: [
+        "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", 
+        "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"
+    ]
+}, async (req, res) => {
+    console.log("[SENTINEL] Initiating System Readiness Audit...");
+    const report = {
+        timestamp: new Date().toISOString(),
+        vertexAI: { status: "Pending", model: "gemini-2.5-flash" },
+        metaGraph: { status: "Pending", scopes: [] },
+        googleMyBusiness: { status: "Pending", locations: [] },
+        insightsDryRun: { status: "Pending", samplesAnalyzed: 0 },
+        errors: []
+    };
+
+    // 1. VERIFY VERTEX AI / GENKIT
+    try {
+        const testPrompt = "Return the word 'OPERATIONAL' if you are active.";
+        const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: testPrompt });
+        if (text.includes("OPERATIONAL")) {
+            report.vertexAI.status = "VERIFIED";
+        } else {
+            report.vertexAI.status = "ANOMALY";
+            report.errors.push("Vertex AI returned unexpected response pattern.");
+        }
+    } catch (err) {
+        report.vertexAI.status = "FAIL";
+        report.errors.push(`Vertex AI Init Error: ${err.message}`);
+    }
+
+    // 2. TEST META GRAPH CONNECTION & PERMISSIONS
+    try {
+        const pageId = META_PAGE_ID.value();
+        const token = META_PERMANENT_PAGE_TOKEN.value();
+        
+        // Check Page Details & Debug Token
+        const debugUrl = `https://graph.facebook.com/v19.0/debug_token?input_token=${token}&access_token=${token}`;
+        const debugResp = await fetch(debugUrl);
+        const debugData = await debugResp.json();
+        
+        if (debugData.data && debugData.data.scopes) {
+            report.metaGraph.scopes = debugData.data.scopes;
+            const required = ["pages_read_engagement", "pages_show_list", "read_insights"];
+            const missing = required.filter(s => !report.metaGraph.scopes.includes(s));
+            
+            if (missing.length > 0) {
+                report.errors.push(`Missing Meta Scopes: ${missing.join(", ")}`);
+                report.metaGraph.status = "PARTIAL_AUTH";
+            } else {
+                report.metaGraph.status = "AUTHENTICATED";
+            }
+        } else {
+            // Fallback: Simple Profile Check
+            const profileResp = await fetch(`https://graph.facebook.com/v19.0/${pageId}?fields=name&access_token=${token}`);
+            if (profileResp.ok) {
+                report.metaGraph.status = "CONNECTED (Limited Scopes)";
+            } else {
+                const errData = await profileResp.json();
+                throw new Error(errData.error?.message || "Meta Handshake Fail");
+            }
+        }
+    } catch (err) {
+        report.metaGraph.status = "FAIL";
+        report.errors.push(`Meta Graph API Error: ${err.message}`);
+    }
+
+    // 3. TEST GOOGLE MY BUSINESS API
+    try {
+        const accessToken = await getGBPAuth();
+        const locationsResp = await fetch("https://mybusiness.googleapis.com/v4/accounts", {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+        
+        if (locationsResp.ok) {
+            const data = await locationsResp.json();
+            report.googleMyBusiness.status = "AUTHENTICATED";
+            report.googleMyBusiness.accountsCount = data.accounts?.length || 0;
+        } else {
+            const errData = await locationsResp.json();
+            throw new Error(errData.error?.message || "GBP Auth Fail");
+        }
+    } catch (err) {
+        report.googleMyBusiness.status = "FAIL";
+        report.errors.push(`GMB API Error: ${err.message}`);
+    }
+
+    // 4. INSIGHTS DRY RUN (Last 14 Posts)
+    try {
+        const postsSnap = await db.collection("socialPosts")
+            .orderBy("timestamp", "desc")
+            .limit(14)
+            .get();
+        
+        report.insightsDryRun.samplesAnalyzed = postsSnap.size;
+        
+        // Attempt to fetch metrics for one sample post to test specific 403s
+        if (postsSnap.size > 0) {
+            const firstPost = postsSnap.docs[0].data();
+            if (firstPost.fbPostId) {
+                const metricUrl = `https://graph.facebook.com/v19.0/${firstPost.fbPostId}/insights?metric=post_impressions_unique,post_engaged_users&access_token=${META_PERMANENT_PAGE_TOKEN.value()}`;
+                const metricResp = await fetch(metricUrl);
+                if (metricResp.status === 403) {
+                    report.errors.push("PERMISSION DENIED: Insights access (403 Forbidden) on specific Post IDs.");
+                    report.insightsDryRun.status = "FORBIDDEN";
+                } else if (metricResp.ok) {
+                    report.insightsDryRun.status = "FUNCTIONAL";
+                } else {
+                    report.insightsDryRun.status = "ANOMALY";
+                }
+            } else {
+                report.insightsDryRun.status = "NO_PUBLISHED_DATA";
+            }
+        } else {
+            report.insightsDryRun.status = "NO_SAMPLES";
+        }
+    } catch (err) {
+        report.insightsDryRun.status = "ERROR";
+        report.errors.push(`Insights Dry Run Fail: ${err.message}`);
+    }
+
+    // Final Determination
+    report.overallReadiness = report.errors.length === 0 ? "READY" : "HARDENING_REQUIRED";
+
+    res.status(200).json(report);
+});
+
 // Production Contact Enquiry Agent
 exports.processContactEnquiry = onRequest({ 
     cors: true,
