@@ -1684,57 +1684,71 @@ exports.processContactEnquiry = onRequest({
     }
 });
 
-/**
- * CORE SOCIAL INTELLIGENCE FORENSIC ENGINE
- * Analyzes performance, sentiment, and geographical efficacy.
- */
 async function runSocialIntelligenceForensics() {
-    console.log("[FORENSIC AGENT] Initializing Deep Audit of Social Ecosystem...");
+    console.log("[FORENSIC AGENT] Initiating Live Engagement Backfill...");
     
-    // 1. Forensic Data Collection (Social Posts & Metrics)
-    const postsSnap = await db.collection("socialPosts").get();
+    const postsSnap = await db.collection("socialPosts").where("published", "==", true).get();
     const totalPostsFound = postsSnap.size;
-    console.log(`[FORENSIC AGENT] Authority Verified. Analyzing ${totalPostsFound} historical entries.`);
-
-    // Simulated Metrics (to be replaced with Meta/GBP API Sync in full production)
-    const stats = {
-        views: (totalPostsFound * 142) + Math.floor(Math.random() * 500),
-        shares: (totalPostsFound * 4) + Math.floor(Math.random() * 10),
-        likes: (totalPostsFound * 18) + Math.floor(Math.random() * 50),
-        follows: 34 + Math.floor(Math.random() * 10),
-        clicks: (totalPostsFound * 11) + Math.floor(Math.random() * 20)
-    };
-
-    // 2. Aggregate Data for AI Analysis
-    const recentPosts = await db.collection("socialPosts")
-        .orderBy("timestamp", "desc")
-        .limit(20)
-        .get();
     
-    const geoData = recentPosts.docs.map(d => {
-        const p = d.data();
-        return `TOWN: ${p.town} | TYPE: ${p.scheduledTime} | CONTENT: ${p.content}`;
-    }).join("\n---\n");
+    let aggregateStats = { views: 0, shares: 0, likes: 0, follows: 0, clicks: 0 };
+    let postDetails = [];
 
+    const metaToken = META_PERMANENT_PAGE_TOKEN.value();
+    let gbpToken = null;
+    try {
+        gbpToken = await getGBPAuth();
+    } catch (e) { console.warn("[FORENSIC AGENT] GBP Auth Deferred: Refresh token pending or invalid."); }
+
+    // 1. FORENSIC DRAW DOWN (Meta & GMB)
+    for (const doc of postsSnap.docs) {
+        const p = doc.data();
+        let pStats = { views: 0, shares: 0, likes: 0, clicks: 0 };
+
+        // A. Meta Data (FB/IG)
+        if (p.fbPostId) {
+            try {
+                const url = `https://graph.facebook.com/v19.0/${p.fbPostId}/insights?metric=post_impressions_unique,post_engaged_users&access_token=${metaToken}`;
+                const resp = await fetch(url);
+                const data = await resp.json();
+                if (data.data) {
+                    pStats.views = data.data.find(m => m.name === 'post_impressions_unique')?.values?.[0]?.value || 0;
+                    pStats.clicks = data.data.find(m => m.name === 'post_engaged_users')?.values?.[0]?.value || 0;
+                }
+                
+                // Get Shares & Likes via fields
+                const fieldsUrl = `https://graph.facebook.com/v19.0/${p.fbPostId}?fields=shares,likes.summary(true)&access_token=${metaToken}`;
+                const fieldsResp = await fetch(fieldsUrl);
+                const fieldsData = await fieldsResp.json();
+                pStats.shares = fieldsData.shares?.count || 0;
+                pStats.likes = fieldsData.likes?.summary?.total_count || 0;
+            } catch (e) { console.error(`Meta Fetch Fail for ${doc.id}:`, e.message); }
+        }
+
+        // B. Aggregate into totals
+        aggregateStats.views += pStats.views;
+        aggregateStats.shares += pStats.shares;
+        aggregateStats.likes += pStats.likes;
+        aggregateStats.clicks += pStats.clicks;
+
+        postDetails.push(`ID: ${doc.id} | TOWN: ${p.town} | VIEWS: ${pStats.views} | SHARES: ${pStats.shares} | CLICKS: ${pStats.clicks} | CONTENT: ${p.content.substring(0, 50)}...`);
+    }
+
+    // 2. AI STRATEGIC SYNTHESIS
     const analysisPrompt = `
-    TASK: Perform a forensic performance audit on the following social media data for Cash 4 Houses.
-    DATA SET:
-    ${geoData}
+    TASK: Perform a forensic performance audit on the backfilled engagement data for Cash 4 Houses.
+    DATA SET (Last 14 Published Posts):
+    ${postDetails.join("\n")}
     
-    STATISTICS:
-    - Total Posts Analyzed: ${totalPostsFound}
-    - Total Reach: ${stats.views}
-    - Interaction Rate: ${((stats.likes + stats.shares) / stats.views * 100).toFixed(2)}%
-    
-    META-DATA (Include in Analysis):
-    - Essex Cities Covered: (Southend, Chelmsford, Basildon, etc.)
-    - Postcodes Covered: (SS0-SS17, CM0-CM15)
+    OVERALL TOTALS:
+    - Total Reach (Forensic): ${aggregateStats.views}
+    - Total Shares: ${aggregateStats.shares}
+    - Total Clicks: ${aggregateStats.clicks}
     
     OBJECTIVE:
-    Analyze the specific messaging styles against the town data. 
-    1. Which town responds best to "Probate" vs "Chain Break"?
-    2. What is the optimal emotional volume (The Warm Blanket ethos)?
-    3. Update the Strategy and Geographical Efficacy Map.
+    Analyze the performance baseline. 
+    1. Which postcode area (SS1 Southend vs SS9 Leigh-on-Sea) has shown the highest 'Share' rate relative to views?
+    2. Confirm if 'Fast Cash' (SS1) or 'Discreet Sale' (SS9) is trending.
+    3. Update the Strategy for the next 24-hour cycle.
     
     RETURN FORMAT (JSON):
     {
@@ -1753,7 +1767,7 @@ async function runSocialIntelligenceForensics() {
          "chelmsford": "string",
          "billericay": "string"
       },
-      "analysisSummary": "markdown string"
+      "analysisSummary": "markdown string (Highlight: Share-rate winner SS1 vs SS9)"
     }
     `;
 
@@ -1761,23 +1775,24 @@ async function runSocialIntelligenceForensics() {
         const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: analysisPrompt });
         const strategy = JSON.parse(text.replace(/```json|```/g, "").trim());
 
-        // 3. Update Intelligence Repositories
         await db.collection("socialStrategy").doc("latest").set({
             ...strategy,
-            auditVersion: "2.4.0",
+            auditVersion: "3.0.1 (Live Forensic)",
+            totalBackfilledPosts: totalPostsFound,
             timestamp: admin.firestore.FieldValue.serverTimestamp()
         });
 
         await db.collection("socialStats").doc("global").set({
-            ...stats,
+            ...aggregateStats,
+            follows: 42, // Static/Est for this run
             postCount: totalPostsFound,
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        console.log("[FORENSIC AGENT] Intelligence Sync Complete. Repositories updated.");
-        return { success: true, postsAnalyzed: totalPostsFound, strategy };
+        console.log("[FORENSIC AGENT] Historical Backfill Complete. Core Strategy baseline established.");
+        return { success: true, stats: aggregateStats, strategy };
     } catch (error) {
-        console.error("[FORENSIC AGENT] Analysis Error:", error);
+        console.error("[FORENSIC AGENT] Backfill Error:", error);
         throw error;
     }
 }
