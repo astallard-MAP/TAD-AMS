@@ -275,23 +275,57 @@ async function loadDashboardStats() {
                             const data = d.data();
                             const name = `${data.firstName || ''} ${data.surname || ''}`.toLowerCase();
                             const address = (data.address || "").toLowerCase();
-                            if (name.includes("test") || name.includes("john doe") || name.includes("jane smith") || address.includes("test st")) {
-                                await deleteDoc(doc(db, "leads", d.id));
+                            const email = (data.email || "").toLowerCase();
+                            
+                            // Forensic Patterns for Test/Sample Data
+                            const isTest = name.includes("test") || 
+                                           name.includes("john doe") || 
+                                           name.includes("jane smith") || 
+                                           address.includes("test st") ||
+                                           address.includes("carlton avenue") ||
+                                           address.includes("undefined") ||
+                                           email.includes("sample@c4h.co.uk") ||
+                                           email.includes("undefined") ||
+                                           email === "andy@stallard.co"; // Removing old dev email
+
+                            if (isTest) {
+                                const leadId = d.id;
+                                await deleteDoc(doc(db, "leads", leadId));
                                 purged++;
+
+                                // Cleanup related collections
+                                const { where, query, collection } = await import("firebase/firestore");
+                                
+                                // Clean Communications
+                                const commSnap = await getDocs(query(collection(db, "communications"), where("leadId", "==", leadId)));
+                                for (const cd of commSnap.docs) await deleteDoc(doc(db, "communications", cd.id));
+                                
+                                // Clean Tasks
+                                const taskSnap = await getDocs(query(collection(db, "tasks"), where("leadId", "==", leadId)));
+                                for (const td of taskSnap.docs) await deleteDoc(doc(db, "tasks", td.id));
+                                
+                                // Clean UserMessages
+                                const msgSnap = await getDocs(query(collection(db, `userMessages/${leadId}/messages`)));
+                                for (const md of msgSnap.docs) await deleteDoc(doc(db, `userMessages/${leadId}/messages/${md.id}`));
                             }
                         }
                         
+                        // Also scrub test users
                         const usersSnap = await getDocs(collection(db, "users"));
                         for (const d of usersSnap.docs) {
-                            const email = (d.data().email || "").toLowerCase();
-                            if (email.includes("test") || email.includes("example.com")) {
+                            const data = d.data();
+                            const email = (data.email || "").toLowerCase();
+                            const name = (data.displayName || "").toLowerCase();
+                            
+                            if (email.includes("test") || email.includes("example.com") || email.includes("sample@c4h.co.uk") || name.includes("test") || email === "") {
                                 await deleteDoc(doc(db, "users", d.id));
                                 purged++;
                             }
                         }
 
-                        alert(`Forensic scrub complete. ${purged} test records eliminated.`);
+                        alert(`Forensic scrub complete. ${purged} artifacts eliminated from production.`);
                         loadLeads();
+                        loadDashboardStats();
                     } catch (err) {
                         console.error("Purge Error:", err);
                         alert("Scrub interrupted: " + err.message);
