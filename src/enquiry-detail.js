@@ -1,4 +1,4 @@
-import { db, auth } from './firebase-config.js';
+import { db, auth, authReady } from './firebase-config.js';
 import { 
     doc, 
     getDoc, 
@@ -11,24 +11,28 @@ import {
     updateDoc,
     where
 } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
 
 const urlParams = new URLSearchParams(window.location.search);
 const leadId = urlParams.get('id');
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
-onAuthStateChanged(auth, (user) => {
+async function checkAuth() {
+    const user = await authReady;
     if (!user || user.uid !== ADMIN_UID) {
+        console.warn("Access Denied: Administrative context required.");
         window.location.href = "/";
-    } else {
-        if (leadId) {
-            initWorkspace();
-        } else {
-            alert("No Lead ID specified.");
-            window.location.href = "/admin.html";
-        }
+        return;
     }
-});
+    
+    if (leadId) {
+        initWorkspace();
+    } else {
+        alert("Enquiry ID missing. Returning to Command Centre.");
+        window.location.href = "/admin.html";
+    }
+}
+
+checkAuth();
 
 async function initWorkspace() {
     loadLeadData();

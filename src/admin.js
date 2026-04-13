@@ -1,4 +1,6 @@
 import { authReady, db, auth, storage, functions } from './firebase-config.js';
+window.db = db;
+window.storage = storage;
 import { 
     collection, 
     getDocs, 
@@ -240,22 +242,67 @@ async function loadDashboardStats() {
             console.warn("Social Audit Load Fail", e); 
         }
 
-        // 8. GBP Activity Insights
-        try {
-            const gbpResp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/getGBPInsights');
-            const gbpData = await gbpResp.json();
-            if (gbpData.success) {
-                document.getElementById('gbp-map-views').textContent = gbpData.mapViews.toLocaleString();
-                document.getElementById('gbp-directions').textContent = gbpData.directions.toLocaleString();
-            } else {
-                document.getElementById('gbp-map-views').textContent = "0";
-                document.getElementById('gbp-directions').textContent = "0";
+            // 8. GBP Activity Insights
+            try {
+                const gbpResp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/getGBPInsights');
+                const gbpData = await gbpResp.json();
+                if (gbpData.success) {
+                    document.getElementById('gbp-map-views').textContent = gbpData.mapViews.toLocaleString();
+                    document.getElementById('gbp-directions').textContent = gbpData.directions.toLocaleString();
+                } else {
+                    document.getElementById('gbp-map-views').textContent = "0";
+                    document.getElementById('gbp-directions').textContent = "0";
+                }
+            } catch (e) {
+                console.warn("GBP Insights Fetch Fail:", e);
             }
-        } catch (e) {
-            console.warn("GBP Insights Fetch Fail:", e);
-        }
 
-    } catch (err) { console.error("Stats Error:", err); }
+            // 9. Purge Test Data Logic
+            const purgeBtn = document.getElementById('btn-purge-test');
+            if (purgeBtn) {
+                purgeBtn.onclick = async () => {
+                    if (!confirm("CAUTION: This will forensicly scrub all test records (Test names, Example emails, Test addresses) from the production environment. Proceed?")) return;
+                    
+                    purgeBtn.disabled = true;
+                    purgeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scrubbing...';
+                    
+                    try {
+                        const { collection, getDocs, deleteDoc, doc } = await import("firebase/firestore");
+                        const leadsSnap = await getDocs(collection(db, "leads"));
+                        let purged = 0;
+                        
+                        for (const d of leadsSnap.docs) {
+                            const data = d.data();
+                            const name = `${data.firstName || ''} ${data.surname || ''}`.toLowerCase();
+                            const address = (data.address || "").toLowerCase();
+                            if (name.includes("test") || name.includes("john doe") || name.includes("jane smith") || address.includes("test st")) {
+                                await deleteDoc(doc(db, "leads", d.id));
+                                purged++;
+                            }
+                        }
+                        
+                        const usersSnap = await getDocs(collection(db, "users"));
+                        for (const d of usersSnap.docs) {
+                            const email = (d.data().email || "").toLowerCase();
+                            if (email.includes("test") || email.includes("example.com")) {
+                                await deleteDoc(doc(db, "users", d.id));
+                                purged++;
+                            }
+                        }
+
+                        alert(`Forensic scrub complete. ${purged} test records eliminated.`);
+                        loadLeads();
+                    } catch (err) {
+                        console.error("Purge Error:", err);
+                        alert("Scrub interrupted: " + err.message);
+                    } finally {
+                        purgeBtn.disabled = false;
+                        purgeBtn.innerHTML = '<i class="fas fa-trash-can"></i> Purge Test Data';
+                    }
+                };
+            }
+
+        } catch (err) { console.error("Stats Error:", err); }
 }
 
 async function loadAdminNews() {
@@ -323,6 +370,7 @@ async function loadLeads() {
         console.error("Error loading leads:", error);
     }
 }
+window.loadLeads = loadLeads;
 
 // Efficiency Report Logic
 
