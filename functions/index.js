@@ -1815,3 +1815,74 @@ exports.manualSocialAnalysis = onRequest({ cors: true }, async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+
+/**
+ * WEEKLY PERFORMANCE DIGEST AGENT
+ * Dispatched every Monday at 8:00 AM GMT.
+ * Compares current week performance against the Baseline Audit.
+ */
+exports.weeklyPerformanceDigest = onSchedule({
+    schedule: "0 8 * * 1", // 8 AM Monday
+    timeZone: "Europe/London",
+    secrets: [
+        "AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET", 
+        "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_REFRESH_TOKEN", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET"
+    ]
+}, async (event) => {
+    console.log("[DIGEST AGENT] Generating Weekly Performance Forensic Report...");
+    
+    try {
+        const statsSnap = await db.collection("socialStats").doc("global").get();
+        const stratSnap = await db.collection("socialStrategy").doc("latest").get();
+        const currentStats = statsSnap.data() || {};
+        
+        // 1. GMB Status Check
+        let gmbStatus = "ACTIVE (Handshake Verified)";
+        try {
+            await getGBPAuth();
+        } catch (e) { gmbStatus = "PENDING (Token Propagation Delay Detected)"; }
+
+        // 2. Generate Digest using Gemini 2.5
+        const digestPrompt = `
+        TASK: Generate a professional, concise Weekly Performance Digest for Cash 4 Houses.
+        RECIPIENT: Andy (Managing Director)
+        
+        WEEKLY METRICS:
+        - Views: ${currentStats.views || 0}
+        - Shares: ${currentStats.shares || 0}
+        - Clicks: ${currentStats.clicks || 0}
+        
+        STRATEGIC FOCUS:
+        - SS1 (Southend) Pivot: Fast Cash / Repossession
+        - SS9 (Leigh-on-Sea) Pivot: Discreet Sale / Professionalism
+        - GMB Heartbeat: ${gmbStatus}
+        
+        OBJECTIVE:
+        Compare these against the "Baseline Audit" established on April 13th.
+        Highlight:
+        1. Click Velocity for SS1.
+        2. Share Velocity for SS9.
+        3. High-Yield Lead Potential.
+        
+        TONE: Professional, Direct, High-Yield Focused.
+        RETURN: HTML Email Body (Clean, structured HTML).
+        `;
+
+        const { text: emailBody } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: digestPrompt });
+
+        // 3. Dispatch via Office 365 Graph API
+        const client = getGraphClient();
+        await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
+            message: {
+                subject: `Weekly Social Intelligence Digest: ${new Date().toLocaleDateString('en-GB')}`,
+                body: { contentType: "HTML", content: emailBody },
+                toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
+            },
+            saveToSentItems: true
+        });
+
+        console.log("[DIGEST AGENT] Performance Digest Dispatched.");
+    } catch (error) {
+        console.error("[DIGEST AGENT] Job Execution Failure:", error);
+    }
+});
