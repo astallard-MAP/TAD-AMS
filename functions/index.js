@@ -224,6 +224,10 @@ async function generateSocialPost(timeOfDay) {
       ${areaInsight ? `- AREA-SPECIFIC INSIGHT (${town}): ${areaInsight}` : ''}
       - Content Tone Adjustment: ${strategy.toneAdjustment || 'Increase local community focus'}
       - Target Motivation: ${strategy.targetMotivation || 'Fast financial turnaround'}
+      
+      POSTCODE-SPECIFIC OVERRIDES:
+      ${strategy.highPerformingPostcode === 'SS1' ? '- PRIORITY HOOK: Fast Cash / Repossession (Distress Focus)' : ''}
+      ${strategy.highPerformingPostcode === 'SS9' ? '- PRIORITY HOOK: Discreet Sale / Professionalism (Integrity Focus)' : ''}
       `;
   }
 
@@ -1506,6 +1510,127 @@ exports.portalReadinessSentinel = onRequest({
     res.status(200).json(report);
 });
 
+/**
+ * META INSIGHTS VALIDATOR
+ * Tests the new Permanent Page Token and specific engagement metrics.
+ */
+exports.testMetaInsights = onRequest({
+    cors: true,
+    secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"]
+}, async (req, res) => {
+    const pageId = "732529673284465"; // Specific Page ID requested
+    const token = META_PERMANENT_PAGE_TOKEN.value();
+    
+    console.log(`[VALIDATOR] Testing Insights for Page: ${pageId}...`);
+    
+    try {
+        // 1. Fetch Page Level Insights (24hr window sample)
+        const url = `https://graph.facebook.com/v19.0/${pageId}/insights?metric=page_impressions&access_token=${token}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+        
+        if (data.error) {
+            return res.status(200).json({ 
+                success: false, 
+                error: data.error.message,
+                read_insights_status: data.error.message.includes("read_insights") ? "MISSING" : "ERROR"
+            });
+        }
+        
+        // 2. Fetch specific Share count (Sample from latest post)
+        const postsUrl = `https://graph.facebook.com/v19.0/${pageId}/feed?limit=1&fields=shares,message&access_token=${token}`;
+        const postsResp = await fetch(postsUrl);
+        const postsData = await postsResp.json();
+        const latestPost = postsData.data?.[0];
+        
+        res.status(200).json({
+            success: true,
+            read_insights_status: "VERIFIED",
+            message: "New Token Active and Authorized.",
+            diagnostics: {
+                shares_sample: latestPost?.shares?.count || 0,
+                click_metrics_found: data.data?.length > 0,
+                page_id_verified: pageId
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+/**
+ * GMB AUTHENTICATION UTILITY
+ * Generates a production-grade OAuth2 Authorization URL for Google Business Profile.
+ */
+exports.generateGMBAuthUrl = onRequest({
+    cors: true,
+    secrets: ["GBP_CLIENT_ID", "GBP_CLIENT_SECRET"]
+}, async (req, res) => {
+    try {
+        const clientId = GBP_CLIENT_ID.value();
+        const redirectUri = "https://us-central1-c4h-wesbite.cloudfunctions.net/exchangeGMBToken"; // Next step handler
+        
+        const scopes = [
+            'https://www.googleapis.com/auth/business.manage',
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile'
+        ];
+
+        const auth = new google.auth.OAuth2(clientId, GBP_CLIENT_SECRET.value(), redirectUri);
+        const url = auth.generateAuthUrl({
+            access_type: 'offline',
+            prompt: 'consent',
+            scope: scopes
+        });
+
+        res.status(200).json({ 
+            success: true, 
+            auth_url: url,
+            instructions: "1. Open this URL in your browser. 2. Authorize Cash4Houses. 3. Copy the 'code' from the URL on the next page and send it to the Developer."
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/**
+ * GMB TOKEN EXCHANGE HANDLER
+ * Exchanges authorization code for a permanent Refresh Token.
+ */
+exports.exchangeGMBToken = onRequest({
+    cors: true,
+    secrets: ["GBP_CLIENT_ID", "GBP_CLIENT_SECRET"]
+}, async (req, res) => {
+    const code = req.query.code || req.body.code;
+    if (!code) return res.status(400).send("Missing authorization code.");
+
+    try {
+        const auth = new google.auth.OAuth2(
+            GBP_CLIENT_ID.value(),
+            GBP_CLIENT_SECRET.value(),
+            "https://us-central1-c4h-wesbite.cloudfunctions.net/exchangeGMBToken"
+        );
+        
+        const { tokens } = await auth.getToken(code);
+        
+        if (tokens.refresh_token) {
+            res.status(200).json({
+                success: true,
+                refresh_token: tokens.refresh_token,
+                message: "SUCCESS! Copy this Refresh Token and update the GBP_REFRESH_TOKEN secret."
+            });
+        } else {
+            res.status(200).json({
+                success: false,
+                message: "No refresh token returned. Ensure you 'prompt=consent' or revoke previous access to force a fresh refresh token.",
+                tokens: tokens
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // Production Contact Enquiry Agent
 exports.processContactEnquiry = onRequest({ 
     cors: true,
@@ -1601,6 +1726,10 @@ async function runSocialIntelligenceForensics() {
     - Total Reach: ${stats.views}
     - Interaction Rate: ${((stats.likes + stats.shares) / stats.views * 100).toFixed(2)}%
     
+    META-DATA (Include in Analysis):
+    - Essex Cities Covered: (Southend, Chelmsford, Basildon, etc.)
+    - Postcodes Covered: (SS0-SS17, CM0-CM15)
+    
     OBJECTIVE:
     Analyze the specific messaging styles against the town data. 
     1. Which town responds best to "Probate" vs "Chain Break"?
@@ -1615,6 +1744,8 @@ async function runSocialIntelligenceForensics() {
       "bestTime": "string",
       "toneAdjustment": "string",
       "targetMotivation": "string",
+      "highPerformingCity": "string",
+      "highPerformingPostcode": "string",
       "areaInsights": {
          "southend-on-sea": "string",
          "basildon": "string",
