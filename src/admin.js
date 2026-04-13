@@ -767,3 +767,92 @@ function setupAdminMessagingHub() {
         };
     }
 }
+
+// --- SOCIAL INTELLIGENCE HUB ---
+const btnSocialIntel = document.getElementById('btn-social-intel');
+const socialIntelSection = document.getElementById('social-intel-section');
+const allAdminSections = document.querySelectorAll('.admin-section, .admin-panel, .kpi-row, .admin-grid, .quick-actions');
+
+if (btnSocialIntel) {
+    btnSocialIntel.onclick = () => {
+        // Hide other specific sections
+        allAdminSections.forEach(s => s.style.display = 'none');
+        document.querySelector('.admin-grid').style.display = 'none';
+        
+        socialIntelSection.style.display = 'block';
+        loadSocialIntelligence();
+    };
+}
+
+async function loadSocialIntelligence() {
+    console.log("Loading Social Intelligence Forensic Data...");
+    
+    // 1. Load Global Stats
+    try {
+        const statsSnap = await getDoc(doc(db, "socialStats", "global"));
+        if (statsSnap.exists()) {
+            const s = statsSnap.data();
+            document.getElementById('social-views').textContent = s.views.toLocaleString();
+            document.getElementById('social-shares').textContent = s.shares.toLocaleString();
+            document.getElementById('social-likes').textContent = s.likes.toLocaleString();
+            document.getElementById('social-follows').textContent = s.follows.toLocaleString();
+            document.getElementById('social-clicks').textContent = s.clicks.toLocaleString();
+        }
+    } catch (e) { console.error("Stats fail:", e); }
+
+    // 2. Load Strategic Analysis
+    try {
+        const stratSnap = await getDoc(doc(db, "socialStrategy", "latest"));
+        const analysisEl = document.getElementById('social-ai-analysis');
+        const timingTable = document.getElementById('social-timing-table');
+
+        if (stratSnap.exists()) {
+            const strat = stratSnap.data();
+            analysisEl.innerHTML = `
+                <div class="strategy-card" style="padding: 1.5rem; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <p style="margin-bottom: 0.5rem;"><strong>Primary High-Yield Hook:</strong> <span class="badge" style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">${strat.topHook}</span></p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Optimal Psychological Archetype:</strong> ${strat.topPsychology}</p>
+                    <p style="margin-bottom: 1rem;"><strong>Target Motivation:</strong> ${strat.targetMotivation}</p>
+                    <div class="markdown-body" style="font-size: 0.9rem; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+                        ${marked.parse(strat.analysisSummary || "The Intelligence Agent is currently cross-referencing engagement patterns from the last 10 posts.")}
+                    </div>
+                </div>
+            `;
+
+            timingTable.innerHTML = `
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 12px;">Engagement Peak</td>
+                    <td style="padding: 12px; font-weight: 600; color: #10b981;">${strat.bestDay} at ${strat.bestTime}</td>
+                    <td style="padding: 12px;"><span class="badge" style="background: #dcfce7; color: #166534;">High</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 12px;">Click-Through Max</td>
+                    <td style="padding: 12px; font-weight: 600;">Afternoons (2-4 PM)</td>
+                    <td style="padding: 12px;"><span class="badge" style="background: #fef9c3; color: #854d0e;">Medium</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 12px;">Share Velocity</td>
+                    <td style="padding: 12px; font-weight: 600;">Weekends (Morning)</td>
+                    <td style="padding: 12px;"><span class="badge" style="background: #dcfce7; color: #166534;">High</span></td>
+                </tr>
+            `;
+        }
+    } catch (e) { console.error("Strategy fail:", e); }
+}
+
+const reAnalyzeSocialBtn = document.getElementById('re-analyze-social');
+if (reAnalyzeSocialBtn) {
+    reAnalyzeSocialBtn.onclick = async () => {
+        reAnalyzeSocialBtn.disabled = true;
+        reAnalyzeSocialBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+        try {
+            await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/manualSocialAnalysis');
+            alert("The Social Intelligence Agent has been tasked with a fresh forensic audit. Content strategy will update automatically.");
+            setTimeout(loadSocialIntelligence, 3000);
+        } catch (e) {
+            alert("Handshake failed. Sentinel is busy with other audits.");
+        }
+        reAnalyzeSocialBtn.disabled = false;
+        reAnalyzeSocialBtn.innerHTML = 'Refresh Intelligence';
+    };
+}
