@@ -86,8 +86,49 @@ async function saveToImageLibrary(imageUrl, prompt, source, metadata = {}) {
   }
 }
 
+/**
+ * Simulates a "Google Street Maps" review by generating architectural context for a town.
+ */
+async function getTownArchitecture(town) {
+  try {
+    const prompt = `Describe the typical residential architecture and street scenery of ${town}, Essex in one concise sentence. 
+    Focus on authentic house types (e.g. Victorian terraces, 1960s semi-detached, council flats) and the general vibe of the neighbourhoods.
+    This will be used for a realistic AI image generation prompt.`;
+    const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt });
+    return text.trim();
+  } catch (e) {
+    return `a typical residential street in ${town}, Essex with a mix of mid-century and older housing`;
+  }
+}
+
 async function generateSocialImage(town, context, source = "Social Post") {
-  const prompt = `A high-quality, professional photograph of a residential area in ${town}, Essex. The atmosphere must embody the "Warm Blanket" ethos: supportive, discrete, and profoundly trustworthy. Soft, atmospheric lighting, high resolution. Avoid generic stock looks; focus on a realistic, calming street scene that suggests a fresh start and peace of mind. Context: ${context.substring(0, 100)}`;
+  const townContext = await getTownArchitecture(town);
+  let prompt = "";
+
+  if (source === "Daily News Story") {
+    // Keep the "Good" news story style: professional, calming, reassuring.
+    prompt = `A high-quality, professional photograph of a residential area in ${town}, Essex. ${townContext}. 
+    The atmosphere must embody the "Warm Blanket" ethos: supportive, discrete, and profoundly trustworthy. 
+    Soft, atmospheric lighting, high resolution. Avoid generic stock looks; focus on a realistic, calming street scene. 
+    Context: ${context.substring(0, 100)}`;
+  } else {
+    // Social Post Style: Authentic, Lived-in, No "Show Home" polish
+    const propertyTypes = [
+      "a row of early 1900s terraced houses with aged brickwork and traditional features",
+      "a typical late 1950s or early 1960s semi-detached house with period character",
+      "a functional block of mid-century flats or a larger Victorian house converted into apartments",
+      "a derelict house showing signs of long-term neglect, perhaps with boarded windows or peeling paint",
+      "a property with very dated decoration from 40-60 years ago, tidy but clearly lived-in for decades",
+      "a realistic street view of a modest semi-detached home with 'rough edges' needing redecoration"
+    ];
+    const chosenType = propertyTypes[Math.floor(Math.random() * propertyTypes.length)];
+
+    prompt = `A realistic, authentic photograph of ${chosenType} in ${town}, Essex. ${townContext}.
+    STYLE: Genuine street photography, looking like a real Google Street View capture or a raw smartphone photo. 
+    AESTHETIC: "Lived-in", NOT a show home. Must include "rough edges" - faded facades, slightly weathered features, or dated exterior elements. 
+    CRITICAL: It must look like a real home belonging to someone who might be a distressed seller. Tidy but not polished, staged, or luxury. No real estate filters.
+    Atmosphere: Grounded, local, and ordinary. Focus on the reality of the property. Context: ${context.substring(0, 100)}`;
+  }
   
   // Automated asset generation fallbacks for resiliency
   const fallbacks = [
