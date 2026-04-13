@@ -240,6 +240,21 @@ async function loadDashboardStats() {
             console.warn("Social Audit Load Fail", e); 
         }
 
+        // 8. GBP Activity Insights
+        try {
+            const gbpResp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/getGBPInsights');
+            const gbpData = await gbpResp.json();
+            if (gbpData.success) {
+                document.getElementById('gbp-map-views').textContent = gbpData.mapViews.toLocaleString();
+                document.getElementById('gbp-directions').textContent = gbpData.directions.toLocaleString();
+            } else {
+                document.getElementById('gbp-map-views').textContent = "0";
+                document.getElementById('gbp-directions').textContent = "0";
+            }
+        } catch (e) {
+            console.warn("GBP Insights Fetch Fail:", e);
+        }
+
     } catch (err) { console.error("Stats Error:", err); }
 }
 

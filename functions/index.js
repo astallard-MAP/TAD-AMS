@@ -2178,3 +2178,58 @@ exports.getLiveVisitors = onRequest({
         res.status(200).json({ success: false, error: err.message, activeUsers: "N/A" });
     }
 });
+
+exports.getGBPInsights = onRequest({
+    cors: true,
+    secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"]
+}, async (req, res) => {
+    try {
+        const accessToken = await getGBPAuth();
+        const locationId = GBP_LOCATION_ID.value();
+        
+        const now = new Date();
+        const start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        
+        const url = `https://businessprofileperformance.googleapis.com/v1/locations/${locationId}:fetchMultiDailyMetrics?` + 
+            `dailyMetrics=BUSINESS_DIRECTION_REQUESTS&` +
+            `dailyMetrics=BUSINESS_IMPRESSIONS_ON_GOOGLE_MAPS&` +
+            `dailyRange.startDate.year=${start.getFullYear()}&` +
+            `dailyRange.startDate.month=${start.getMonth() + 1}&` +
+            `dailyRange.startDate.day=${start.getDate()}&` +
+            `dailyRange.endDate.year=${now.getFullYear()}&` +
+            `dailyRange.endDate.month=${now.getMonth() + 1}&` +
+            `dailyRange.endDate.day=${now.getDate()}`;
+
+        const resp = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+
+        if (!resp.ok) {
+            const errData = await resp.json();
+            throw new Error(errData.error?.message || "Failed to fetch GMB insights");
+        }
+
+        const data = await resp.json();
+        
+        let directions = 0;
+        let mapViews = 0;
+        
+        if (data.multiDailyMetricValues) {
+            data.multiDailyMetricValues.forEach(m => {
+                const total = m.dailyMetricValues.reduce((sum, v) => sum + parseInt(v.value || 0), 0);
+                if (m.dailyMetric === "BUSINESS_DIRECTION_REQUESTS") directions = total;
+                if (m.dailyMetric === "BUSINESS_IMPRESSIONS_ON_GOOGLE_MAPS") mapViews = total;
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            directions,
+            mapViews,
+            timestamp: new Date().toISOString()
+        });
+    } catch (err) {
+        console.error("GBP Insights Error:", err);
+        res.status(200).json({ success: false, error: err.message });
+    }
+});
