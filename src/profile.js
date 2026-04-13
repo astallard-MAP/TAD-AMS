@@ -24,7 +24,7 @@ const ADMIN_NAV = `
     <a href="/audit-log.html"><i class="fas fa-shield-halved"></i> Security & Audit</a>
 `;
 
-onAuthStateChanged(auth, async (user) => {
+authReady.then(async (user) => {
     if (!user) {
         window.location.href = "/";
     } else {
@@ -33,6 +33,9 @@ onAuthStateChanged(auth, async (user) => {
             if (sideNav) sideNav.innerHTML = ADMIN_NAV;
             document.getElementById('sidebar-user-role').textContent = "Global Admin";
         }
+        
+        // Ensure default UI state before loading
+        document.getElementById('sidebar-user-name').textContent = user.email.split('@')[0];
         loadProfile(user.uid);
     }
 });
@@ -51,7 +54,16 @@ async function loadProfile(uid) {
             updateAvatarDisplay(data.photoURL);
         }
         
-        document.getElementById('sidebar-user-name').textContent = data.displayName || auth.currentUser.email.split('@')[0];
+        if (data.displayName) {
+            document.getElementById('sidebar-user-name').textContent = data.displayName;
+        }
+    } else {
+        // First time user: Create a skeleton record
+        console.log("Initialising new character profile for UID:", uid);
+        await setDoc(doc(db, "users", uid), {
+            email: auth.currentUser.email,
+            createdAt: serverTimestamp()
+        }, { merge: true });
     }
 }
 

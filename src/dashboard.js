@@ -248,7 +248,7 @@ function setupDashboardListeners(user) {
             if (!file) return;
 
             try {
-                const storageRef = ref(storage, `profiles/${user.uid}`);
+                const storageRef = ref(storage, `avatars/${user.uid}`);
                 const snapshot = await uploadBytes(storageRef, file);
                 const url = await getDownloadURL(snapshot.ref);
 
