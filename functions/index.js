@@ -78,6 +78,7 @@ async function saveToImageLibrary(imageUrl, prompt, source, metadata = {}) {
       imageUrl,
       prompt,
       source,
+      isAI: metadata.isAI || false, // Default to false for manual/real images
       metadata,
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
@@ -98,6 +99,26 @@ async function getTownArchitecture(town) {
     return text.trim();
   } catch (e) {
     return `a typical residential street in ${town}, Essex with a mix of mid-century and older housing`;
+  }
+}
+
+/**
+ * Checks if an AI-generated image URL has been used in the last 30 days.
+ * Rule: Only applies to artificially generated images to allow reuse of real/manual photos.
+ */
+async function isImageRecentlyUsed(imageUrl) {
+  try {
+    const thirtyDaysAgo = admin.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+    const snap = await db.collection("imageLibrary")
+      .where("imageUrl", "==", imageUrl)
+      .where("timestamp", ">=", thirtyDaysAgo)
+      .where("isAI", "==", true) // Only block repeated AI generations
+      .limit(1)
+      .get();
+    return !snap.empty;
+  } catch (err) {
+    console.error("Error checking image reuse:", err);
+    return false; 
   }
 }
 
@@ -130,26 +151,43 @@ async function generateSocialImage(town, context, source = "Social Post") {
     Atmosphere: Grounded, local, and ordinary. Focus on the reality of the property. Context: ${context.substring(0, 100)}`;
   }
   
-  // Automated asset generation fallbacks for resiliency
+  // Automated asset generation fallbacks for resiliency (Real Unsplash Photos)
   const fallbacks = [
-    "https://images.unsplash.com/photo-1570129477492-45c003edd2be",
-    "https://images.unsplash.com/photo-1560518883-ce09059eeffa",
-    "https://images.unsplash.com/photo-1554995207-c18c203602cb",
-    "https://images.unsplash.com/photo-1518780664697-55e3ad937233",
-    "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09"
+    "https://images.unsplash.com/photo-1570129477492-45c003edd2be", 
+    "https://images.unsplash.com/photo-1560518883-ce09059eeffa", 
+    "https://images.unsplash.com/photo-1554995207-c18c203602cb", 
+    "https://images.unsplash.com/photo-1518780664697-55e3ad937233", 
+    "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09", 
+    "https://images.unsplash.com/photo-1574360301482-11ef70d262c1", 
+    "https://images.unsplash.com/photo-1599809275671-b5942cabc7a2", 
+    "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00", 
+    "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff", 
+    "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf", 
+    "https://images.unsplash.com/photo-1523217582562-b131a1961559"
   ];
-  const randomImg = fallbacks[Math.floor(Math.random() * fallbacks.length)] + "?auto=format&fit=crop&q=80&w=1200";
 
   try {
     // Production Asset Generation via Vertex AI
     const result = await ai.generate({ model: 'vertexai/imagen-3', prompt: prompt });
     const imageUrl = result.media[0].url; 
-    await saveToImageLibrary(imageUrl, prompt, source, { town });
-    return imageUrl;
+    
+    // Check for reuse ONLY for AI generated images
+    const used = await isImageRecentlyUsed(imageUrl);
+    if (!used) {
+      await saveToImageLibrary(imageUrl, prompt, source, { town, isAI: true });
+      return imageUrl;
+    }
+    console.warn("AI generated image already used recently. Falling back to fresh asset.");
+    throw new Error("Duplicate AI image detected");
   } catch (error) {
-    console.warn("Image Gen Error (using fallback):", error);
-    await saveToImageLibrary(randomImg, prompt, source, { town, fallback: true });
-    return randomImg;
+    console.warn("AI Gen Fail or Duplicate. Finding fallback from photographic library...", error.message);
+    
+    // Pick a random fallback (Real photos - exempt from 30-day block but shuffled for variety)
+    const randomFallback = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    const fullUrl = randomFallback + "?auto=format&fit=crop&q=80&w=1200";
+    
+    await saveToImageLibrary(fullUrl, prompt, source, { town, fallback: true, isAI: false });
+    return fullUrl;
   }
 }
 
@@ -855,12 +893,18 @@ exports.chatbotAndy = onRequest({
       MOBILE-FIRST BREVITY PROTOCOL (CRITICAL):
       - 65% of users are on mobile. Keep responses SHORT and PUNCHY. 
       - Avoid long blocks of text. Use single-sentence paragraphs.
-      - LISTS: Keep list items to 1-5 words maximum. (e.g., "1. No Chains", "2. Cash Funds").
       - Never be verbose. Get to the point while maintaining the "Warm Blanket" empathy.
       
-      MANDATORY CALL TO ACTION:
-      - Every single response MUST end with a clear nudge to take action.
-      - Examples: "Just fill out the offer form below to get started.", "Why not submit your address now for a same-day valuation?", "Click 'Get Your Cash Offer' to see how we can help."
+      SMALL TALK & HUMAN CONNECTION (NEW):
+      - You are more than a property bot; you are a caring human representative.
+      - Proactively check in on the user. Ask: "How are you feeling today?", "Is there something specific on your mind?", or "What can I do to make this easier for you?"
+      - Engage in light small talk if the user initiates it. Be warm, relaxed, and unhurried.
+      - Your goal is to build trust through genuine interest in their situation, not just their house.
+      
+      MANDATORY CALL TO ACTION (WITH EMPATHY):
+      - Every response should close with a nudge toward the valuation form, but it must feel like a supportive NEXT STEP for their peace of mind, not a sales pitch.
+      - Prioritize the human connection first; if they are in distress, focus on empathy before the CTA.
+      - Examples: "Whenever you're ready, the valuation form is here to help us help you.", "If you'd like to see some numbers, just pop your address in the form below.", "How about we take the first step together? Submit your address and I'll get to work."
 
       COMPASSIONATE SAFEGUARDING PROTOCOL:
       - If a user displays worry/distress: GENTLY suggest professional support.
