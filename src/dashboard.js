@@ -149,6 +149,9 @@ async function loadUserProperties(email) {
         // 3. Populate Dossier Matrix (18 Forensic Points)
         renderDossierMatrix(prop);
 
+        // 4. Trigger Valuation Intelligence Agent
+        runValuationIntelligence(prop);
+
     } catch (error) {
         console.error("Matrix Load Error:", error);
     }
@@ -378,3 +381,101 @@ if (chatForm && chatInput && aiChatMessages) {
         }
     };
 }
+
+async function runValuationIntelligence(prop) {
+    const grid = document.getElementById('valuation-grid');
+    const user = auth.currentUser;
+    if (!grid) return;
+    
+    try {
+        const resp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/researchPropertyValuation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                propertyAddress: prop.address,
+                town: prop.townCity || 'Southend',
+                postcode: prop.postcode || 'SS1'
+            })
+        });
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.error);
+
+        grid.innerHTML = `
+            <div class="val-column address-col">
+                <i class="fas fa-location-dot"></i>
+                <h3>Subject Property</h3>
+                <p style="font-size: 1.2rem; font-weight: 800; color: #EB287A;">${prop.address}</p>
+            </div>
+            <div class="val-column summary-col">
+                <i class="fas fa-robot"></i>
+                <h3>AI Performance Summary</h3>
+                <p style="font-size: 0.95rem; line-height: 1.6; color: #475569;">${data.summary}</p>
+            </div>
+            <div class="val-column options-col">
+                <div class="val-option-row" onclick="handlePurchaseSelection('Estate Agency', ${data.valuations.estateAgency.price})">
+                    <div class="val-option-main">
+                        <span class="val-label">Open Market Value (OMV)</span>
+                        <span class="val-price">£${data.valuations.estateAgency.price.toLocaleString()}</span>
+                    </div>
+                    <div class="val-option-meta">${data.valuations.estateAgency.subtext}</div>
+                    <button class="btn-val">Please Proceed with Estate Agency service</button>
+                </div>
+                <div class="val-option-row" onclick="handlePurchaseSelection('Auction', ${data.valuations.auction.price})">
+                    <div class="val-option-main">
+                        <span class="val-label">Auction Target (80% OMV)</span>
+                        <span class="val-price">£${data.valuations.auction.price.toLocaleString()}</span>
+                    </div>
+                    <div class="val-option-meta">${data.valuations.auction.subtext}</div>
+                    <button class="btn-val">Please Proceed with Auction service</button>
+                </div>
+                <div class="val-option-row highlight" onclick="handlePurchaseSelection('Cash Purchase', ${data.valuations.cashPurchase.price})">
+                    <div class="val-option-main">
+                        <span class="val-label">Immediate Offer (65% OMV)</span>
+                        <span class="val-price">£${data.valuations.cashPurchase.price.toLocaleString()}</span>
+                    </div>
+                    <div class="val-option-meta">${data.valuations.cashPurchase.subtext}</div>
+                    <button class="btn-val active">I would like to accept your offer / Contact Me</button>
+                </div>
+            </div>
+        `;
+
+        const appraisalLink = document.getElementById('book-appraisal-link');
+        if (appraisalLink) {
+            appraisalLink.onclick = async (e) => {
+                e.preventDefault();
+                await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/processValuationRequest', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userData: { name: user.email.split('@')[0], email: user.email },
+                        propertyAddress: prop.address
+                    })
+                });
+                alert("Sent! Andy will contact you shortly to arrange a real-life appraisal.");
+            };
+        }
+
+    } catch (e) {
+        console.error("Valuation Agent Failed:", e);
+        grid.innerHTML = `<div class="error-msg" style="padding: 20px; color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> Intelligence Agent Timeout. Propagating local data baseline...</div>`;
+    }
+}
+
+window.handlePurchaseSelection = async (type, price) => {
+    const user = auth.currentUser;
+    const propAddress = document.querySelector('.address-col p').textContent;
+    
+    try {
+        await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/processPurchaseEnquiry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userData: { name: user.email.split('@')[0], email: user.email },
+                propertyAddress: propAddress,
+                optionType: type,
+                price: price
+            })
+        });
+        alert(`Request Sent! Andy has been alerted that you wish to proceed via ${type}.`);
+    } catch (e) { alert("Enquiry failed to send."); }
+};

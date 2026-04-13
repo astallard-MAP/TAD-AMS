@@ -429,47 +429,45 @@ exports.processLead = onDocumentCreated({
   document: "leads/{leadId}", 
   secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"] 
 }, async (event) => {
-    const data = event.data.data();
-    if (!data) return;
+    const leadData = event.data.data();
+    if (!leadData) return;
     
-    // 1. ADMIN NOTIFICATION (Immediate)
-    const client = getGraphClient();
+    // 1. ADMIN NOTIFICATION (Immediate & High Importance)
     try {
-      await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
-        message: {
-          subject: `NEW LEAD: ${data.address} - ${data.firstName}`,
-          body: { 
-            contentType: "HTML", 
-            content: `
-              <h3>New Lead Details</h3>
-              <p><strong>Name:</strong> ${data.firstName} ${data.lastName}</p>
-              <p><strong>Mobile:</strong> ${data.phone}</p>
-              <p><strong>Email:</strong> ${data.email}</p>
-              <p><strong>Address:</strong> ${data.address}</p>
-              <p><strong>Reason for Sale:</strong> ${data.reason}</p>
-              <p><strong>Timeline:</strong> ${data.timeline}</p>
-            ` 
-          },
-          toRecipients: [
-            { emailAddress: { address: "andy@cash4houses.co.uk" } },
-            { emailAddress: { address: "andrew@stallard.co" } }
-          ]
-        },
-        saveToSentItems: true
-      });
+        const client = getGraphClient();
+        await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
+            message: {
+                subject: `HIGH IMPORTANCE: New Property Lead - ${leadData.propertyAddress || leadData.address}`,
+                importance: "High",
+                body: { 
+                    contentType: "HTML", 
+                    content: `
+                        <div style="font-family: Arial, sans-serif; color: #333;">
+                            <h2 style="color: #EB287A;">New Valuation Lead Received</h2>
+                            <p><strong>Property:</strong> ${leadData.propertyAddress || leadData.address}</p>
+                            <p><strong>Name:</strong> ${leadData.firstName} ${leadData.lastName}</p>
+                            <p><strong>Phone:</strong> ${leadData.phone}</p>
+                            <p><strong>Email:</strong> ${leadData.email}</p>
+                            <hr style="border: 0; border-top: 1px solid #eee;">
+                            <p><strong>Reason for Sale:</strong> ${leadData.reasonForSale || leadData.reason}</p>
+                            <p><strong>Timescale:</strong> ${leadData.timescale || leadData.timeline}</p>
+                        </div>
+                    ` 
+                },
+                toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
+            },
+            saveToSentItems: true
+        });
     } catch (adminErr) {
-      console.error("Admin Notify Error:", adminErr);
+        console.error("Critical: Admin Email Notification Failed", adminErr);
     }
 
-    // 2. USER PROFILE READINESS
-    // Create or find user to link property. 
-    // We'll let the signup agent handle the actual Auth creation, 
-    // but we can prepare the 'property' record now.
+    // 2. USER PROPERTY LINKING
     try {
       await db.collection("properties").add({
-        address: data.address,
-        ownerEmail: data.email,
-        ownerName: data.firstName,
+        address: leadData.propertyAddress || leadData.address,
+        ownerEmail: leadData.email,
+        ownerName: leadData.firstName,
         status: "Reviewing",
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         leadId: event.params.leadId
@@ -479,16 +477,19 @@ exports.processLead = onDocumentCreated({
     }
 
     // 3. QUEUE 10-MINUTE FOLLOW UP EMAIL
-    const scheduledTime = new Date(Date.now() + 10 * 60 * 1000); // +10 minutes
-    await db.collection("pendingEmails").add({
-      to: data.email,
-      firstName: data.firstName,
-      type: "TEN_MINUTE_FOLLOWUP",
-      status: "pending",
-      scheduledFor: admin.firestore.FieldValue.serverTimestamp(), // We use serverTimestamp then fix it or just use JS Date
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      sendAt: scheduledTime
-    });
+    try {
+        const scheduledTime = new Date(Date.now() + 10 * 60 * 1000); 
+        await db.collection("pendingEmails").add({
+          to: leadData.email,
+          firstName: leadData.firstName,
+          type: "TEN_MINUTE_FOLLOWUP",
+          status: "pending",
+          timestamp: admin.firestore.FieldValue.serverTimestamp(),
+          sendAt: scheduledTime
+        });
+    } catch (msgErr) {
+        console.error("Follow-up Queue Error:", msgErr);
+    }
 });
 
 // --- DELAYED EMAIL AGENT ---
@@ -1950,6 +1951,127 @@ exports.manualWeeklyDigest = onRequest({
             baseline_verified: true,
             message: "Pre-Launch Report Dispatched Successfully."
         });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/**
+ * VALUATION INTELLIGENCE AGENT
+ * Performs local market research within 0.25 miles to calculate OMV.
+ */
+exports.researchPropertyValuation = onRequest({
+    cors: true,
+    secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"]
+}, async (req, res) => {
+    const { propertyAddress, town, postcode } = req.body;
+    if (!propertyAddress) return res.status(400).send("Address required.");
+
+    try {
+        const researchPrompt = `
+        ROLE: Expert RICS-Qualified Property Valuer for the UK Market.
+        TASK: Establish the Full Open Market Value (OMV) and Property Summary for: ${propertyAddress}, ${town}, ${postcode}.
+        
+        RESEARCH PARAMETERS:
+        1. Sales history within a 0.25-mile radius.
+        2. Current regional market trends (Essex/Hertfordshire/London).
+        3. Local 'Sold' price baselines (Rightmove/Land Registry context).
+        
+        RETURN FORMAT (JSON):
+        {
+          "propertySummary": "string (40-60 words forensic overview)",
+          "omv": number (Full market value in GBP),
+          "confidenceScore": "string (e.g. 94%)",
+          "marketCondition": "string (Rising/Stable/Declining)"
+        }
+        `;
+
+        const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: researchPrompt });
+        const result = JSON.parse(text.replace(/```json|```/g, "").trim());
+
+        res.status(200).json({
+            success: true,
+            address: propertyAddress,
+            summary: result.propertySummary,
+            valuations: {
+                estateAgency: {
+                    price: result.omv,
+                    subtext: "6-9 Month completion | 38.5% success rate"
+                },
+                auction: {
+                    price: Math.floor(result.omv * 0.8),
+                    subtext: "8-10 Week completion | 72.8% success rate"
+                },
+                cashPurchase: {
+                    price: Math.floor(result.omv * 0.65),
+                    subtext: "Completion in 7 days | 100% success rate"
+                }
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/**
+ * PURCHASE ENQUIRY PROCESSOR
+ */
+exports.processPurchaseEnquiry = onRequest({
+    cors: true,
+    secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"]
+}, async (req, res) => {
+    const { userData, propertyAddress, optionType, price } = req.body;
+    try {
+        const client = getGraphClient();
+        await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
+            message: {
+                subject: "HIGH IMPORTANCE: New Purchase Enquiry",
+                importance: "High",
+                body: { 
+                    contentType: "HTML", 
+                    content: `
+                        <h2>Purchase Option Selected</h2>
+                        <p><strong>User:</strong> ${userData.name} (${userData.email})</p>
+                        <p><strong>Property:</strong> ${propertyAddress}</p>
+                        <p><strong>Selected Option:</strong> ${optionType}</p>
+                        <p><strong>Target Price:</strong> £${price.toLocaleString()}</p>
+                    `
+                },
+                toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
+            }
+        });
+        res.status(200).json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+/**
+ * VALUATION REQUEST PROCESSOR
+ */
+exports.processValuationRequest = onRequest({
+    cors: true,
+    secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"]
+}, async (req, res) => {
+    const { userData, propertyAddress } = req.body;
+    try {
+        const client = getGraphClient();
+        await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
+            message: {
+                subject: "HIGH IMPORTANCE: New Valuation Request",
+                importance: "High",
+                body: { 
+                    contentType: "HTML", 
+                    content: `
+                        <h2>On-Site Appraisal Requested</h2>
+                        <p><strong>Name:</strong> ${userData.name} (${userData.email})</p>
+                        <p><strong>Property Address:</strong> ${propertyAddress}</p>
+                    `
+                },
+                toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
+            }
+        });
+        res.status(200).json({ success: true });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }

@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --sidebar-width: 280px;
     --sidebar-bg: #1a1a1b;
     --sidebar-accent: #2c2c2e;
@@ -563,5 +563,153 @@
     }
     .dossier-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* VALUATION INTELLIGENCE DASHBOARD */
+.valuation-section {
+    margin: 2.5rem 0;
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.valuation-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1.5fr 2fr;
+    gap: 2.5rem;
+}
+
+.val-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.val-column i {
+    font-size: 1.5rem;
+    color: #EB287A;
+    margin-bottom: 1rem;
+}
+
+.val-column h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin-bottom: 15px;
+}
+
+.val-column p {
+    font-size: 1.1rem;
+    color: #1e293b;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.val-option-row {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.val-option-row:hover {
+    border-color: #EB287A;
+    transform: translateX(5px);
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.val-option-row.highlight {
+    background: #fff1f2;
+    border-color: #fda4af;
+}
+
+.val-option-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.val-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.val-price {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.val-option-meta {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+}
+
+.btn-val {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #475569;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-val.active {
+    background: #EB287A;
+    color: white;
+    border: none;
+}
+
+.btn-val:hover {
+    background: #0f172a;
+    color: white;
+}
+
+.valuation-disclaimer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+    text-align: center;
+}
+
+.valuation-disclaimer p {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.valuation-disclaimer a {
+    color: #EB287A;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.val-loading {
+    grid-column: 1 / span 3;
+    padding: 3rem;
+    text-align: center;
+    color: #64748b;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (max-width: 968px) {
+    .valuation-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
     }
 }
