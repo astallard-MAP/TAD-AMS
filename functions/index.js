@@ -617,6 +617,75 @@ exports.manualSocialGenerate = onRequest({
   res.status(200).send(text);
 });
 
+exports.instantSocialTestAgent = onRequest({
+  cors: true,
+  memory: "512MiB",
+  secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"]
+}, async (req, res) => {
+  const steps = [];
+  try {
+    steps.push("Step 1: Initialising Diagnostic Agent...");
+    
+    // 1. Content Generation
+    const town = ESSEX_TOWNS[Math.floor(Math.random() * ESSEX_TOWNS.length)];
+    const prompt = `Generate a 50-word urgent social media post for distressed property sellers in ${town}. Focus on speed and empathy.`;
+    const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: prompt });
+    steps.push(`Step 2: AI Content Generated for ${town}.`);
+    
+    // 2. Image Generation
+    let imageUrl = "";
+    try {
+      imageUrl = await generateSocialImage(town, "Diagnostic Test", "Test Agent");
+      steps.push("Step 3: Asset Generation Complete.");
+    } catch (e) {
+      steps.push(`Step 3: Asset Generation Failed (Fallback used): ${e.message}`);
+    }
+
+    // 3. Firestore Record
+    const docRef = await db.collection("socialPosts").add({
+      content: text,
+      imageUrl: imageUrl,
+      town: town,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      type: "Diagnostic Test",
+      published: false
+    });
+    steps.push(`Step 4: Audit Record Created (ID: ${docRef.id}).`);
+
+    // 4. Meta Publication
+    let metaStatus = "Success";
+    try {
+      await publishToMetaInternal(docRef.id);
+      steps.push("Step 5: Meta Publication (FB/IG) Attempted.");
+    } catch (e) {
+      metaStatus = `Failed: ${e.message}`;
+      steps.push(`Step 5: Meta Publication Failed: ${e.message}`);
+    }
+
+    // 5. GBP Publication
+    let gbpStatus = "Success";
+    try {
+      await publishToGBP(text, imageUrl);
+      steps.push("Step 6: Google Business Publication Attempted.");
+    } catch (e) {
+      gbpStatus = `Failed: ${e.message}`;
+      steps.push(`Step 6: GBP Publication Failed: ${e.message}`);
+    }
+
+    res.status(200).json({
+      operational_status: gbpStatus === "Success" && metaStatus === "Success" ? "Fully Operational" : "Partially Degraded",
+      summary: steps,
+      post_preview: text,
+      asset_url: imageUrl,
+      meta_result: metaStatus,
+      gbp_result: gbpStatus
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message, trace: steps });
+  }
+});
+
 exports.testEmailConnection = onRequest({ 
   cors: true, 
   secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"] 

@@ -710,6 +710,39 @@ if (publishGBPAction) {
     };
 }
 
+// GBP Re-auth Action
+const reauthGBPAction = document.getElementById('btn-reauth-gbp');
+if (reauthGBPAction) {
+    reauthGBPAction.onclick = async () => {
+        const icon = reauthGBPAction.querySelector('i');
+        const originalIcon = icon.className;
+        
+        icon.className = 'fas fa-spinner fa-spin';
+        reauthGBPAction.style.opacity = '0.7';
+        reauthGBPAction.style.pointerEvents = 'none';
+
+        try {
+            const resp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/generateGMBAuthUrl');
+            const result = await resp.json();
+            
+            if (result.success && result.auth_url) {
+                // Open auth URL in new tab
+                window.open(result.auth_url, '_blank');
+                alert("A new tab has opened for Google Authorization. Please complete the sign-in, then copy the Refresh Token from the final screen.");
+            } else {
+                alert("Error generating Auth URL: " + (result.error || "Unknown"));
+            }
+        } catch (err) { 
+            console.error("GMB Auth Error:", err);
+            alert("Connection Failed: Unable to reach Auth engine."); 
+        }
+        
+        icon.className = originalIcon;
+        reauthGBPAction.style.opacity = '1';
+        reauthGBPAction.style.pointerEvents = 'auto';
+    };
+}
+
 // Mobile Audit Action
 const mobileAuditAction = document.getElementById('btn-mobile-audit');
 if (mobileAuditAction) {
