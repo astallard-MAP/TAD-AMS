@@ -203,22 +203,22 @@ async function generateSocialImage(town, context, source = "Social Post") {
   } else {
     // Social Post Style: Authentic, Lived-in, No "Show Home" polish
     const propertyTypes = [
-      "a row of early 1900s terraced houses with traditional features and a neat, lived-in appearance",
-      "a typical late 1950s or early 1960s semi-detached house with authentic character and a standard garden",
-      "a functional block of mid-century flats or a larger Victorian house converted into well-kept apartments",
-      "a realistic street view of a modest family home with a parked car and typical residential landscaping",
-      "a professional and respectful handshake between two people on a residential doorstep, symbolizing trust",
-      "a close-up of a house key being handed over to a new owner, reflecting a transparent property completion",
-      "a neat arrangement of UK GBP Sterling banknotes next to house keys on a wooden table, symbolizing a fast cash transaction"
+      "a row of early 1900s terraced houses with traditional features, showing signs of wear and authentic, lived-in character",
+      "a typical late 1950s semi-detached house with a slightly overgrown garden and a weathered, authentic facade",
+      "a realistic street view of a modest house with peeling paint on the door and an unkempt residential front",
+      "a row of functional, mid-century flats with scruffy brickwork and standard local character",
+      "a professional and respectful handshake between two people on a scruffy residential doorstep, symbolizing trust",
+      "a close-up of a house key being handed over, reflecting a transparent property completion regardless of condition",
+      "a neat arrangement of UK GBP Sterling banknotes next to house keys, symbolizing a fast cash transaction for a distressed property"
     ];
     const chosenType = propertyTypes[Math.floor(Math.random() * propertyTypes.length)];
 
     prompt = `A realistic, authentic photograph of ${chosenType} in ${town}, Essex. ${townContext}.
-    STYLE: Genuine street photography or high-quality documentary style, looking like a real real-life moment. 
-    AESTHETIC: "Real-Life Average Condition". NOT a pristine show home and NOT a luxury estate. 
-    CRITICAL: It must reflect the true, respectful lifestyle of an average person in the area. Tidy, lived-in, and relatable. 
+    STYLE: Genuine street photography, looking like a raw, real-life moment captured on a phone or documentary camera.
+    AESTHETIC: "Real-Life Distressed Condition". NOT a show home. NOT a luxury estate. 
+    CRITICAL: Embrace the reality of distressed sales. Overgrown gardens, scruffy facades, and unkempt exteriors are encouraged.
     If showing transaction elements: Ensure UK GBP Sterling is used and the tone is professional, respectful, and supportive.
-    Atmosphere: Grounded, local, and ordinary. Focus on the reality of the British property market. Context: ${context.substring(0, 100)}`;
+    Atmosphere: Grounded, local, and honest. Focus on the reality of properties needing speed and empathy. Context: ${context.substring(0, 100)}`;
   }
   
   // Automated asset generation fallbacks for resiliency (Real Unsplash Photos)
@@ -258,6 +258,18 @@ async function generateSocialImage(town, context, source = "Social Post") {
     
     await saveToImageLibrary(fullUrl, prompt, source, { town, fallback: true, isAI: false });
     return fullUrl;
+  }
+}
+
+// --- UTILITY: LINK SHORTENER ---
+async function shortenUrl(url) {
+  try {
+    const resp = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
+    if (resp.ok) return await resp.text();
+    return url; // Fallback to long URL if service down
+  } catch (e) {
+    console.error("Link Shortening Failed:", e.message);
+    return url;
   }
 }
 
@@ -301,6 +313,10 @@ async function generateSocialPost(timeOfDay) {
       `;
   }
 
+  // Generate Shortened Tracking Link
+  const rawUrl = `Https://cash4houses.co.uk?utm_source=social&utm_medium=${timeOfDay.toLowerCase()}_post&utm_campaign=essex_outreach&utm_content=${town.toLowerCase().replace(/\s+/g, '_')}`;
+  const shortUrl = await shortenUrl(rawUrl);
+
   const prompt = `
     ROLE: High-Conversion Copywriter & 'South East Essex Social Media Agent' for Cash 4 Houses.
     ETHEREAL PERSONA: "The Warm Blanket" - Empathetic, professional, and a lifeline for those under pressure.
@@ -315,12 +331,12 @@ async function generateSocialPost(timeOfDay) {
     STRICT RULES (NO EXCEPTIONS):
     1. WORD LIMIT: Total post content must be UNDER 80 words.
     2. NO INTRODUCTIONS: Do NOT start with "In today's market" or "Are you looking to...".
-    3. THE HOOK: Start DIRECTLY with a hard-hitting pain point (Probate, Divorce, Foreclosure, Chain Break, or Inherited Property).
+    3. THE HOOK: Start DIRECTLY with a hard-hitting pain point (Probate, Divorce, Foreclosure, etc.).
     4. SCAN-ABILITY: Use exactly 3 bullet points (using emojis like ✅ or •) to list benefits.
     5. THE SOLUTION: Cash 4 Houses - Direct Cash Buyer. No chains, no fees, no hassle.
     6. PSYCHOLOGICAL TRIGGER: Explicitly use "We Buy As-Is" and mention "no repairs or cleaning needed".
-    7. LOCAL FOCUS: Mention ${town} specifically. Use British English (e.g., 'flats', 'local community').
-    8. CALL TO ACTION: One clear CTA pointing to Https://cash4houses.co.uk?utm_source=social&utm_medium=${timeOfDay.toLowerCase()}_post&utm_campaign=essex_outreach&utm_content=${town.toLowerCase().replace(/\s+/g, '_')}.
+    7. LOCAL FOCUS: Mention ${town} specifically. Use British English.
+    8. CALL TO ACTION: One clear CTA pointing to ${shortUrl}.
     
     OUTPUT FORMAT:
     [Problem-Focused Hook Line]
