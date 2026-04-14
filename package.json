@@ -13,10 +13,6 @@
     "vite-plugin-pwa": "^1.2.0"
   },
   "dependencies": {
-    "@genkit-ai/ai": "^1.31.0",
-    "@genkit-ai/firebase": "^1.31.0",
-    "@genkit-ai/vertexai": "^1.28.0",
-    "firebase": "^12.11.0",
-    "genkit": "^1.31.0"
+    "firebase": "^12.11.0"
   }
 }
