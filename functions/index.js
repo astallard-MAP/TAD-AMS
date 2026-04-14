@@ -282,7 +282,7 @@ async function generateSocialPost(timeOfDay) {
   // --- INTEGRATED STRATEGIC INTELLIGENCE (GEO-AWARE) ---
   const strategySnap = await db.collection("socialStrategy").doc("latest").get();
   let strategicInjections = "";
-  if (strategySnap.exists()) {
+  if (strategySnap.exists) {
       const strategy = strategySnap.data();
       const areaKey = town.toLowerCase();
       const areaInsight = strategy.areaInsights ? strategy.areaInsights[areaKey] : null;
