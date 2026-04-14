@@ -826,9 +826,9 @@ exports.verifyMetaConnection = onRequest({
 });
 
 async function getGBPAuth() {
-  const clientId = GBP_CLIENT_ID.value();
-  const clientSecret = GBP_CLIENT_SECRET.value();
-  const refreshToken = GBP_REFRESH_TOKEN.value();
+  const clientId = GBP_CLIENT_ID.value().trim();
+  const clientSecret = GBP_CLIENT_SECRET.value().trim();
+  const refreshToken = GBP_REFRESH_TOKEN.value().trim();
 
   const auth = new google.auth.OAuth2(clientId, clientSecret);
   auth.setCredentials({ refresh_token: refreshToken });
