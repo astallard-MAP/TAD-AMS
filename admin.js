@@ -257,6 +257,16 @@ async function loadDashboardStats() {
                 console.warn("GBP Insights Fetch Fail:", e);
             }
 
+            // 9. SEO Pages Published (KPI) - Real-time Listener
+            onSnapshot(doc(db, "systemState", "counters"), (snap) => {
+                const seoPagesEl = document.getElementById('stat-seo-pages');
+                if (snap.exists() && seoPagesEl) {
+                    seoPagesEl.textContent = snap.data().Total_Published_Pages || 0;
+                }
+            }, (err) => {
+                console.warn("SEO Page Counter listener failed:", err);
+            });
+
             // 9. Purge Test Data Logic
             const purgeBtn = document.getElementById('btn-purge-test');
             if (purgeBtn) {

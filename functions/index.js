@@ -2391,3 +2391,183 @@ exports.getGBPInsights = onRequest({
         res.status(200).json({ success: false, error: err.message });
     }
 });
+
+// --- AUTONOMOUS SEO & WEB PAGE GENERATION (WP-SEO) PROTOCOL ---
+
+/**
+ * WP-SEO Generator: Executes at 22:00 GMT daily.
+ * Targets the GSR Active_Location and assembles the daily SEO page.
+ */
+exports.autonomousSEOGenerator = onSchedule({
+    schedule: "0 22 * * *", 
+    timeZone: "Europe/London",
+    memory: "1GiB"
+}, async (event) => {
+    console.log("[WP-SEO] Initiating Autonomous Generation Protocol...");
+    
+    try {
+        const town = await getActiveGSRLocation();
+        const today = new Date();
+        const dateStr = today.toISOString().split('T')[0].split('-').reverse().join(''); // DDMMYYYY
+        const fullDate = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        // BLOCK 1: REGIONAL OVERVIEW (AI Dynamic Scrape)
+        const overviewPrompt = `
+            TASK: Generate a 250-word professional factual overview of ${town}, Essex.
+            INCLUDE: Local landmarks, demographic character, and current property market climate.
+            TONE: Factual, authoritative, and helpful for local residents.
+        `;
+        const { text: block1 } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: overviewPrompt });
+
+        // BLOCK 2: DAILY AI ANALYSIS
+        const newsSnap = await db.collection("marketUpdates").doc("latest").get();
+        const block2 = newsSnap.exists ? newsSnap.data().content : "Market analysis refresh in progress.";
+
+        // BLOCK 3: SOCIAL MEDIA ARCHIVE
+        const socialSnap = await db.collection("socialPosts")
+            .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(new Date(new Date().setHours(0,0,0,0))))
+            .orderBy("timestamp", "desc")
+            .limit(3)
+            .get();
+        
+        let block3 = "";
+        socialSnap.forEach(doc => {
+            const post = doc.data();
+            block3 += `
+                <div style="background: #f1f5f9; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <p style="font-style: italic; color: #475569;">"${post.content}"</p>
+                    ${post.imageUrl ? `<img src="${post.imageUrl}" style="width: 100%; border-radius: 8px; margin-top: 10px;">` : ''}
+                </div>
+            `;
+        });
+
+        // ASSEMBLE HTML PAGE
+        const htmlContent = `
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${town} Property Market Update | ${fullDate}</title>
+    <meta name="description" content="Official daily property report for ${town}, Essex. Real-life market analysis, social outreach archives, and local insights for ${fullDate}.">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap">
+    <style>
+        :root { --amethyst: #a21caf; --charcoal: #1e293b; --slate: #64748b; }
+        body { font-family: 'Outfit', sans-serif; margin: 0; background: #fafafa; color: var(--charcoal); line-height: 1.7; }
+        .hero { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 80px 20px; text-align: center; }
+        .hero h1 { font-size: 3rem; margin: 0; letter-spacing: -0.05em; }
+        .container { max-width: 900px; margin: -40px auto 100px; background: white; padding: 60px; border-radius: 24px; shadow: 0 25px 50px -12px rgba(0,0,0,0.1); }
+        .date-badge { display: inline-block; background: #fae8ff; color: #a21caf; padding: 6px 16px; border-radius: 99px; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; font-size: 0.75rem; }
+        h2 { border-left: 5px solid var(--amethyst); padding-left: 20px; margin-top: 50px; font-size: 1.8rem; color: #0f172a; }
+        .market-insight { background: #fff1f2; padding: 30px; border-radius: 16px; border: 1px solid #fecdd3; color: #9f1239; }
+        .footer-cta { margin-top: 80px; padding: 60px; background: #fdf4ff; border-radius: 24px; text-align: center; border: 2px solid #f5d0fe; }
+        .btn { display: inline-block; background: var(--amethyst); color: white; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; transition: transform 0.2s; }
+        .btn:hover { transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="date-badge">${fullDate}</div>
+        <h1>${town} Real Estate Briefing</h1>
+    </div>
+    <div class="container">
+        <section>
+            <h2>Geographical & Market Overview</h2>
+            <p>${block1}</p>
+        </section>
+        
+        <section>
+            <h2>Daily Market Intelligence Analysis</h2>
+            <div class="market-insight">${block2}</div>
+        </section>
+
+        <section>
+            <h2>Social Outreach Archive</h2>
+            <p style="color: var(--slate); margin-bottom: 30px;">Historical record of social engagement and local support initiatives published today.</p>
+            ${block3 || '<p>Outreach logs verified and archived.</p>'}
+        </section>
+
+        <div class="footer-cta">
+            <h3>Direct Property Exit in ${town}</h3>
+            <p>Our team provides guaranteed cash offers for properties in any condition across ${town}. Skip the chain and the uncertainty.</p>
+            <a href="https://cash4houses.co.uk" class="btn">Request Instant Valuation</a>
+        </div>
+    </div>
+</body>
+</html>
+        `;
+
+        // PERSIST TO FIRESTORE
+        await db.collection("seoPages").doc(dateStr).set({
+            html: htmlContent,
+            date: dateStr,
+            town: town,
+            timestamp: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        // INCREMENT KPI COUNTER
+        const countRef = db.collection("systemState").doc("counters");
+        await db.runTransaction(async (t) => {
+            const snap = await t.get(countRef);
+            const count = snap.exists ? (snap.data().Total_Published_Pages || 0) : 0;
+            t.set(countRef, { Total_Published_Pages: count + 1 }, { merge: true });
+        });
+
+        // TRIGGER INDEXING PING
+        const siteUrl = "https://cash4houses.co.uk";
+        const newPageUrl = `${siteUrl}/${dateStr}.html`;
+        await fetch(`https://www.google.com/ping?sitemap=${siteUrl}/sitemap.xml`);
+        await fetch(`https://www.bing.com/indexnow?url=${newPageUrl}&key=8e3a09f`);
+
+        console.log(`[WP-SEO] Successfully published ${dateStr}.html for ${town}.`);
+    } catch (err) {
+        console.error("[WP-SEO] Protocol Failure:", err);
+    }
+});
+
+/**
+ * SERVE SEO PAGE: Dynamic handler for DDMMYYYY.html URLs.
+ */
+exports.serveSEOPage = onRequest({ cors: true }, async (req, res) => {
+    const path = req.path.replace(/^\//, '').replace('.html', '');
+    if (!/^\d{8}$/.test(path)) return res.status(404).send("Page Not Found");
+
+    try {
+        const pageSnap = await db.collection("seoPages").doc(path).get();
+        if (!pageSnap.exists) return res.status(404).send("Historical Page Not Found");
+        
+        res.status(200).send(pageSnap.data().html);
+    } catch (err) {
+        res.status(500).send("System Error");
+    }
+});
+
+/**
+ * SERVE SITEMAP: Dynamic XML generator.
+ */
+exports.serveSitemap = onRequest({ cors: true }, async (req, res) => {
+    try {
+        const pagesSnap = await db.collection("seoPages").orderBy("timestamp", "desc").limit(1000).get();
+        const siteUrl = "https://cash4houses.co.uk";
+        
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        
+        // Static Core Pages
+        const staticPages = ['', 'contact.html', 'about.html', 'dashboard.html'];
+        staticPages.forEach(p => {
+            xml += `<url><loc>${siteUrl}/${p}</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`;
+        });
+
+        // Dynamic SEO Pages
+        pagesSnap.forEach(doc => {
+            xml += `<url><loc>${siteUrl}/${doc.id}.html</loc><changefreq>never</changefreq><priority>0.5</priority></url>`;
+        });
+
+        xml += '</urlset>';
+        res.set('Content-Type', 'text/xml');
+        res.status(200).send(xml);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});

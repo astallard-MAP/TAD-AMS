@@ -50,6 +50,14 @@
     ],
     "rewrites": [
       {
+        "source": "/*.html",
+        "function": "serveSEOPage"
+      },
+      {
+        "source": "/sitemap.xml",
+        "function": "serveSitemap"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
