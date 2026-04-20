@@ -1385,12 +1385,18 @@ async function performSocialAudit() {
         const policyPrompt = `
             ROLE: Senior Compliance Auditor.
             TASK: Review the following AI Image Generation requests for compliance with "Professional Property Conduct" and "Anti-Abuse" policies.
-            POLICIES: Blocks offensive, rude, or unprofessional content. 
-            IMAGE GUIDELINES: We prioritize "Real-Life Average Condition". 
+            
+            MISSION: The ultimate aim is to stop abusive or discriminatory posts. It is NOT to stop realistic depictions of property conditions.
+            
+            POLICIES: Blocks offensive, rude, discriminatory, or abusive content. 
+            
+            IMAGE GUIDELINES: We prioritize "Authentic Real-Life Situations".
+            - DO NOT block "Scruffy", "Derelict", "Unkempt", or "Unmodernised" characterizations. These depict the real world and are highly relevant to our target audience of distressed sellers.
+            - ALLOW realistic distress: peeling paint, weathered facades, scruffy brickwork, and overgrown gardens are encouraged for authenticity.
+            - UNDERSTAND: These images are AI-generated and do not identify real-life properties. Therefore, they are NOT disrespectful or insulting to any specific resident.
             - DO NOT block images of cash if they are UK GBP Sterling being used in a respectful transaction context (e.g. next to keys).
             - DO NOT block handshakes or key handovers.
-            - DO block "Scruffy" or "Derelict" characterizations that could be seen as disrespectful to the average resident.
-            - DO block "Pristine Show Homes" as they are unrealistic for our target audience.
+            - DO block "Pristine Show Homes" as they are unrealistic and alienating for our target audience.
             
             DATA: ${JSON.stringify(auditPayload)}
             
