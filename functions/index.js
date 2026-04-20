@@ -156,17 +156,25 @@ async function saveToImageLibrary(imageUrl, prompt, source, metadata = {}) {
 }
 
 /**
- * Simulates a "Google Street Maps" review by generating architectural context for a town.
+ * HL-VF Protocol: Geospatial Reference Module (Active Visual Scoping)
+ * Simulates a visual audit of the area to identify architectural vernacular and environmental texture.
  */
-async function getTownArchitecture(town) {
+async function performVisualFidelityAudit(town) {
   try {
-    const prompt = `Describe the typical residential architecture and street scenery of ${town}, Essex in one concise sentence. 
-    Focus on authentic house types (e.g. Victorian terraces, 1960s semi-detached, council flats) and the general vibe of the neighbourhoods.
-    This will be used for a realistic AI image generation prompt.`;
-    const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt });
+    const auditPrompt = `
+      GEOSPATIAL REFERENCE MODULE: PERFORM VISUAL AUDIT
+      Location: ${town}, South East England.
+      
+      TASK:
+      1. Identify Architectural Vernacular: Prevailing building materials (e.g., red brick, pebble-dash, weatherboarding) and specific house types (e.g., 1930s semis, Victorian terraces, ex-local authority blocks).
+      2. Identify Environmental Texture: Local markers such as specific street lighting style, pavement types, and typical front garden boundaries (e.g., low brick walls, wooden picket fences).
+      
+      OUTPUT: Return a single technical description identifying the specific house type and textures for an image generation prompt.
+    `;
+    const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: auditPrompt });
     return text.trim();
   } catch (e) {
-    return `a typical residential street in ${town}, Essex with a mix of mid-century and older housing`;
+    return `red brick 1930s semi-detached houses with low brick garden walls and weathered facades`;
   }
 }
 
@@ -191,34 +199,32 @@ async function isImageRecentlyUsed(imageUrl) {
 }
 
 async function generateSocialImage(town, context, source = "Social Post") {
-  const townContext = await getTownArchitecture(town);
+  const visualAudit = await performVisualFidelityAudit(town);
   let prompt = "";
+
+  const HL_VF_PREFIX = `Hyper-realistic documentary photography, authentic UK residential street, ${visualAudit}, weathered texture, overcast British lighting, realistic grit, no saturation, non-idealized environment.`;
 
   if (source === "Daily News Story") {
     // Keep the "Good" news story style: professional, calming, reassuring.
-    prompt = `A high-quality, professional photograph of a residential area in ${town}, Essex. ${townContext}. 
-    The atmosphere must embody the "Warm Blanket" ethos: supportive, discrete, and profoundly trustworthy. 
-    Soft, atmospheric lighting, high resolution. Avoid generic stock looks; focus on a realistic, calming street scene. 
-    Context: ${context.substring(0, 100)}`;
+    prompt = `${HL_VF_PREFIX} The atmosphere must embody the "Warm Blanket" ethos: supportive, discrete, and profoundly trustworthy. Soft, atmospheric lighting, high resolution. Context: ${context.substring(0, 100)}`;
   } else {
-    // Social Post Style: Authentic, Lived-in, No "Show Home" polish
+    // Social Post Style: HL-VF Protocol (Anti-Polishing Rule)
     const propertyTypes = [
-      "a row of early 1900s terraced houses with traditional features, showing signs of wear and authentic, lived-in character",
-      "a typical late 1950s semi-detached house with a slightly overgrown garden and a weathered, authentic facade",
+      "a row of houses showing signs of wear and authentic lived-in character",
+      "a house with a slightly overgrown garden and a weathered facade",
       "a realistic street view of a modest house with peeling paint on the door and an unkempt residential front",
-      "a row of functional, mid-century flats with scruffy brickwork and standard local character",
+      "a row of functional flats with scruffy brickwork and standard local character",
       "a professional and respectful handshake between two people on a scruffy residential doorstep, symbolizing trust",
       "a close-up of a house key being handed over, reflecting a transparent property completion regardless of condition",
       "a neat arrangement of UK GBP Sterling banknotes next to house keys, symbolizing a fast cash transaction for a distressed property"
     ];
     const chosenType = propertyTypes[Math.floor(Math.random() * propertyTypes.length)];
 
-    prompt = `A realistic, authentic photograph of ${chosenType} in ${town}, Essex. ${townContext}.
-    STYLE: Genuine street photography, looking like a raw, real-life moment captured on a phone or documentary camera.
-    AESTHETIC: "Real-Life Distressed Condition". NOT a show home. NOT a luxury estate. 
-    CRITICAL: Embrace the reality of distressed sales. Overgrown gardens, scruffy facades, and unkempt exteriors are encouraged.
-    If showing transaction elements: Ensure UK GBP Sterling is used and the tone is professional, respectful, and supportive.
-    Atmosphere: Grounded, local, and honest. Focus on the reality of properties needing speed and empathy. Context: ${context.substring(0, 100)}`;
+    prompt = `${HL_VF_PREFIX} Subject: ${chosenType}. 
+    CONDITION FILTER: Strictly no show-home polish. Include realistic age artifacts: weathered masonry, faded paintwork, realistic roof moss, and slightly overgrown vegetation.
+    ENVIRONEMNTAL CLUTTER: Include non-branded wheelie bins, parked older-model vehicles, or slight imbalances in window dressings.
+    SOCIAL SENTINEL: Adhere to Documentary Realism. Permit property neglect provided it avoids prohibited hate symbols or lewd graffiti.
+    Context: ${context.substring(0, 100)}`;
   }
   
   // Automated asset generation fallbacks for resiliency (Real Unsplash Photos)
