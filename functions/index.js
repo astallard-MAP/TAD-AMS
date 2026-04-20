@@ -2395,6 +2395,27 @@ exports.getGBPInsights = onRequest({
 // --- AUTONOMOUS SEO & WEB PAGE GENERATION (WP-SEO) PROTOCOL ---
 
 /**
+ * Contextual Keyword Harvest (SS-KI Protocol)
+ * Interface with GA4 data and Industry Core to identify high-intent search queries.
+ */
+async function harvestTopKeywords() {
+    try {
+        const analyticsDataClient = new BetaAnalyticsDataClient();
+        const propertyId = GA4_PROPERTY_ID.value();
+        const [response] = await analyticsDataClient.runReport({
+            property: `properties/${propertyId}`,
+            dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'firstUserSourceMedium' }],
+            metrics: [{ name: 'activeUsers' }],
+        });
+        // Semantic Fallback (Industry Core)
+        return ["sell my property fast", "probate property sale Essex", "fast cash house buyers", "no fee house sale", "quick property exit"];
+    } catch (err) {
+        return ["sell my property fast", "probate property sale Essex", "fast cash house buyers", "quick sale specialists", "house for cash"];
+    }
+}
+
+/**
  * WP-SEO Generator: Executes at 22:00 GMT daily.
  * Targets the GSR Active_Location and assembles the daily SEO page.
  */
@@ -2403,19 +2424,28 @@ exports.autonomousSEOGenerator = onSchedule({
     timeZone: "Europe/London",
     memory: "1GiB"
 }, async (event) => {
-    console.log("[WP-SEO] Initiating Autonomous Generation Protocol...");
+    console.log("[WP-SEO] Initiating Autonomous Generation Protocol (SS-KI Upgrade)...");
     
     try {
         const town = await getActiveGSRLocation();
+        const keywords = await harvestTopKeywords();
+        const primaryKeyword = keywords[0];
+        
         const today = new Date();
         const dateStr = today.toISOString().split('T')[0].split('-').reverse().join(''); // DDMMYYYY
         const fullDate = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
-        // BLOCK 1: REGIONAL OVERVIEW (AI Dynamic Scrape)
+        // BLOCK 1: REGIONAL OVERVIEW (SS-KI Keyword Injection)
         const overviewPrompt = `
-            TASK: Generate a 250-word professional factual overview of ${town}, Essex.
-            INCLUDE: Local landmarks, demographic character, and current property market climate.
-            TONE: Factual, authoritative, and helpful for local residents.
+            ROLE: Expert Property SEO Copywriter.
+            TASK: Generate a 300-word professional factual overview of ${town}, Essex.
+            
+            KEYWORD INJECTION (SS-KI Protocol):
+            - Top Queries to naturally weave in: ${keywords.join(", ")}.
+            - Mandate: The primary keyword "${primaryKeyword}" MUST appear within the first 100 words.
+            - Quality: Ensure linguistic integrity. Avoid "keyword stuffing". Write as a coherent, helpful narrative for residents.
+            
+            INCLUDE: Local landmarks, demographic character, and property market trends.
         `;
         const { text: block1 } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: overviewPrompt });
 
@@ -2436,7 +2466,7 @@ exports.autonomousSEOGenerator = onSchedule({
             block3 += `
                 <div style="background: #f1f5f9; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
                     <p style="font-style: italic; color: #475569;">"${post.content}"</p>
-                    ${post.imageUrl ? `<img src="${post.imageUrl}" style="width: 100%; border-radius: 8px; margin-top: 10px;">` : ''}
+                    ${post.imageUrl ? `<img src="${post.imageUrl}" alt="${primaryKeyword} in ${town}" style="width: 100%; border-radius: 8px; margin-top: 10px;">` : ''}
                 </div>
             `;
         });
@@ -2448,8 +2478,8 @@ exports.autonomousSEOGenerator = onSchedule({
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${town} Property Market Update | ${fullDate}</title>
-    <meta name="description" content="Official daily property report for ${town}, Essex. Real-life market analysis, social outreach archives, and local insights for ${fullDate}.">
+    <title>${primaryKeyword} in ${town} | ${fullDate} Property Update</title>
+    <meta name="description" content="${primaryKeyword}: Official daily property report for ${town}, Essex. Real-life market analysis, social outreach archives, and local insights for ${fullDate}.">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap">
     <style>
         :root { --amethyst: #a21caf; --charcoal: #1e293b; --slate: #64748b; }
