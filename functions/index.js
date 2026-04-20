@@ -273,8 +273,62 @@ async function shortenUrl(url) {
   }
 }
 
+/**
+ * Implement Geographical Synchronization & Rotation (GSR) Protocol.
+ * 1. 24-Hour Regional Lockdown: Mandatory Active_Location for all posts in a 24hr window.
+ * 2. Exhaustive Rotation Logic: "Bucket System" randomly selects from available towns.
+ * 3. Cycle Reset: Completed bucket is only flushed when Available is empty.
+ */
+async function getActiveGSRLocation() {
+    const today = new Date().toISOString().split('T')[0];
+    const strategyRef = admin.firestore().collection("systemState").doc("gsrStrategy");
+    const strategySnap = await strategyRef.get();
+    
+    let gsr = strategySnap.exists ? strategySnap.data() : { 
+        activeLocation: null, 
+        lastDate: null, 
+        availableBucket: [...ESSEX_TOWNS], 
+        completedBucket: [] 
+    };
+
+    // 1. 24-HOUR REGIONAL LOCKDOWN CHECK
+    if (gsr.lastDate === today && gsr.activeLocation) {
+        console.log(`[GSR Protocol] Regional Lockdown Active: Targeting ${gsr.activeLocation}`);
+        return gsr.activeLocation;
+    }
+
+    // 2. EXHAUSTIVE ROTATION LOGIC (BUCKET SYSTEM)
+    // If it's a new day, we pick a new location. 
+    // The previous one (if any) is already in or should be in completed.
+    if (gsr.activeLocation) {
+        if (!gsr.completedBucket.includes(gsr.activeLocation)) {
+            gsr.completedBucket.push(gsr.activeLocation);
+        }
+        gsr.availableBucket = gsr.availableBucket.filter(t => t !== gsr.activeLocation);
+    }
+
+    // Reset buckets if exhausted
+    if (gsr.availableBucket.length === 0) {
+        console.log("[GSR Protocol] Available bucket exhausted. Flushing cycle...");
+        gsr.availableBucket = [...gsr.completedBucket, ...(gsr.activeLocation ? [] : [])];
+        gsr.completedBucket = [];
+    }
+
+    // Random selection from remaining available pool
+    const randomIndex = Math.floor(Math.random() * gsr.availableBucket.length);
+    const nextLocation = gsr.availableBucket[randomIndex];
+
+    // Update & Cache
+    gsr.activeLocation = nextLocation;
+    gsr.lastDate = today;
+    
+    await strategyRef.set(gsr);
+    console.log(`[GSR Protocol] New 24-Hour Campaign Initiated: ${nextLocation}`);
+    return nextLocation;
+}
+
 async function generateSocialPost(timeOfDay) {
-  const town = ESSEX_TOWNS[Math.floor(Math.random() * ESSEX_TOWNS.length)];
+  const town = await getActiveGSRLocation();
   
   // 1. Fetch Market & Local News Context
   let newsContext = "";
@@ -432,7 +486,7 @@ async function updateMarketNews() {
     const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: prompt });
     
     // Generate a unique photographic image for this news
-    const town = ESSEX_TOWNS[Math.floor(Math.random() * ESSEX_TOWNS.length)];
+    const town = await getActiveGSRLocation();
     const imageUrl = await generateSocialImage(town, text, "Daily News Story");
 
     const payload = { 
@@ -643,7 +697,7 @@ exports.instantSocialTestAgent = onRequest({
     steps.push("Step 1: Initialising Diagnostic Agent...");
     
     // 1. Content Generation
-    const town = ESSEX_TOWNS[Math.floor(Math.random() * ESSEX_TOWNS.length)];
+    const town = await getActiveGSRLocation();
     const prompt = `Generate a 50-word urgent social media post for distressed property sellers in ${town}. Focus on speed and empathy.`;
     const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: prompt });
     steps.push(`Step 2: AI Content Generated for ${town}.`);
@@ -1152,7 +1206,7 @@ async function performSpotlightGeneration() {
     const dayName = today.toLocaleDateString('en-GB', { weekday: 'long' });
     const fullDate = `${dayName} the ${today.getDate()}${getOrdinal(today.getDate())} of ${today.toLocaleDateString('en-GB', { month: 'long' })} ${today.getFullYear()}`;
 
-    const town = ESSEX_TOWNS[Math.floor(Math.random() * ESSEX_TOWNS.length)];
+    const town = await getActiveGSRLocation();
 
     try {
         // 1. Fetch Today's News
