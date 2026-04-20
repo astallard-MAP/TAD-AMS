@@ -1384,19 +1384,32 @@ async function performSocialAudit() {
 
         const policyPrompt = `
             ROLE: Senior Compliance Auditor.
-            TASK: Review the following AI Image Generation requests for compliance with "Professional Property Conduct" and "Anti-Abuse" policies.
+            TASK: Review the following AI Image Generation requests for compliance with the "Social Sentinel: Revised Operational Directive".
             
-            MISSION: The ultimate aim is to stop abusive or discriminatory posts. It is NOT to stop realistic depictions of property conditions.
+            1. CORE PHILOSOPHY: CONTEXTUAL REALISM
+            The primary function is to prevent malicious, discriminatory, or harmful content. It is NOT your role to sanitise physical reality or enforce an aesthetic standard of "wealth." Imagery reflecting properties in various states of repair—including those that are unkempt, scruffy, or derelict—is classified as "Documentary Realism" and is a PERMITTED category.
             
-            POLICIES: Blocks offensive, rude, discriminatory, or abusive content. 
+            2. PERMITTED CONTENT (The "Real Life" Clause)
+            DO NOT BLOCK images based on the following physical attributes:
+            - Structural Decay: Peeling paint, boarded-up windows, overgrown gardens, or missing roof tiles.
+            - Aesthetic Neglect: General "scruffiness," unwashed facades, or un-landscaped exteriors.
+            - Urban Context: Properties reflecting authentic architectural landscapes (e.g., Westcliff-on-Sea), regardless of perceived value or condition.
+            - Transactional Elements: UK GBP Sterling (respectfully used, e.g., near keys), handshakes, or key handovers.
             
-            IMAGE GUIDELINES: We prioritize "Authentic Real-Life Situations".
-            - DO NOT block "Scruffy", "Derelict", "Unkempt", or "Unmodernised" characterizations. These depict the real world and are highly relevant to our target audience of distressed sellers.
-            - ALLOW realistic distress: peeling paint, weathered facades, scruffy brickwork, and overgrown gardens are encouraged for authenticity.
-            - UNDERSTAND: These images are AI-generated and do not identify real-life properties. Therefore, they are NOT disrespectful or insulting to any specific resident.
-            - DO NOT block images of cash if they are UK GBP Sterling being used in a respectful transaction context (e.g. next to keys).
-            - DO NOT block handshakes or key handovers.
-            - DO block "Pristine Show Homes" as they are unrealistic and alienating for our target audience.
+            3. PROHIBITED CONTENT (The "Red Line" Clause)
+            BLOCK content that meets these strict criteria for being rude, abusive, or discriminatory:
+            - Hate Symbols: Imagery containing symbols of hate, extremism, or historical trauma.
+            - Gratuitous Graffiti: Text or drawings depicting lewd, sexual, or overtly profane acts.
+            - Personal Harassment: Images focusing on specific identifiable individuals or personal items leading to doxxing/targeted mockery.
+            - Illegal Acts: Imagery depicting active criminal behavior or dangerous conditions beyond structural neglect.
+            - Aesthetic Mismatch: Continue to block "Pristine Show Homes" as they are alienating for our target audience.
+            
+            4. LOGIC OVERRIDE: CONDITION VS. CHARACTER
+            Distinguish between Condition (state of brick and mortar) and Character (worth of inhabitants).
+            - Logical Test: Does the image depict a building in need of repair? [PASSED]
+            - Logical Test: Does the image include discriminatory tropes or malicious intent toward a protected group? [FAILED]
+            
+            CONCLUSION: Property condition is a neutral fact. Permit all images of physical property neglect provided they do not cross the "Red Line" listed in Section 3.
             
             DATA: ${JSON.stringify(auditPayload)}
             
