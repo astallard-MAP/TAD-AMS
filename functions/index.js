@@ -386,17 +386,18 @@ async function generateSocialPost(timeOfDay) {
     
     ${strategicInjections}
     
-    MISSION: Generate a high-impact "Pain-Point Pivot" social media post.
+    MISSION: Generate a high-impact, punchy social media post for distressed property sellers.
     
     STRICT RULES (NO EXCEPTIONS):
-    1. WORD LIMIT: Total post content must be UNDER 80 words.
-    2. NO INTRODUCTIONS: Do NOT start with "In today's market" or "Are you looking to...".
-    3. THE HOOK: Start DIRECTLY with a hard-hitting pain point (Probate, Divorce, Foreclosure, etc.).
-    4. SCAN-ABILITY: Use exactly 3 bullet points (using emojis like ✅ or •) to list benefits.
-    5. THE SOLUTION: Cash 4 Houses - Direct Cash Buyer. No chains, no fees, no hassle.
-    6. PSYCHOLOGICAL TRIGGER: Explicitly use "We Buy As-Is" and mention "no repairs or cleaning needed".
-    7. LOCAL FOCUS: Mention ${town} specifically. Use British English.
-    8. CALL TO ACTION: One clear CTA pointing to ${shortUrl}.
+    1. WORD LIMIT: Maximum 80 words. Every word must earn its place.
+    2. NO INTRODUCTIONS: Do NOT start with "In today's market", "Are you looking to...", or "At Cash 4 Houses...". Start DIRECTLY with a pain point (Broken Chain, Probate, Divorce, Financial Distress).
+    3. TONE: Empathetic, professional, and urgent.
+    4. STYLE: "Copywriting" (selling), not "Content Writing" (educating). Use British English (e.g., 'flats' instead of 'apartments').
+    5. HEADLINE: A scroll-stopping headline centered on a problem.
+    6. SCAN-ABILITY: Exactly 3 bullet points (using emojis like ✅ or •) to list benefits (e.g., Cash payment, No fees, Any condition).
+    7. PSYCHOLOGICAL TRIGGER: Explicitly use the phrase "We Buy As-Is" and mention "no repairs or cleaning needed".
+    8. MARKET CONTEXT: Sellers in 2026 prioritize "certainty" and "speed" over "top price" due to market competition.
+    9. CALL TO ACTION: One clear CTA pointing to Https://cash4houses.co.uk.
     
     OUTPUT FORMAT:
     [Problem-Focused Hook Line]
@@ -407,7 +408,7 @@ async function generateSocialPost(timeOfDay) {
     
     [Solution & CTA]
     
-    [Hashtags: 5-8 local/niche tags like #Southend #QuickSale #WeBuyAsIs]
+    [Hashtags: 5-8 local/niche tags like #Southend #QuickSale #WeBuyAsIs #Property #Essex]
   `;
 
   try {
@@ -482,10 +483,26 @@ async function updateMarketNews() {
   }
 
   const prompt = `
-    ROLE: You are 'Andy', a property market analyst.
+    ROLE: You are 'Andy', a property market analyst and high-conversion copywriter for Cash 4 Houses.
     INPUT: ${JSON.stringify(allItems.slice(0, 10))}
-    MISSION: Summarize today's UK property news triggers in an empathetic, supportive way for sellers under pressure. 
-    Explain why a fast cash sale might be the best strategic move in this current climate.
+    MISSION: Summarize today's UK property news triggers as a punchy, high-impact social media post for sellers under pressure.
+    
+    STRICT RULES (NO EXCEPTIONS):
+    1. WORD LIMIT: Maximum 80 words.
+    2. NO INTRODUCTIONS: Do NOT start with "In today's news" or "Market update". Start DIRECTLY with the pain point or market trigger.
+    3. TONE: Empathetic and urgent. Explain why a fast cash sale is the strategic move NOW.
+    4. SCAN-ABILITY: Exactly 3 bullet points listing benefits (e.g., We Buy As-Is, No Fees, 7-Day Completion).
+    5. CALL TO ACTION: Direct them to Https://cash4houses.co.uk.
+    6. LANGUAGE: British English.
+    
+    OUTPUT FORMAT:
+    [Problem/Market Hook Headline]
+    
+    [Bullet 1]
+    [Bullet 2]
+    [Bullet 3]
+    
+    [Solution & CTA]
   `;
 
   try {
@@ -704,7 +721,8 @@ exports.instantSocialTestAgent = onRequest({
     
     // 1. Content Generation
     const town = await getActiveGSRLocation();
-    const prompt = `Generate a 50-word urgent social media post for distressed property sellers in ${town}. Focus on speed and empathy.`;
+    const prompt = `ROLE: High-Conversion Copywriter. Generate an urgent 70-word social media post for distressed property sellers in ${town}. 
+    RULES: No intros, start with pain point, exactly 3 bullet benefits, mention "We Buy As-Is", CTA to Https://cash4houses.co.uk. Use British English.`;
     const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: prompt });
     steps.push(`Step 2: AI Content Generated for ${town}.`);
     
