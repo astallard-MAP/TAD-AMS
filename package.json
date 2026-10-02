@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "firebase": "^12.11.0",
+    "nodemailer": "^10.0.13",
     "serve": "^14.2.6"
   }
 }

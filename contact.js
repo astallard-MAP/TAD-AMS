@@ -44,7 +44,7 @@ if (contactForm) {
             }
         } catch (err) {
             console.error("Submission Error:", err);
-            alert("I'm sorry, we couldn't send your enquiry at this time. Please email us directly at andy@cash4houses.co.uk");
+            alert("I'm sorry, we couldn't send your enquiry at this time. Please email us directly at astallard65@gmail.com");
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Enquiry';
         }

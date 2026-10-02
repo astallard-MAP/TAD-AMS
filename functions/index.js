@@ -2,9 +2,7 @@ const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https")
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
-const { Client } = require("@microsoft/microsoft-graph-client");
-const { ClientSecretCredential } = require("@azure/identity");
-require("isomorphic-fetch");
+const nodemailer = require("nodemailer");
 const Parser = require("rss-parser");
 const { genkit } = require("genkit");
 const { vertexAI } = require("@genkit-ai/vertexai");
@@ -24,9 +22,7 @@ const ai = genkit({
 });
 
 // Secrets
-const AZURE_TENANT_ID = defineSecret("AZURE_TENANT_ID");
-const AZURE_CLIENT_ID = defineSecret("AZURE_CLIENT_ID");
-const AZURE_CLIENT_SECRET = defineSecret("AZURE_CLIENT_SECRET");
+const GMAIL_APP_PASSWORD = defineSecret("GMAIL_APP_PASSWORD");
 const GBP_LOCATION_ID = defineSecret("GBP_LOCATION_ID");
 const GBP_CLIENT_ID = defineSecret("GBP_CLIENT_ID");
 const GBP_CLIENT_SECRET = defineSecret("GBP_CLIENT_SECRET");
@@ -49,7 +45,7 @@ const GLOBAL_SIGNATURE = `
     
     <div style="margin-top: 15px; font-size: 0.9rem;">
         <p style="margin: 2px 0;"><strong>Tel:</strong> 07834 555 355</p>
-        <p style="margin: 2px 0;"><strong>E:</strong> <a href="mailto:andy@cash4houses.co.uk" style="color: #EB287A; text-decoration: none;">andy@cash4houses.co.uk</a></p>
+        <p style="margin: 2px 0;"><strong>E:</strong> <a href="mailto:astallard65@gmail.com" style="color: #EB287A; text-decoration: none;">astallard65@gmail.com</a></p>
     </div>
 
     <div style="margin-top: 20px;">
@@ -73,39 +69,39 @@ const GLOBAL_SIGNATURE = `
 </div>
 `;
 
-// --- MICROSOFT GRAPH API CLIENT ---
-function getGraphClient() {
-  const credential = new ClientSecretCredential(
-    AZURE_TENANT_ID.value(),
-    AZURE_CLIENT_ID.value(),
-    AZURE_CLIENT_SECRET.value()
-  );
-  return Client.initWithMiddleware({
-    authProvider: {
-      getAccessToken: async () => {
-        const token = await credential.getToken("https://graph.microsoft.com/.default");
-        return token.token;
-      }
-    }
-  });
-}
-
+// --- GMAIL NODEMAILER TRANSPORT ---
 /**
- * Dispatches an email via Graph API and automatically appends the Global Signature.
+ * Dispatches an email via Nodemailer and automatically appends the Global Signature.
  */
 async function dispatchEmail({ to, subject, body, importance = "Normal" }) {
-  const client = getGraphClient();
-  const fullBody = `${body}${GLOBAL_SIGNATURE}`;
-  
-  await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
-    message: {
-      subject,
-      importance,
-      body: { contentType: "HTML", content: fullBody },
-      toRecipients: [{ emailAddress: { address: to } }]
-    },
-    saveToSentItems: true
-  });
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'astallard65@gmail.com',
+        pass: GMAIL_APP_PASSWORD.value()
+      }
+    });
+
+    const fullBody = `${body}${GLOBAL_SIGNATURE}`;
+
+    const mailOptions = {
+      from: '"Andrew Stallard | Cash 4 Houses" <astallard65@gmail.com>',
+      to: to,
+      subject: subject,
+      html: fullBody,
+      headers: {
+        'X-Priority': importance === 'High' ? '1 (Highest)' : '3 (Normal)',
+        'Importance': importance
+      }
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`Email successfully dispatched to ${to}`);
+  } catch (error) {
+    console.error("Failed to dispatch email via Nodemailer:", error);
+    throw error;
+  }
 }
 
 exports.seedSignatureTemplate = onRequest({ cors: true }, async (req, res) => {
@@ -598,7 +594,7 @@ exports.processLead = onDocumentCreated({
     // 1. ADMIN NOTIFICATION (Immediate & High Importance)
     try {
         const client = getGraphClient();
-        await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
+        await client.api('/users/astallard65@gmail.com/sendMail').post({
             message: {
                 subject: `HIGH IMPORTANCE: New Property Lead - ${leadData.propertyAddress || leadData.address}`,
                 importance: "High",
@@ -617,7 +613,7 @@ exports.processLead = onDocumentCreated({
                         </div>
                     ` 
                 },
-                toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
+                toRecipients: [{ emailAddress: { address: "astallard65@gmail.com" } }]
             },
             saveToSentItems: true
         });
@@ -675,7 +671,7 @@ exports.emailQueueAgent = onSchedule({
     for (const doc of pending.docs) {
         const mail = doc.data();
         try {
-            await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
+            await client.api('/users/astallard65@gmail.com/sendMail').post({
                 message: {
                     subject: "Your Property Valuation Request - Next Steps",
                     body: { 
@@ -782,20 +778,32 @@ exports.instantSocialTestAgent = onRequest({
 
 exports.testEmailConnection = onRequest({ 
   cors: true, 
-  secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"] 
+  secrets: [GMAIL_APP_PASSWORD] 
 }, async (req, res) => {
   try {
-    await dispatchEmail({
-      to: "andy@cash4houses.co.uk",
-      subject: "Office 365 Configuration: GRAPH API SUCCESS",
-      body: `<p>Diagnostic check complete at ${new Date().toISOString()}. Secure OAuth2 link active.</p>`
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'astallard65@gmail.com',
+        pass: GMAIL_APP_PASSWORD.value()
+      }
     });
-    res.status(200).json({ success: true, message: "Graph Auth verified. Test email dispatched." });
-  } catch (err) { 
-    console.error("Test Email Error:", err);
-    if (err.requestId) console.log("Graph Request ID:", err.requestId);
-    if (err.clientRequestId) console.log("Graph Client Request ID:", err.clientRequestId);
-    res.status(200).json({ success: false, error: err.code || "AUTH_FAIL", message: err.message, requestId: err.requestId }); 
+    
+    // Verify the SMTP connection details are correct
+    await transporter.verify();
+    
+    // Dispatch a test email to yourself
+    await transporter.sendMail({
+      from: '"Andrew Stallard | Cash 4 Houses" <astallard65@gmail.com>',
+      to: 'astallard65@gmail.com',
+      subject: 'System Diagnostic: SMTP Connection Active',
+      text: 'The Nodemailer SMTP integration is working perfectly.'
+    });
+
+    res.status(200).send("SUCCESS: SMTP connection verified and test email dispatched!");
+  } catch (err) {
+    console.error("SMTP Test Failed:", err);
+    res.status(500).send("ERROR: SMTP Test Failed - " + err.message);
   }
 });
 
@@ -1900,7 +1908,7 @@ exports.processContactEnquiry = onRequest({
         const client = getGraphClient();
         
         // 1. Send Notification to Andy
-        await client.api('/users/andy@cash4houses.co.uk/sendMail').post({
+        await client.api('/users/astallard65@gmail.com/sendMail').post({
             message: {
                 subject: `New Website Enquiry: ${data.name}`,
                 body: { 
@@ -1918,7 +1926,7 @@ exports.processContactEnquiry = onRequest({
                         <p style="font-size: 0.8rem; color: #64748b;">This inquiry has been logged in the Cash4Houses Portal Library.</p>
                     `
                 },
-                toRecipients: [{ emailAddress: { address: "andy@cash4houses.co.uk" } }]
+                toRecipients: [{ emailAddress: { address: "astallard65@gmail.com" } }]
             },
             saveToSentItems: true
         });
@@ -1929,7 +1937,7 @@ exports.processContactEnquiry = onRequest({
             type: "Inquiry Received",
             channel: "Website Form",
             summary: `Public enquiry from ${data.name} via contact.html`,
-            recipients: ["andy@cash4houses.co.uk"]
+            recipients: ["astallard65@gmail.com"]
         });
 
         res.status(200).json({ success: true });
@@ -2127,7 +2135,7 @@ exports.weeklyPerformanceDigest = onSchedule({
 
         // 3. Dispatch via Office 365 Graph API
         await dispatchEmail({
-            to: "andy@cash4houses.co.uk",
+            to: "astallard65@gmail.com",
             subject: `Weekly Social Intelligence Digest: ${new Date().toLocaleDateString('en-GB')}`,
             body: emailBody
         });
@@ -2185,14 +2193,14 @@ exports.manualWeeklyDigest = onRequest({
 
         // 3. Dispatch
         await dispatchEmail({
-            to: "andy@cash4houses.co.uk",
+            to: "astallard65@gmail.com",
             subject: `PRE-LAUNCH: Weekly Social Intelligence Digest`,
             body: emailBody
         });
 
         res.status(200).json({ 
             success: true, 
-            recipient: "andy@cash4houses.co.uk",
+            recipient: "astallard65@gmail.com",
             gmb_status: gmbStatus,
             baseline_verified: true,
             message: "Pre-Launch Report Dispatched Successfully."
@@ -2282,7 +2290,7 @@ exports.processPurchaseEnquiry = onRequest({
     const { userData, propertyAddress, optionType, price } = req.body;
     try {
         await dispatchEmail({
-            to: "andy@cash4houses.co.uk",
+            to: "astallard65@gmail.com",
             subject: "HIGH IMPORTANCE: New Purchase Enquiry",
             importance: "High",
             body: `
@@ -2309,7 +2317,7 @@ exports.processValuationRequest = onRequest({
     const { userData, propertyAddress } = req.body;
     try {
         await dispatchEmail({
-            to: "andy@cash4houses.co.uk",
+            to: "astallard65@gmail.com",
             subject: "HIGH IMPORTANCE: New Valuation Request",
             importance: "High",
             body: `
