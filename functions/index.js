@@ -48,7 +48,7 @@ const GLOBAL_SIGNATURE = `
     <p style="margin: 0; color: #EB287A; font-weight: 600; font-size: 0.9rem;">Managing Director | Cash 4 Houses</p>
     
     <div style="margin-top: 15px; font-size: 0.9rem;">
-        <p style="margin: 2px 0;"><strong>Tel:</strong> 01704 416 323</p>
+        <p style="margin: 2px 0;"><strong>Tel:</strong> 07834 555 355</p>
         <p style="margin: 2px 0;"><strong>E:</strong> <a href="mailto:andy@cash4houses.co.uk" style="color: #EB287A; text-decoration: none;">andy@cash4houses.co.uk</a></p>
     </div>
 
