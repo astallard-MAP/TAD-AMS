@@ -1,3 +1,6 @@
+const { setGlobalOptions } = require("firebase-functions/v2");
+setGlobalOptions({ region: "europe-west4" });
+
 const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
@@ -586,7 +589,7 @@ exports.manualMarketUpdate = onRequest({
 // --- LEAD PROCESSING (MICROSOFT GRAPH) ---
 exports.processLead = onDocumentCreated({ 
   document: "leads/{leadId}", 
-  secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"] 
+  secrets: [GMAIL_APP_PASSWORD] 
 }, async (event) => {
     const leadData = event.data.data();
     if (!leadData) return;
@@ -655,7 +658,7 @@ exports.processLead = onDocumentCreated({
 exports.emailQueueAgent = onSchedule({ 
   schedule: "every 5 minutes", 
   timeZone: "Europe/London",
-  secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"] 
+  secrets: [GMAIL_APP_PASSWORD] 
 }, async (event) => {
     const now = new Date();
     const pending = await db.collection("pendingEmails")
@@ -1897,7 +1900,7 @@ exports.exchangeGMBToken = onRequest({
 // Production Contact Enquiry Agent
 exports.processContactEnquiry = onRequest({ 
     cors: true,
-    secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"] 
+    secrets: [GMAIL_APP_PASSWORD] 
 }, async (req, res) => {
     const data = req.body;
     if (!data.email || !data.name) {
@@ -2216,7 +2219,7 @@ exports.manualWeeklyDigest = onRequest({
  */
 exports.researchPropertyValuation = onRequest({
     cors: true,
-    secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"]
+    secrets: [GMAIL_APP_PASSWORD]
 }, async (req, res) => {
     const { propertyAddress, town, postcode } = req.body;
     if (!propertyAddress) return res.status(400).send("Address required.");
@@ -2285,7 +2288,7 @@ exports.researchPropertyValuation = onRequest({
  */
 exports.processPurchaseEnquiry = onRequest({
     cors: true,
-    secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"]
+    secrets: [GMAIL_APP_PASSWORD]
 }, async (req, res) => {
     const { userData, propertyAddress, optionType, price } = req.body;
     try {
@@ -2312,7 +2315,7 @@ exports.processPurchaseEnquiry = onRequest({
  */
 exports.processValuationRequest = onRequest({
     cors: true,
-    secrets: ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"]
+    secrets: [GMAIL_APP_PASSWORD]
 }, async (req, res) => {
     const { userData, propertyAddress } = req.body;
     try {
