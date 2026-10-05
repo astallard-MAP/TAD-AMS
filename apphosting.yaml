@@ -1,0 +1,14 @@
+# App Hosting Configuration for Cash 4 Houses
+
+# Run concurrency and memory settings for the App Hosting workers
+runConfig:
+  cpu: 1
+  memoryMiB: 1024
+  concurrency: 80
+  minInstances: 0
+  maxInstances: 10
+
+# Environment variables mapping
+env:
+  - variable: VITE_APP_ENV
+    value: production

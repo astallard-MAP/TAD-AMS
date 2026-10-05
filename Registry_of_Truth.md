@@ -16,9 +16,10 @@ Cash 4 Houses is a proprietary, full-stack, AI-orchestrated residential property
 The commercial purpose of the platform is to acquire residential real estate directly from motivated or distressed property sellers (facing broken chains, bereavement/probate, divorce, structural defects, or financial repossession) providing a guaranteed, transparent cash exit with zero agent fees and completion in as little as 7 to 14 days.
 
 ### 1.2 Form (Architecture & Technology Stack)
-- **Frontend Architecture:** Pure Vanilla HTML5, Vanilla CSS3 (curated design system tokens, zero utility-bloat frameworks), and Vanilla ES Modules JavaScript.
-- **Build & Optimization Pipeline:** Vite (`vite.config.js`) bundling into `dist/` with PWA service worker precaching (`vite-plugin-pwa`).
-- **Backend Architecture:** Serverless Firebase Cloud Functions v2 running on Node.js 20 explicitly bound to region **`europe-west4`** (Eemshaven, Netherlands).
+- **Frontend Architecture (MPA):** Multi-Page Application (MPA). The project is explicitly designed and routed as an MPA with distinct structural HTML pages (`about.html`, `locations.html`, `contact.html`, etc.).
+- **Build & Optimization Pipeline:** Vite (`vite.config.js`) explicitly configured to process and output each individual HTML page into the `dist/` folder via `rollupOptions.input`.
+- **Hosting Infrastructure:** **Google Firebase App Hosting (2026).** The project is officially hosted on the modern Firebase App Hosting platform. It conforms to App Hosting standards, relying on the automated build pipeline (`npm run build`) to serve the compiled MPA static assets directly from the global edge network.
+- **Backend Architecture:** Serverless Firebase Cloud Functions v2 running on Node.js 22 explicitly bound to region **`europe-west4`** (Eemshaven, Netherlands).
 - **AI Core Engine:** Google Genkit integrated with Google Cloud Vertex AI (`gemini-2.5-flash` for high-conversion copywriting, visual auditing, and chatbot dialogue; `imagen-3` for hyper-local documentary photography).
 - **Data Persistence:** Google Cloud Firestore (multi-tenant structure for leads, audit logs, social intelligence, dynamic SEO pages, and communication transcripts).
 - **External Integration Hub:** Meta Graph API v19.0 (Facebook Page & Instagram Business), Google My Business API v4 (Dual Essex GBP locations), and Nodemailer via Gmail SMTP.

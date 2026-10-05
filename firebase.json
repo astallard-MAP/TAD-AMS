@@ -58,10 +58,6 @@
         "source": "/sitemap.xml",
         "function": "serveSitemap",
         "region": "europe-west4"
-      },
-      {
-        "source": "**",
-        "destination": "/index.html"
       }
     ]
   }
