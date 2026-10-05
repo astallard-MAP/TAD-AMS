@@ -13,7 +13,8 @@ import {
     doc,
     getDoc,
     setDoc,
-    limit
+    limit,
+    updateDoc
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { ref, getDownloadURL } from "firebase/storage";
@@ -35,6 +36,7 @@ authReady.then(async (user) => {
         pollSecurityAlerts();
         loadForensicLogs();
         setupAdminMessagingHub();
+        loadFleetHealth();
     }
 });
 
@@ -1006,3 +1008,57 @@ if (reAnalyzeSocialBtn) {
         reAnalyzeSocialBtn.innerHTML = 'Refresh Intelligence';
     };
 }
+
+// --- HIVE MIND FLEET HEALTH ---
+async function loadFleetHealth() {
+    const grid = document.getElementById('fleet-health-grid');
+    if (!grid) return;
+    try {
+        const querySnapshot = await getDocs(collection(db, 'moduleRegistry'));
+        if (querySnapshot.empty) {
+            grid.innerHTML = '<p>No fleet modules detected.</p>';
+            return;
+        }
+        let html = '';
+        querySnapshot.forEach(doc => {
+            const data = doc.data();
+            const statusColor = data.healthStatus === 'healthy' ? '#10b981' : (data.healthStatus === 'failing' ? '#ef4444' : '#f59e0b');
+            const icon = data.healthStatus === 'healthy' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+            const enabledLabel = data.enabled ? 'ONLINE' : 'KILLED';
+            const enabledColor = data.enabled ? '#1e293b' : '#ef4444';
+            
+            html += `
+                <div style="padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; background: ${data.enabled ? '#f8fafc' : '#fee2e2'};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h3 style="font-size: 0.95rem; margin: 0; color: ${enabledColor};">${doc.id}</h3>
+                        <i class="fas ${icon}" style="color: ${statusColor};"></i>
+                    </div>
+                    <p style="margin: 0; font-size: 0.8rem; color: #64748b;">Status: <strong style="color: ${statusColor};">${data.healthStatus}</strong></p>
+                    <p style="margin: 0; font-size: 0.8rem; color: #64748b;">Power: <strong>${enabledLabel}</strong></p>
+                    <p style="margin: 0; font-size: 0.75rem; color: #94a3b8; margin-top: 5px;">Last Run: ${data.lastRun ? data.lastRun.toDate().toLocaleString() : 'Never'}</p>
+                    <button onclick="toggleKillSwitch('${doc.id}', ${data.enabled})" style="margin-top: 10px; width: 100%; padding: 5px; border-radius: 4px; border: none; background: ${data.enabled ? '#ef4444' : '#10b981'}; color: white; cursor: pointer; font-size: 0.8rem;">
+                        <i class="fas fa-power-off"></i> ${data.enabled ? 'ENGAGE KILL-SWITCH' : 'RESTORE MODULE'}
+                    </button>
+                </div>
+            `;
+        });
+        grid.innerHTML = html;
+    } catch (e) {
+        console.error("Fleet Health Load Error:", e);
+        grid.innerHTML = '<p style="color: #ef4444;">Failed to fetch Hive Mind telemetry.</p>';
+    }
+}
+
+window.toggleKillSwitch = async function(moduleId, currentlyEnabled) {
+    if (!confirm(`Are you sure you want to ${currentlyEnabled ? 'DISABLE' : 'ENABLE'} ${moduleId}?`)) return;
+    try {
+        await updateDoc(doc(db, 'moduleRegistry', moduleId), {
+            enabled: !currentlyEnabled,
+            healthStatus: !currentlyEnabled ? 'healthy' : 'killed_by_admin'
+        });
+        loadFleetHealth();
+    } catch (e) {
+        alert("Failed to toggle kill switch.");
+        console.error(e);
+    }
+};

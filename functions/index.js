@@ -407,7 +407,7 @@ async function generateSocialPost(timeOfDay) {
     
     [Solution & CTA]
     
-    [Hashtags: 5-8 local/niche tags like #Southend #QuickSale #WeBuyAsIs #Property #Essex]
+    [Hashtags: 3-7 local/niche tags like #Southend #QuickSale #WeBuyAsIs #Property #Essex]
   `;
 
   try {
@@ -2636,3 +2636,40 @@ exports.serveSitemap = onRequest({ region: "europe-west4", cors: true }, async (
         res.status(500).send(err.message);
     }
 });
+
+// --- SLIM FLEET MODULES ---
+const slimMkt = require('./slim/slimMkt');
+exports.slimMktAgent = slimMkt.slimMktAgent;
+exports.manualSlimMkt = slimMkt.manualSlimMkt;
+
+const slimPsy = require('./slim/slimPsy');
+exports.slimPsyAgent = slimPsy.slimPsyAgent;
+exports.manualSlimPsy = slimPsy.manualSlimPsy;
+
+const slimHash = require('./slim/slimHash');
+exports.slimHashAgent = slimHash.slimHashAgent;
+
+const slimCopy = require('./slim/slimCopy');
+exports.slimCopyAgent = slimCopy.slimCopyAgent;
+
+const slimVis = require('./slim/slimVis');
+exports.slimVisAgent = slimVis.slimVisAgent;
+
+const slimComp = require('./slim/slimComp');
+exports.slimCompAgent = slimComp.slimCompAgent;
+exports.checkCompliance = slimComp.checkCompliance;
+
+const slimPerf = require('./slim/slimPerf');
+exports.slimPerfAgent = slimPerf.slimPerfAgent;
+
+const slimAndy = require('./slim/slimAndy');
+exports.slimAndyAgent = slimAndy.slimAndyAgent;
+
+const slimFunnel = require('./slim/slimFunnel');
+exports.slimFunnelAgent = slimFunnel.slimFunnelAgent;
+
+const slimLocal = require('./slim/slimLocal');
+exports.slimLocalAgent = slimLocal.slimLocalAgent;
+
+const slimOrch = require('./slim/slimOrch');
+exports.slimOrchAgent = slimOrch.slimOrchAgent;

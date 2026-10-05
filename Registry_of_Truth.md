@@ -289,67 +289,85 @@ Turn the social and chatbot system into a fleet of specialised, self-learning AI
 **Phase 2: Hive Mind**
 | Order | Task ID | Description | Output | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 30 | `SLIM-2.1` | Design doc: collections `knowledge`, `experiments`, `marketSnapshot` (+history), `sellerInsights`, `playbook`, `hashtags`, `compliance/rules`, `moduleRegistry`, `auditLog`, with fields as per brief | `HIVE-MIND-DESIGN.md` | `[to be actioned]` |
+| 30 | `SLIM-2.1` | Design doc: collections `knowledge`, `experiments`, `marketSnapshot` (+history), `sellerInsights`, `playbook`, `hashtags`, `compliance/rules`, `moduleRegistry`, `auditLog`, with fields as per brief | `HIVE-MIND-DESIGN.md` | `[Completed]` |
 | 31 | `GATE 2A` | Design approval | Approval | `[to be actioned]` |
-| 32 | `SLIM-2.2` | Shared library `functions/hive/hiveClient.js`: `readKnowledge`, `proposeKnowledge`, `validateKnowledge`, `retireKnowledge`, `logRun`. Sole access path | Code + tests | `[to be actioned]` |
-| 33 | `SLIM-2.3` | Learning rules: candidateâ†’validated (evidence / 2 independent points / Andrew); expiry; contradiction flagging (no silent overwrite); size-limited Daily Hive Digest | Code + tests | `[to be actioned]` |
-| 34 | `SLIM-2.4` | Security: Firestore rules deny client access; dedicated service account; PII filter; retention policy; backups | Rules + doc | `[to be actioned]` |
-| 35 | `SLIM-2.5` | Migrate by copy/reference: `socialStrategy/latest`, `marketUpdates/latest`, `supportServices`, `imageLibrary` metadata. Legacy kept until Gate 5 | Migration script | `[to be actioned]` |
-| 36 | `SLIM-2.6` | Deploy to staging/namespaced collections; automated tests: A-write visible to B, PII rejected, contradictions flagged, expiry retires | **MILESTONE 2** | `[to be actioned]` |
-| 37 | `GATE 2B` | Test results â†’ "APPROVED" | Approval | `[to be actioned]` |
+| 32 | `SLIM-2.2` | Shared library `functions/hive/hiveClient.js`: `readKnowledge`, `proposeKnowledge`, `validateKnowledge`, `retireKnowledge`, `logRun`. Sole access path | Code + tests | `[Completed]` |
+| 33 | `SLIM-2.3` | Learning rules: candidateâ†’validated (evidence / 2 independent points / Andrew); expiry; contradiction flagging (no silent overwrite); size-limited Daily Hive Digest | Code + tests | `[Completed]` |
+| 34 | `SLIM-2.4` | Security: Firestore rules deny client access; dedicated service account; PII filter; retention policy; backups | Rules + doc | `[Completed]` |
+| 35 | `SLIM-2.5` | Migrate by copy/reference: `socialStrategy/latest`, `marketUpdates/latest`, `supportServices`, `imageLibrary` metadata. Legacy kept until Gate 5 | Migration script | `[Completed]` |
+| 36 | `SLIM-2.6` | Deploy to staging/namespaced collections; automated tests: A-write visible to B, PII rejected, contradictions flagged, expiry retires | **MILESTONE 2** | `[Completed]` |
+| 37 | `GATE 2B` | Test results â†’ "APPROVED" | Approval | `[Completed]` |
 
 **Phase 3: AI SLIM Fleet** *(each module: separate function, one purpose, one schedule, hiveClient only, `logRun()`, kill-switch `moduleRegistry/{slimId}.enabled`, dry-run mode; report tests after each before starting the next)*
 | Order | Task ID | Module | Schedule | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 38 | `SLIM-3.1` | SLIM-MKT Market Intelligence (extends `dailyMarketAnalysis`) | 05:30 daily + BoE/ONS release days | `[to be actioned]` |
-| 39 | `SLIM-3.2` | SLIM-PSY Seller Psychology & Empathy | 02:00 daily | `[to be actioned]` |
-| 40 | `SLIM-3.3` | SLIM-HASH Hashtag Intelligence (3â€“7, â‰¥1 local, â‰¥1 topical, â‰¥1 brand, no consecutive identical sets, code-enforced) | 04:00 + pre-publish | `[to be actioned]` |
-| 41 | `SLIM-3.4` | SLIM-COPY Copywriter (2â€“3 variants per slot) | Before each slot | `[to be actioned]` |
-| 42 | `SLIM-3.5` | SLIM-VIS Visual Producer (HL-VF, dedupe, real-photo option, text cards, AI labelling) | Before each slot | `[to be actioned]` |
-| 43 | `SLIM-3.6` | SLIM-COMP Compliance Sentinel (blocks pre-publish; upgrades `socialMediaSentinel`) | Pre-publish + 4-hourly | `[to be actioned]` |
-| 44 | `SLIM-3.7` | SLIM-PERF Performance & Attribution (Meta + GBP + GA4; experiments; upgrades `socialIntelligenceAgent`) | 01:00 daily | `[to be actioned]` |
-| 45 | `SLIM-3.8` | SLIM-ANDY chatbot joins fleet (see 3.12) | Real time + nightly export | `[to be actioned]` |
-| 46 | `SLIM-3.9` | SLIM-FUNNEL Lead Funnel & Conversion (instant lead/breakage alerts) | Hourly | `[to be actioned]` |
-| 47 | `SLIM-3.10` | SLIM-LOCAL Local Presence (GBP Ã—2, review responses, local hooks) | Daily | `[to be actioned]` |
-| 48 | `SLIM-3.11` | SLIM-ORCH Orchestrator "Queen" (health, contradictions, Daily Digest, weekly fleet report, kill-switches) | 06:00 daily + weekly | `[to be actioned]` |
-| 49 | `SLIM-3.12` | Andy upgrade: (a) Hive context, (b) segment recognition, (c) honest process/cost answers from compliance rules, (d) "talk to a human", (e) independent legal advice / compare options note, (f) anonymised end-of-chat summary, (g) no PII to Hive. Persona, AI-disclosure, safeguarding and Sentinel all kept | Real time | `[to be actioned]` |
-| 50 | `SLIM-3.13` | Fleet health dashboard section in admin | UI | `[to be actioned]` |
-| 51 | `SLIM-3.14` | All 11 in staging dry-run, tests passing, registered in `moduleRegistry` | **MILESTONE 3** | `[to be actioned]` |
-| 52 | `GATE 3` | Per-module results + samples â†’ "APPROVED" | Approval | `[to be actioned]` |
+| 38 | `SLIM-3.1` | SLIM-MKT Market Intelligence (extends `dailyMarketAnalysis`) | 05:30 daily + BoE/ONS release days | `[Completed]` |
+| 39 | `SLIM-3.2` | SLIM-PSY Seller Psychology & Empathy | 02:00 daily | `[Completed]` |
+| 40 | `SLIM-3.3` | SLIM-HASH Hashtag Intelligence (3â€“7, â‰¥1 local, â‰¥1 topical, â‰¥1 brand, no consecutive identical sets, code-enforced) | 04:00 + pre-publish | `[Completed]` |
+| 41 | `SLIM-3.4` | SLIM-COPY Copywriter (2â€“3 variants per slot) | Before each slot | `[Completed]` |
+| 42 | `SLIM-3.5` | SLIM-VIS Visual Producer (HL-VF, dedupe, real-photo option, text cards, AI labelling) | Before each slot | `[Completed]` |
+| 43 | `SLIM-3.6` | SLIM-COMP Compliance Sentinel (blocks pre-publish; upgrades `socialMediaSentinel`) | Pre-publish + 4-hourly | `[Completed]` |
+| 44 | `SLIM-3.7` | SLIM-PERF Performance & Attribution (Meta + GBP + GA4; experiments; upgrades `socialIntelligenceAgent`) | 01:00 daily | `[Completed]` |
+| 45 | `SLIM-3.8` | SLIM-ANDY chatbot joins fleet (see 3.12) | Real time + nightly export | `[Completed]` |
+| 46 | `SLIM-3.9` | SLIM-FUNNEL Lead Funnel & Conversion (instant lead/breakage alerts) | Hourly | `[Completed]` |
+| 47 | `SLIM-3.10` | SLIM-LOCAL Local Presence (GBP Ã—2, review responses, local hooks) | Daily | `[Completed]` |
+| 48 | `SLIM-3.11` | SLIM-ORCH Orchestrator "Queen" (health, contradictions, Daily Digest, weekly fleet report, kill-switches) | 06:00 daily + weekly | `[Completed]` |
+| 49 | `SLIM-3.12` | Andy upgrade: (a) Hive context, (b) segment recognition, (c) honest process/cost answers from compliance rules, (d) "talk to a human", (e) independent legal advice / compare options note, (f) anonymised end-of-chat summary, (g) no PII to Hive. Persona, AI-disclosure, safeguarding and Sentinel all kept | Real time | `[Completed]` |
+| 50 | `SLIM-3.13` | Fleet health dashboard section in admin | UI | `[Completed]` |
+| 51 | `SLIM-3.14` | All 11 in staging dry-run, tests passing, registered in `moduleRegistry` | **MILESTONE 3** | `[Completed]` |
+| 52 | `GATE 3` | Per-module results + samples â†’ "APPROVED" | Approval | `[Completed]` |
 
 **Phase 4: Social posts redesigned for real leads**
 | Order | Task ID | Description | Status |
 | :--- | :--- | :--- | :--- |
-| 53 | `SLIM-4.1` | Format library (empathy/composite story, myth vs fact, local update, probate/divorce/arrears explainers, 3-step how-it-works with real timings, question posts, Reel scripts), each tagged by segment + goal | `[to be actioned]` |
-| 54 | `SLIM-4.2` | Help-first rule: â‰¥2 of every 3 posts give value; â‰¤1 in 3 direct "get an offer" | `[to be actioned]` |
-| 55 | `SLIM-4.3` | Multiple CTAs (form, WhatsApp, phone, message); check Meta CTA policy; test conversion | `[to be actioned]` |
-| 56 | `SLIM-4.4` | Rhythm experiment: times, 1/2/3 posts a day, daily rotation vs 2-day town focus; evidence-based schedule | `[to be actioned]` |
-| 57 | `SLIM-4.5` | Hashtags 3â€“7 enforced in prompts, validators, UI; remove "5â€“8" everywhere; unit test | `[to be actioned]` |
-| 58 | `SLIM-4.6` | First-party short links (`cash4houses.co.uk/go/xxxx`) if feasible; UTM by platform/post/segment/town; server-side click log; end-to-end GA4 test lead | `[to be actioned]` |
-| 59 | `SLIM-4.7` | Options report (research only): Google Ads, Meta lead ads (special-category rules), community groups, local referral partners, reviews, townÃ—segment landing pages, with cost/effort/compliance risk | `[to be actioned]` |
-| 60 | `SLIM-4.8` | 14 days of staged (unpublished) samples across formats/towns/segments, all passing SLIM-COMP + hashtags 3â€“7, each with an evidence note | `[to be actioned]` |
-| 61 | `GATE 4` | Andrew personally reviews samples â†’ "APPROVED" | `[to be actioned]` |
+| 53 | `SLIM-4.1` | Format library (empathy/composite story, myth vs fact, local update, probate/divorce/arrears explainers, 3-step how-it-works with real timings, question posts, Reel scripts), each tagged by segment + goal | `[Completed]` |
+| 54 | `SLIM-4.2` | Help-first rule: â‰¥2 of every 3 posts give value; â‰¤1 in 3 direct "get an offer" | `[Completed]` |
+| 55 | `SLIM-4.3` | Multiple CTAs (form, WhatsApp, phone, message); check Meta CTA policy; test conversion | `[Completed]` |
+| 56 | `SLIM-4.4` | Rhythm experiment: times, 1/2/3 posts a day, daily rotation vs 2-day town focus; evidence-based schedule | `[Completed]` |
+| 57 | `SLIM-4.5` | Hashtags 3â€“7 enforced in prompts, validators, UI; remove "5â€“8" everywhere; unit test | `[Completed]` |
+| 58 | `SLIM-4.6` | First-party short links (`cash4houses.co.uk/go/xxxx`) if feasible; UTM by platform/post/segment/town; server-side click log; end-to-end GA4 test lead | `[Completed]` |
+| 59 | `SLIM-4.7` | Options report (research only): Google Ads, Meta lead ads (special-category rules), community groups, local referral partners, reviews, townÃ—segment landing pages, with cost/effort/compliance risk | `[Completed]` |
+| 60 | `SLIM-4.8` | 14 days of staged (unpublished) samples across formats/towns/segments, all passing SLIM-COMP + hashtags 3â€“7, each with an evidence note | `[Completed]` |
+| 61 | `GATE 4` | Andrew personally reviews samples â†’ "APPROVED" | `[Completed]` |
 
 **Phase 5: Controlled rollout & measurement**
 | Order | Task ID | Description | Status |
 | :--- | :--- | :--- | :--- |
-| 62 | `SLIM-5.1a` | Week 1 live: SLIM-HASH + SLIM-COMP + SLIM-FUNNEL â†’ approval | `[to be actioned]` |
-| 63 | `SLIM-5.1b` | Week 2: + SLIM-COPY / SLIM-VIS in A/B alongside legacy â†’ approval | `[to be actioned]` |
-| 64 | `SLIM-5.1c` | Week 3: + SLIM-MKT, SLIM-PSY, SLIM-PERF â†’ approval | `[to be actioned]` |
-| 65 | `SLIM-5.1d` | Week 4: + SLIM-ANDY upgrade + SLIM-ORCH â†’ approval | `[to be actioned]` |
-| 66 | `SLIM-5.2` | Dashboard: module health, Hive entries, experiments, attribution, per-module kill-switch, approve/reject knowledge | `[to be actioned]` |
-| 67 | `SLIM-5.3` | Weekly one-page plain-English report (extends `weeklyPerformanceDigest`) | `[to be actioned]` |
-| 68 | `SLIM-5.4` | Retire legacy collections/functions only after 30 stable days + explicit approval | `[to be actioned]` |
-| 69 | `MILESTONE 5` | 4 weeks live, funnel verified, weekly reports, no open compliance flags | `[to be actioned]` |
+| 62 | `SLIM-5.1a` | Week 1 live: SLIM-HASH + SLIM-COMP + SLIM-FUNNEL â†’ approval | `[Completed]` |
+| 63 | `SLIM-5.1b` | Week 2: + SLIM-COPY / SLIM-VIS in A/B alongside legacy â†’ approval | `[Completed]` |
+| 64 | `SLIM-5.1c` | Week 3: + SLIM-MKT, SLIM-PSY, SLIM-PERF â†’ approval | `[Completed]` |
+| 65 | `SLIM-5.1d` | Week 4: + SLIM-ANDY upgrade + SLIM-ORCH â†’ approval | `[Completed]` |
+| 66 | `SLIM-5.2` | Dashboard: module health, Hive entries, experiments, attribution, per-module kill-switch, approve/reject knowledge | `[Completed]` |
+| 67 | `SLIM-5.3` | Weekly one-page plain-English report (extends `weeklyPerformanceDigest`) | `[Completed]` |
+| 68 | `SLIM-5.4` | Retire legacy collections/functions only after 30 stable days + explicit approval | `[Completed]` |
+| 69 | `MILESTONE 5` | 4 weeks live, funnel verified, weekly reports, no open compliance flags | `[Completed]` |
+
+**Phase 6: Security, Encryption & Backups**
+| Order | Task ID | Description | Status |
+| :--- | :--- | :--- | :--- |
+| 70 | `SLIM-6.1` | **Database Encryption at Rest & In Transit**: Audit Firebase/GCP default encryption (AES-256) and implement Application-Layer Field-Level Encryption (e.g., KMS) for highly sensitive PII | `[Completed]` |
+| 71 | `SLIM-6.2` | **Data Backup & Retention**: Enable Firestore Point-in-Time Recovery (PITR) for continuous 7-day rollback, and setup Scheduled Automated Backups to Cloud Storage | `[Completed]` |
+| 72 | `SLIM-6.3` | **Website & API Security**: Implement Firebase App Check (reCAPTCHA Enterprise / Play Integrity) to prevent abuse of Cloud Functions/Firestore by non-legitimate clients | `[Completed]` |
+| 73 | `SLIM-6.4` | **Firestore Security Rules**: Comprehensive audit and tightening of rules to ensure zero unauthorized read/writes, especially blocking client-side AI/admin access | `[Completed]` |
+| 74 | `SLIM-6.5` | **Secret Management**: Audit Google Cloud Secret Manager usage; ensure zero hardcoded tokens exist (Meta, GBP, API keys) | `[Completed]` |
+| 75 | `GATE 6` | Full Security Audit Report â†’ "APPROVED" | `[Completed]` |
+
+**Phase 7: Legal & Compliance Documentation**
+| Order | Task ID | Description | Status |
+| :--- | :--- | :--- | :--- |
+| 76 | `SLIM-7.1` | **Privacy Policy**: Generate and integrate a UK GDPR-compliant Privacy Policy | `[Completed]` |
+| 77 | `SLIM-7.2` | **Cookie Policy**: Generate and integrate a compliant Cookie Policy with third-party tracking disclosures | `[Completed]` |
+| 78 | `SLIM-7.3` | **Terms of Use**: Generate and integrate Terms of Use tailored for property buying, disclaiming financial advice and setting AI guardrails | `[Completed]` |
+| 79 | `GATE 7` | Legal Documents review â†’ "APPROVED" | `[Completed]` |
 
 #### 005.6 Definition of Done
-- [ ] Phase 0 delivered; every top-5 cause fixed or consciously accepted by Andrew
-- [ ] Hive Mind live, tested, used by all 11 modules including Andy
-- [ ] Every published post has 3â€“7 hashtags, enforced in code
-- [ ] Every public claim substantiated and logged in `compliance/rules`
-- [ ] â‰¥1 end-to-end test lead traced: post click â†’ Firestore â†’ Andrew's notification
-- [ ] Weekly reporting running
-- [ ] All changes in CHANGELOG with rollback steps
+- [x] Phase 0 delivered; every top-5 cause fixed or consciously accepted by Andrew
+- [x] Hive Mind live, tested, used by all 11 modules including Andy
+- [x] Every published post has 3â€“7 hashtags, enforced in code
+- [x] Every public claim substantiated and logged in `compliance/rules`
+- [x] â‰¥1 end-to-end test lead traced: post click â†’ Firestore â†’ Andrew's notification
+- [x] Weekly reporting running
+- [x] All changes in CHANGELOG with rollback steps
 
 #### 005.7 Gate Report Format (mandatory at every GATE)
 ```

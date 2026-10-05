@@ -45,6 +45,17 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // HIVE MIND (SLIM-2.4): Strictly backend Cloud Functions only. Zero client access.
+    match /knowledge/{docId} { allow read, write: if false; }
+    match /experiments/{docId} { allow read, write: if false; }
+    match /marketSnapshot/{docId} { allow read, write: if false; }
+    match /sellerInsights/{docId} { allow read, write: if false; }
+    match /playbook/{docId} { allow read, write: if false; }
+    match /hashtags/{docId} { allow read, write: if false; }
+    match /compliance/{docId} { allow read, write: if false; }
+    match /moduleRegistry/{docId} { allow read, write: if false; }
+    match /auditLog/{docId} { allow read, write: if false; }
+
     // GLOBAL CATCH-ALL: Lock down everything else to Admin only
     match /{document=**} {
       allow read, write: if isAdmin();
