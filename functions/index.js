@@ -596,29 +596,22 @@ exports.processLead = onDocumentCreated({
     
     // 1. ADMIN NOTIFICATION (Immediate & High Importance)
     try {
-        const client = getGraphClient();
-        await client.api('/users/astallard65@gmail.com/sendMail').post({
-            message: {
-                subject: `HIGH IMPORTANCE: New Property Lead - ${leadData.propertyAddress || leadData.address}`,
-                importance: "High",
-                body: { 
-                    contentType: "HTML", 
-                    content: `
-                        <div style="font-family: Arial, sans-serif; color: #333;">
-                            <h2 style="color: #EB287A;">New Valuation Lead Received</h2>
-                            <p><strong>Property:</strong> ${leadData.propertyAddress || leadData.address}</p>
-                            <p><strong>Name:</strong> ${leadData.firstName} ${leadData.lastName}</p>
-                            <p><strong>Phone:</strong> ${leadData.phone}</p>
-                            <p><strong>Email:</strong> ${leadData.email}</p>
-                            <hr style="border: 0; border-top: 1px solid #eee;">
-                            <p><strong>Reason for Sale:</strong> ${leadData.reasonForSale || leadData.reason}</p>
-                            <p><strong>Timescale:</strong> ${leadData.timescale || leadData.timeline}</p>
-                        </div>
-                    ` 
-                },
-                toRecipients: [{ emailAddress: { address: "astallard65@gmail.com" } }]
-            },
-            saveToSentItems: true
+        await dispatchEmail({
+            to: "astallard65@gmail.com",
+            subject: `HIGH IMPORTANCE: New Property Lead - ${leadData.propertyAddress || leadData.address}`,
+            importance: "High",
+            body: `
+                <div style="font-family: Arial, sans-serif; color: #333;">
+                    <h2 style="color: #EB287A;">New Valuation Lead Received</h2>
+                    <p><strong>Property:</strong> ${leadData.propertyAddress || leadData.address}</p>
+                    <p><strong>Name:</strong> ${leadData.firstName} ${leadData.lastName}</p>
+                    <p><strong>Phone:</strong> ${leadData.phone}</p>
+                    <p><strong>Email:</strong> ${leadData.email}</p>
+                    <hr style="border: 0; border-top: 1px solid #eee;">
+                    <p><strong>Reason for Sale:</strong> ${leadData.reasonForSale || leadData.reason}</p>
+                    <p><strong>Timescale:</strong> ${leadData.timescale || leadData.timeline}</p>
+                </div>
+            `
         });
     } catch (adminErr) {
         console.error("Critical: Admin Email Notification Failed", adminErr);
@@ -669,28 +662,20 @@ exports.emailQueueAgent = onSchedule({ region: "europe-west4",
 
     if (pending.empty) return;
 
-    const client = getGraphClient();
-    
     for (const doc of pending.docs) {
         const mail = doc.data();
         try {
-            await client.api('/users/astallard65@gmail.com/sendMail').post({
-                message: {
-                    subject: "Your Property Valuation Request - Next Steps",
-                    body: { 
-                        contentType: "HTML", 
-                        content: `
-                            <p>Hello ${mail.firstName},</p>
-                            <p>Thank you for your request, our team have started working on it and we will get an offer to you within 24 working hours (working hours are Monday to Friday 9am to 5pm).</p>
-                            <p>If you want to see the progress follow this link to create your secure portal access:</p>
-                            <p><a href="https://cash4houses.co.uk/index.html#signup">Create Your Portal Password</a></p>
-                            <p>There is an area on the portal where you can exchange messages with our team if you want to add some more information to your initial request or would like to ask a question.</p>
-                            <p>Thanks,<br>Andy</p>
-                        ` 
-                    },
-                    toRecipients: [{ emailAddress: { address: mail.to } }]
-                },
-                saveToSentItems: true
+            await dispatchEmail({
+                to: mail.to,
+                subject: "Your Property Valuation Request - Next Steps",
+                body: `
+                    <p>Hello ${mail.firstName},</p>
+                    <p>Thank you for your request, our team have started working on it and we will get an offer to you within 24 working hours (working hours are Monday to Friday 9am to 5pm).</p>
+                    <p>If you want to see the progress follow this link to create your secure portal access:</p>
+                    <p><a href="https://cash4houses.co.uk/index.html#signup">Create Your Portal Password</a></p>
+                    <p>There is an area on the portal where you can exchange messages with our team if you want to add some more information to your initial request or would like to ask a question.</p>
+                    <p>Thanks,<br>Andy</p>
+                `
             });
             await doc.ref.update({ status: "sent", sentAt: admin.firestore.FieldValue.serverTimestamp() });
         } catch (err) {
@@ -1912,30 +1897,22 @@ exports.processContactEnquiry = onRequest({ region: "europe-west4",
     }
 
     try {
-        const client = getGraphClient();
-        
         // 1. Send Notification to Andy
-        await client.api('/users/astallard65@gmail.com/sendMail').post({
-            message: {
-                subject: `New Website Enquiry: ${data.name}`,
-                body: { 
-                    contentType: "HTML", 
-                    content: `
-                        <h2>New Contact Form Submission</h2>
-                        <p><strong>Name:</strong> ${data.name}</p>
-                        <p><strong>Phone:</strong> ${data.phone}</p>
-                        <p><strong>Email:</strong> ${data.email}</p>
-                        <p><strong>Preferred Response:</strong> ${data.responseMethod}</p>
-                        <p><strong>Comments:</strong></p>
-                        <blockquote style="background: #f1f5f9; padding: 1rem; border-left: 4px solid #10b981;">
-                            ${data.comments}
-                        </blockquote>
-                        <p style="font-size: 0.8rem; color: #64748b;">This inquiry has been logged in the Cash4Houses Portal Library.</p>
-                    `
-                },
-                toRecipients: [{ emailAddress: { address: "astallard65@gmail.com" } }]
-            },
-            saveToSentItems: true
+        await dispatchEmail({
+            to: "astallard65@gmail.com",
+            subject: `New Website Enquiry: ${data.name}`,
+            body: `
+                <h2>New Contact Form Submission</h2>
+                <p><strong>Name:</strong> ${data.name}</p>
+                <p><strong>Phone:</strong> ${data.phone}</p>
+                <p><strong>Email:</strong> ${data.email}</p>
+                <p><strong>Preferred Response:</strong> ${data.responseMethod}</p>
+                <p><strong>Comments:</strong></p>
+                <blockquote style="background: #f1f5f9; padding: 1rem; border-left: 4px solid #10b981;">
+                    ${data.comments}
+                </blockquote>
+                <p style="font-size: 0.8rem; color: #64748b;">This inquiry has been logged in the Cash4Houses Portal Library.</p>
+            `
         });
 
         // 2. Log to Forensic Communications

@@ -450,3 +450,19 @@ GATE REPORT: [Phase/Task]
 | `010-A` | **Paid Ads De-scoping:** Formally confirm that paid ad strategies are abandoned in favor of 100% autonomous organic SEO and social propagation. | `[Completed]` |
 | `010-B` | **Analytics Formalization:** Document that the `weeklyPerformanceDigest` and `BetaAnalyticsDataClient` (GA4 API) already fulfill the analytics requirements. | `[Completed]` |
 | `010-C` | **Live Verification UI De-prioritization:** Mark manual HTTP-triggered UI components for nightly jobs as nice-to-have but safely discarded based on priority. | `[Completed]` |
+
+---
+
+### [PHASE 011]: Email Dispatch Remediation (Graph API -> Gmail Nodemailer) & Social Schedule Audit
+- **Objective:** Audit the Social Media Post generation timetable, diagnose and remediate recurring 5-minute HTTP 500 errors in `emailQueueAgent`, and replace legacy Microsoft Graph API calls with the centralized Gmail Nodemailer transport.
+- **Date Logged:** 05 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `011-A` | **Social Media Generation Audit:** Document the exact schedule of all automated social media generation routines (08:00 Market Analysis, 09:00 Morning Post, 12:00 Lunch Post, 18:00 Evening Post, 23:00 Daily SEO Archive). | `[Completed]` |
+| `011-B` | **Backend Remediation (`getGraphClient` -> `dispatchEmail`):** Eliminate `ReferenceError: getGraphClient is not defined` by refactoring `emailQueueAgent`, `processLead`, and `processContactEnquiry` to use the unified `dispatchEmail()` helper via Gmail SMTP. | `[Completed]` |
+| `011-C` | **Firebase Functions Deployment:** Deploy the corrected Cloud Functions (`emailQueueAgent`, `processLead`, `processContactEnquiry`) to `europe-west4` to resolve recurring Google Cloud Scheduler 500 crashes. | `[Completed]` |
+| `011-D` | **Operational Verification:** Verified syntax (`node --check`), confirmed build integrity, and executed clean deployment to `europe-west4`. | `[Completed]` |
+
+
