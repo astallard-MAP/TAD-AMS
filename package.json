@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node generate-static-content.js && vite build",
     "preview": "vite preview",
     "start": "serve -s dist"
   },
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "firebase": "^12.11.0",
+    "firebase-admin": "^14.5.0",
     "nodemailer": "^10.0.13",
     "serve": "^14.2.6"
   }

@@ -47,18 +47,6 @@
           }
         ]
       }
-    ],
-    "rewrites": [
-      {
-        "source": "/*.html",
-        "function": "serveSEOPage",
-        "region": "europe-west4"
-      },
-      {
-        "source": "/sitemap.xml",
-        "function": "serveSitemap",
-        "region": "europe-west4"
-      }
     ]
   }
 }
