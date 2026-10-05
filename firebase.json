@@ -51,11 +51,13 @@
     "rewrites": [
       {
         "source": "/*.html",
-        "function": "serveSEOPage"
+        "function": "serveSEOPage",
+        "region": "europe-west4"
       },
       {
         "source": "/sitemap.xml",
-        "function": "serveSitemap"
+        "function": "serveSitemap",
+        "region": "europe-west4"
       },
       {
         "source": "**",

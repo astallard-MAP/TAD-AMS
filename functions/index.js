@@ -107,7 +107,7 @@ async function dispatchEmail({ to, subject, body, importance = "Normal" }) {
   }
 }
 
-exports.seedSignatureTemplate = onRequest({ cors: true }, async (req, res) => {
+exports.seedSignatureTemplate = onRequest({ region: "europe-west4", cors: true }, async (req, res) => {
     try {
         await db.collection("emailTemplates").doc("globalSignature").set({
             name: "Global Email Signature",
@@ -447,19 +447,19 @@ async function generateSocialPost(timeOfDay) {
   }
 }
 
-exports.socialMorningPost = onSchedule({ 
+exports.socialMorningPost = onSchedule({ region: "europe-west4", 
   schedule: "0 9 * * *", 
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
 }, async (event) => { await generateSocialPost("Morning"); });
 
-exports.socialLunchPost = onSchedule({ 
+exports.socialLunchPost = onSchedule({ region: "europe-west4", 
   schedule: "0 12 * * *", 
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
 }, async (event) => { await generateSocialPost("Lunch"); });
 
-exports.socialEveningPost = onSchedule({ 
+exports.socialEveningPost = onSchedule({ region: "europe-west4", 
   schedule: "0 18 * * *", 
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
@@ -569,7 +569,7 @@ async function updateMarketNews() {
 }
 
 // Ensure it runs once a day automatically at 8:00 AM
-exports.dailyMarketAnalysis = onSchedule({ 
+exports.dailyMarketAnalysis = onSchedule({ region: "europe-west4", 
   schedule: "0 8 * * *", 
   timeZone: "Europe/London",
   secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
@@ -577,7 +577,7 @@ exports.dailyMarketAnalysis = onSchedule({
   await updateMarketNews(); 
 });
 
-exports.manualMarketUpdate = onRequest({ 
+exports.manualMarketUpdate = onRequest({ region: "europe-west4", 
   cors: true, 
   memory: "512MiB",
   secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
@@ -655,7 +655,7 @@ exports.processLead = onDocumentCreated({
 });
 
 // --- DELAYED EMAIL AGENT ---
-exports.emailQueueAgent = onSchedule({ 
+exports.emailQueueAgent = onSchedule({ region: "europe-west4", 
   schedule: "every 5 minutes", 
   timeZone: "Europe/London",
   secrets: [GMAIL_APP_PASSWORD] 
@@ -700,7 +700,7 @@ exports.emailQueueAgent = onSchedule({
     }
 });
 
-exports.manualSocialGenerate = onRequest({ 
+exports.manualSocialGenerate = onRequest({ region: "europe-west4", 
   cors: true, 
   memory: "512MiB",
   secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
@@ -709,7 +709,7 @@ exports.manualSocialGenerate = onRequest({
   res.status(200).send(text);
 });
 
-exports.instantSocialTestAgent = onRequest({
+exports.instantSocialTestAgent = onRequest({ region: "europe-west4",
   cors: true,
   memory: "512MiB",
   secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"]
@@ -779,7 +779,7 @@ exports.instantSocialTestAgent = onRequest({
   }
 });
 
-exports.testEmailConnection = onRequest({ 
+exports.testEmailConnection = onRequest({ region: "europe-west4", 
   cors: true, 
   secrets: [GMAIL_APP_PASSWORD] 
 }, async (req, res) => {
@@ -894,7 +894,7 @@ async function publishToMetaInternal(postId) {
   return { facebook: fbResult, instagram: igResult };
 }
 
-exports.publishToMeta = onRequest({ 
+exports.publishToMeta = onRequest({ region: "europe-west4", 
   cors: true, 
   secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "META_APP_ID", "META_APP_SECRET"] 
 }, async (req, res) => {
@@ -909,7 +909,7 @@ exports.publishToMeta = onRequest({
   }
 });
 
-exports.verifyMetaConnection = onRequest({
+exports.verifyMetaConnection = onRequest({ region: "europe-west4",
   cors: true,
   secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"]
 }, async (req, res) => {
@@ -1060,7 +1060,7 @@ async function publishToGBP(content, imageUrl) {
 }
 
 // Scheduled GBP Agents
-exports.gbpMorningPost = onSchedule({ 
+exports.gbpMorningPost = onSchedule({ region: "europe-west4", 
   schedule: "0 9 * * *", 
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
@@ -1072,7 +1072,7 @@ exports.gbpMorningPost = onSchedule({
   }
 });
 
-exports.gbpLunchPost = onSchedule({ 
+exports.gbpLunchPost = onSchedule({ region: "europe-west4", 
   schedule: "0 12 * * *", 
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
@@ -1089,7 +1089,7 @@ exports.gbpLunchPost = onSchedule({
   }
 });
 
-exports.gbpEveningPost = onSchedule({ 
+exports.gbpEveningPost = onSchedule({ region: "europe-west4", 
   schedule: "0 18 * * *", 
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
@@ -1106,7 +1106,7 @@ exports.gbpEveningPost = onSchedule({
   }
 });
 
-exports.testGBPPost = onRequest({ 
+exports.testGBPPost = onRequest({ region: "europe-west4", 
   cors: true, 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
 }, async (req, res) => {
@@ -1124,7 +1124,7 @@ exports.testGBPPost = onRequest({
   }
 });
 
-exports.getGoogleReviews = onRequest({
+exports.getGoogleReviews = onRequest({ region: "europe-west4",
   cors: true,
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"]
 }, async (req, res) => {
@@ -1133,7 +1133,7 @@ exports.getGoogleReviews = onRequest({
 });
 
 // --- AGENTIC CHATBOT (ANDY) ---
-exports.chatbotAndy = onRequest({ 
+exports.chatbotAndy = onRequest({ region: "europe-west4", 
   cors: true, 
   secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
 }, async (req, res) => {
@@ -1306,7 +1306,7 @@ async function performSpotlightGeneration() {
 
 
 // --- THE REGULATOR: SELF-REPAIR & SYSTEM AUDIT AGENT ---
-exports.portalSentinel = onSchedule({
+exports.portalSentinel = onSchedule({ region: "europe-west4",
     schedule: "every 2 hours",
     timeZone: "Europe/London",
     memory: "1GiB"
@@ -1391,13 +1391,13 @@ exports.portalSentinel = onSchedule({
 });
 
 // --- SEO SENTINEL: SEARCH ENGINE SUBMISSION AGENT ---
-exports.generateDailySpotlight = onSchedule({ 
+exports.generateDailySpotlight = onSchedule({ region: "europe-west4", 
     schedule: "0 0 * * *", 
     timeZone: "Europe/London", 
     memory: "1GiB" 
 }, performSpotlightGeneration);
 
-exports.seoSubmissionAgent = onSchedule({
+exports.seoSubmissionAgent = onSchedule({ region: "europe-west4",
     schedule: "0 1 * * *", // 1:00 am every day
     timeZone: "Europe/London",
     memory: "512MiB"
@@ -1544,7 +1544,7 @@ async function performSocialAudit() {
 }
 
 // --- SOCIAL MEDIA SENTINEL: PERFORMANCE & POLICY AUDIT AGENT ---
-exports.socialMediaSentinel = onSchedule({
+exports.socialMediaSentinel = onSchedule({ region: "europe-west4",
     schedule: "every 4 hours",
     timeZone: "Europe/London",
     memory: "1GiB"
@@ -1553,7 +1553,7 @@ exports.socialMediaSentinel = onSchedule({
 });
 
 // Manual social audit trigger
-exports.manualSocialAudit = onRequest({ cors: true, memory: "1GiB" }, async (req, res) => {
+exports.manualSocialAudit = onRequest({ region: "europe-west4", cors: true, memory: "1GiB" }, async (req, res) => {
   try {
     const report = await performSocialAudit();
     res.status(200).json(report);
@@ -1563,7 +1563,7 @@ exports.manualSocialAudit = onRequest({ cors: true, memory: "1GiB" }, async (req
 });
 
 // --- MOBILE EXPERIENCE SENTINEL: FORENSIC RESPONSIVE AUDIT AGENT ---
-exports.dailyMobileAudit = onSchedule({
+exports.dailyMobileAudit = onSchedule({ region: "europe-west4",
     schedule: "0 18 * * *", // 6:00 pm every day
     timeZone: "Europe/London",
     memory: "1GiB"
@@ -1634,7 +1634,7 @@ exports.manualMobileAudit = onCall(async (request) => {
 
 
 // Manual system repair trigger
-exports.manualSystemRepair = onRequest({ cors: true, memory: "1GiB" }, async (req, res) => {
+exports.manualSystemRepair = onRequest({ region: "europe-west4", cors: true, memory: "1GiB" }, async (req, res) => {
   try {
     console.log("Manual System Repair Requested...");
     res.status(200).send("Sentinel Repair Cycle Initiated.");
@@ -1647,7 +1647,7 @@ exports.manualSystemRepair = onRequest({ cors: true, memory: "1GiB" }, async (re
  * PORTAL READINESS SENTINEL: SYSTEM AUDIT
  * Performs a deep forensic diagnostic of AI and Social API integrations.
  */
-exports.portalReadinessSentinel = onRequest({
+exports.portalReadinessSentinel = onRequest({ region: "europe-west4",
     cors: true,
     memory: "512MiB",
     secrets: [
@@ -1780,7 +1780,7 @@ exports.portalReadinessSentinel = onRequest({
  * META INSIGHTS VALIDATOR
  * Tests the new Permanent Page Token and specific engagement metrics.
  */
-exports.testMetaInsights = onRequest({
+exports.testMetaInsights = onRequest({ region: "europe-west4",
     cors: true,
     secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"]
 }, async (req, res) => {
@@ -1828,7 +1828,7 @@ exports.testMetaInsights = onRequest({
  * GMB AUTHENTICATION UTILITY
  * Generates a production-grade OAuth2 Authorization URL for Google Business Profile.
  */
-exports.generateGMBAuthUrl = onRequest({
+exports.generateGMBAuthUrl = onRequest({ region: "europe-west4",
     cors: true,
     secrets: ["GBP_CLIENT_ID", "GBP_CLIENT_SECRET"]
 }, async (req, res) => {
@@ -1863,7 +1863,7 @@ exports.generateGMBAuthUrl = onRequest({
  * GMB TOKEN EXCHANGE HANDLER
  * Exchanges authorization code for a permanent Refresh Token.
  */
-exports.exchangeGMBToken = onRequest({
+exports.exchangeGMBToken = onRequest({ region: "europe-west4",
     cors: true,
     secrets: ["GBP_CLIENT_ID", "GBP_CLIENT_SECRET"]
 }, async (req, res) => {
@@ -1898,7 +1898,7 @@ exports.exchangeGMBToken = onRequest({
 });
 
 // Production Contact Enquiry Agent
-exports.processContactEnquiry = onRequest({ 
+exports.processContactEnquiry = onRequest({ region: "europe-west4", 
     cors: true,
     secrets: [GMAIL_APP_PASSWORD] 
 }, async (req, res) => {
@@ -2063,7 +2063,7 @@ async function runSocialIntelligenceForensics() {
     }
 }
 
-exports.socialIntelligenceAgent = onSchedule({
+exports.socialIntelligenceAgent = onSchedule({ region: "europe-west4",
     schedule: "0 1 * * *", 
     timeZone: "Europe/London",
     secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID"]
@@ -2072,7 +2072,7 @@ exports.socialIntelligenceAgent = onSchedule({
 });
 
 // Manual Analysis Trigger (Callable Request)
-exports.manualSocialAnalysis = onRequest({ cors: true }, async (req, res) => {
+exports.manualSocialAnalysis = onRequest({ region: "europe-west4", cors: true }, async (req, res) => {
     try {
         console.log("[UI-TRIGGER] Manual Forensic Social Audit Initiated...");
         const result = await runSocialIntelligenceForensics();
@@ -2087,7 +2087,7 @@ exports.manualSocialAnalysis = onRequest({ cors: true }, async (req, res) => {
  * Dispatched every Monday at 8:00 AM GMT.
  * Compares current week performance against the Baseline Audit.
  */
-exports.weeklyPerformanceDigest = onSchedule({
+exports.weeklyPerformanceDigest = onSchedule({ region: "europe-west4",
     schedule: "0 8 * * 1", // 8 AM Monday
     timeZone: "Europe/London",
     secrets: [
@@ -2153,7 +2153,7 @@ exports.weeklyPerformanceDigest = onSchedule({
  * MANUAL DIGEST TRIGGER (PRE-LAUNCH)
  * One-off trigger to confirm Baseline Sync and GMB Heartbeat.
  */
-exports.manualWeeklyDigest = onRequest({
+exports.manualWeeklyDigest = onRequest({ region: "europe-west4",
     cors: true,
     secrets: [
         "AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET", 
@@ -2217,7 +2217,7 @@ exports.manualWeeklyDigest = onRequest({
  * VALUATION INTELLIGENCE AGENT
  * Performs local market research within 0.25 miles to calculate OMV.
  */
-exports.researchPropertyValuation = onRequest({
+exports.researchPropertyValuation = onRequest({ region: "europe-west4",
     cors: true,
     secrets: [GMAIL_APP_PASSWORD]
 }, async (req, res) => {
@@ -2286,7 +2286,7 @@ exports.researchPropertyValuation = onRequest({
 /**
  * PURCHASE ENQUIRY PROCESSOR
  */
-exports.processPurchaseEnquiry = onRequest({
+exports.processPurchaseEnquiry = onRequest({ region: "europe-west4",
     cors: true,
     secrets: [GMAIL_APP_PASSWORD]
 }, async (req, res) => {
@@ -2313,7 +2313,7 @@ exports.processPurchaseEnquiry = onRequest({
 /**
  * VALUATION REQUEST PROCESSOR
  */
-exports.processValuationRequest = onRequest({
+exports.processValuationRequest = onRequest({ region: "europe-west4",
     cors: true,
     secrets: [GMAIL_APP_PASSWORD]
 }, async (req, res) => {
@@ -2335,7 +2335,7 @@ exports.processValuationRequest = onRequest({
     }
 });
 
-exports.getLiveVisitors = onRequest({ 
+exports.getLiveVisitors = onRequest({ region: "europe-west4", 
     cors: true,
     secrets: ["GA4_PROPERTY_ID"] 
 }, async (req, res) => {
@@ -2372,7 +2372,7 @@ exports.getLiveVisitors = onRequest({
     }
 });
 
-exports.getGBPInsights = onRequest({
+exports.getGBPInsights = onRequest({ region: "europe-west4",
     cors: true,
     secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"]
 }, async (req, res) => {
@@ -2454,7 +2454,7 @@ async function harvestTopKeywords() {
  * WP-SEO Generator: Executes at 22:00 GMT daily.
  * Targets the GSR Active_Location and assembles the daily SEO page.
  */
-exports.autonomousSEOGenerator = onSchedule({
+exports.autonomousSEOGenerator = onSchedule({ region: "europe-west4",
     schedule: "0 22 * * *", 
     timeZone: "Europe/London",
     memory: "1GiB"
@@ -2593,7 +2593,7 @@ exports.autonomousSEOGenerator = onSchedule({
 /**
  * SERVE SEO PAGE: Dynamic handler for DDMMYYYY.html URLs.
  */
-exports.serveSEOPage = onRequest({ cors: true }, async (req, res) => {
+exports.serveSEOPage = onRequest({ region: "europe-west4", cors: true }, async (req, res) => {
     const path = req.path.replace(/^\//, '').replace('.html', '');
     if (!/^\d{8}$/.test(path)) return res.status(404).send("Page Not Found");
 
@@ -2610,7 +2610,7 @@ exports.serveSEOPage = onRequest({ cors: true }, async (req, res) => {
 /**
  * SERVE SITEMAP: Dynamic XML generator.
  */
-exports.serveSitemap = onRequest({ cors: true }, async (req, res) => {
+exports.serveSitemap = onRequest({ region: "europe-west4", cors: true }, async (req, res) => {
     try {
         const pagesSnap = await db.collection("seoPages").orderBy("timestamp", "desc").limit(1000).get();
         const siteUrl = "https://cash4houses.co.uk";
