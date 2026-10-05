@@ -11,11 +11,13 @@ import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndP
 import privacyRaw from './privacy.html?raw';
 import cookiesRaw from './cookies.html?raw';
 import termsRaw from './terms.html?raw';
+import sitemapRaw from './sitemap.html?raw';
 
 const policyHTML = {
     '/privacy.html': privacyRaw,
     '/cookies.html': cookiesRaw,
-    '/terms.html': termsRaw
+    '/terms.html': termsRaw,
+    '/sitemap.html': sitemapRaw
 };
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
@@ -406,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.classList.remove('active');
     });
 
-    const links = document.querySelectorAll('a[href="/privacy.html"], a[href="/cookies.html"], a[href="/terms.html"]');
+    const links = document.querySelectorAll('a[href="/privacy.html"], a[href="/cookies.html"], a[href="/terms.html"], a[href="/sitemap.html"]');
     links.forEach(link => {
         link.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -418,18 +420,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(rawText, 'text/html');
-                    const mainContent = doc.querySelector('.policy-content');
+                    const mainContent = doc.querySelector('.policy-content') || doc.querySelector('.sitemap-container');
                     if (mainContent) {
                         modalBody.innerHTML = mainContent.innerHTML;
                     } else {
-                        modalBody.innerHTML = '<p>Failed to extract policy content. Please try again later.</p>';
+                        modalBody.innerHTML = '<p>Failed to extract content. Please try again later.</p>';
                     }
                 } catch (err) {
-                    console.error("Failed to parse policy", err);
-                    modalBody.innerHTML = '<p>Failed to parse policy. Please try again later.</p>';
+                    console.error("Failed to parse content", err);
+                    modalBody.innerHTML = '<p>Failed to parse content. Please try again later.</p>';
                 }
             } else {
-                modalBody.innerHTML = '<p>Policy content not found.</p>';
+                modalBody.innerHTML = '<p>Content not found.</p>';
             }
         });
     });
