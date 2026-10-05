@@ -8,6 +8,16 @@ import {
 } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 
+import privacyRaw from './privacy.html?raw';
+import cookiesRaw from './cookies.html?raw';
+import termsRaw from './terms.html?raw';
+
+const policyHTML = {
+    '/privacy.html': privacyRaw,
+    '/cookies.html': cookiesRaw,
+    '/terms.html': termsRaw
+};
+
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
 // Auth State Logic
@@ -402,22 +412,24 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const url = link.getAttribute('href');
             overlay.classList.add('active');
-            modalBody.innerHTML = '<p style="text-align:center; padding: 2rem;">Loading policy...</p>';
             
-            try {
-                const res = await fetch(url);
-                const text = await res.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const mainContent = doc.querySelector('.policy-content');
-                if (mainContent) {
-                    modalBody.innerHTML = mainContent.innerHTML;
-                } else {
-                    modalBody.innerHTML = '<p>Failed to load policy content. Please try again later.</p>';
+            const rawText = policyHTML[url];
+            if (rawText) {
+                try {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(rawText, 'text/html');
+                    const mainContent = doc.querySelector('.policy-content');
+                    if (mainContent) {
+                        modalBody.innerHTML = mainContent.innerHTML;
+                    } else {
+                        modalBody.innerHTML = '<p>Failed to extract policy content. Please try again later.</p>';
+                    }
+                } catch (err) {
+                    console.error("Failed to parse policy", err);
+                    modalBody.innerHTML = '<p>Failed to parse policy. Please try again later.</p>';
                 }
-            } catch (err) {
-                console.error("Failed to load policy", err);
-                modalBody.innerHTML = '<p>Failed to load policy. Please try again later.</p>';
+            } else {
+                modalBody.innerHTML = '<p>Policy content not found.</p>';
             }
         });
     });
