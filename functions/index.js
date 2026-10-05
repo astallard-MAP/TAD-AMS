@@ -1150,6 +1150,8 @@ exports.chatbotAndy = onRequest({ region: "europe-west4",
     const newsDoc = await db.collection("marketUpdates").doc("latest").get();
     const newsSummary = newsDoc.exists ? newsDoc.data().content : "No recent news available.";
 
+    const ukTimeOptions = { timeZone: 'Europe/London', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
+    const currentUKTime = new Intl.DateTimeFormat('en-GB', ukTimeOptions).format(new Date());
     const systemPrompt = `
       ROLE: You are 'Andy' (Andrew Stallard), owner of Cash 4 Houses.
       ETHOS: Honest, transparent, and profoundly helpful.
@@ -1182,6 +1184,7 @@ exports.chatbotAndy = onRequest({ region: "europe-west4",
       - Say: "I'm the AI version of Andy. I can't lie—the truth is that a fast sale can fix this, but your peace of mind comes first."
       
       CONTEXT (Today's News): ${newsSummary}
+      CURRENT UK TIME (GMT/BST): ${currentUKTime} (If the user asks for the time, tell them exactly this time. You are fully aware of GMT/BST shifts).
     `;
 
     const { text } = await ai.generate({
@@ -1398,7 +1401,7 @@ exports.generateDailySpotlight = onSchedule({ region: "europe-west4",
 }, performSpotlightGeneration);
 
 exports.seoSubmissionAgent = onSchedule({ region: "europe-west4",
-    schedule: "0 1 * * *", // 1:00 am every day
+    schedule: "30 23 * * *", // 11:30 pm every day
     timeZone: "Europe/London",
     memory: "512MiB"
 }, async (event) => {
@@ -1411,10 +1414,11 @@ exports.seoSubmissionAgent = onSchedule({ region: "europe-west4",
         
         // Google Search Console Ping
         await fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`);
+        try { await fetch(`https://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=${sitemapUrl}`); } catch (e) {}
 
         await db.collection("seoSubmissions").add({
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
-            engines: ["Google", "Bing"],
+            engines: ["Google", "Bing", "Yahoo"],
             sitemap: sitemapUrl,
             status: "Submitted"
         });
@@ -2455,7 +2459,7 @@ async function harvestTopKeywords() {
  * Targets the GSR Active_Location and assembles the daily SEO page.
  */
 exports.autonomousSEOGenerator = onSchedule({ region: "europe-west4",
-    schedule: "0 22 * * *", 
+    schedule: "0 23 * * *", 
     timeZone: "Europe/London",
     memory: "1GiB"
 }, async (event) => {
@@ -2467,7 +2471,8 @@ exports.autonomousSEOGenerator = onSchedule({ region: "europe-west4",
         const primaryKeyword = keywords[0];
         
         const today = new Date();
-        const dateStr = today.toISOString().split('T')[0].split('-').reverse().join(''); // DDMMYYYY
+        const rawDateStr = today.toISOString().split('T')[0].split('-').reverse().join(''); // DDMMYYYY
+        const dateStr = `cashforhouses${rawDateStr}`;
         const fullDate = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
         // BLOCK 1: REGIONAL OVERVIEW (SS-KI Keyword Injection)
@@ -2557,6 +2562,11 @@ exports.autonomousSEOGenerator = onSchedule({ region: "europe-west4",
             <p>Our team provides guaranteed cash offers for properties in any condition across ${town}. Skip the chain and the uncertainty.</p>
             <a href="https://cash4houses.co.uk" class="btn">Request Instant Valuation</a>
         </div>
+        
+        <section style="margin-top: 50px; border-top: 1px solid #e2e8f0; padding-top: 30px;">
+            <h3 style="color: var(--slate); font-size: 1rem;">SEO Targeted Keywords & Tags</h3>
+            <p style="font-size: 0.85rem; color: #94a3b8;">${keywords.join(', ')}</p>
+        </section>
     </div>
 </body>
 </html>
@@ -2595,7 +2605,49 @@ exports.autonomousSEOGenerator = onSchedule({ region: "europe-west4",
  */
 exports.serveSEOPage = onRequest({ region: "europe-west4", cors: true }, async (req, res) => {
     const path = req.path.replace(/^\//, '').replace('.html', '');
-    if (!/^\d{8}$/.test(path)) return res.status(404).send("Page Not Found");
+    // Handle Archive Page Route
+    if (path === 'archive') {
+        try {
+            const pagesSnap = await db.collection("seoPages").orderBy("timestamp", "desc").limit(50).get();
+            let linksHtml = '';
+            pagesSnap.forEach(doc => {
+                const data = doc.data();
+                linksHtml += `<li style="margin-bottom: 10px;"><a href="/${doc.id}.html" style="color: #a21caf; text-decoration: none; font-weight: 600;">${data.town || 'Property Update'} - ${doc.id.replace('cashforhouses', '')}</a></li>`;
+            });
+            
+            const archiveHtml = `
+            <!DOCTYPE html>
+            <html lang="en-GB">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Daily Articles Archive | Cash 4 Houses</title>
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap">
+                <style>
+                    body { font-family: 'Outfit', sans-serif; margin: 0; background: #fafafa; color: #1e293b; padding: 40px; }
+                    .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+                    h1 { color: #0f172a; border-bottom: 3px solid #EB287A; padding-bottom: 10px; }
+                    ul { list-style: none; padding: 0; }
+                    a:hover { text-decoration: underline !important; }
+                    .back-btn { display: inline-block; margin-bottom: 20px; color: #64748b; text-decoration: none; font-weight: 600; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <a href="/" class="back-btn">&larr; Back to Home</a>
+                    <h1>Daily Articles Archive</h1>
+                    <p>Browse our daily historical logs of real estate market activity and local social outreach.</p>
+                    <ul>${linksHtml || '<li>No articles generated yet.</li>'}</ul>
+                </div>
+            </body>
+            </html>`;
+            return res.status(200).send(archiveHtml);
+        } catch (err) {
+            return res.status(500).send("Archive Error");
+        }
+    }
+
+    if (!/^cashforhouses\d{8}$/.test(path) && !/^\d{8}$/.test(path)) return res.status(404).send("Page Not Found");
 
     try {
         const pageSnap = await db.collection("seoPages").doc(path).get();
@@ -2619,7 +2671,7 @@ exports.serveSitemap = onRequest({ region: "europe-west4", cors: true }, async (
         xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         
         // Static Core Pages
-        const staticPages = ['', 'contact.html', 'about.html', 'dashboard.html'];
+        const staticPages = ['', 'contact.html', 'about.html', 'dashboard.html', 'archive.html'];
         staticPages.forEach(p => {
             xml += `<url><loc>${siteUrl}/${p}</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`;
         });
@@ -2645,6 +2697,45 @@ exports.manualSlimMkt = slimMkt.manualSlimMkt;
 const slimPsy = require('./slim/slimPsy');
 exports.slimPsyAgent = slimPsy.slimPsyAgent;
 exports.manualSlimPsy = slimPsy.manualSlimPsy;
+
+/**
+ * DYNAMIC TESTIMONIAL GENERATOR: 11:45 PM Daily
+ */
+exports.generateDailyTestimonial = onSchedule({ region: "europe-west4",
+    schedule: "45 23 * * *", 
+    timeZone: "Europe/London",
+    memory: "512MiB"
+}, async (event) => {
+    console.log("[TESTIMONIAL] Generating daily dynamic testimonial...");
+    try {
+        const town = await getActiveGSRLocation();
+        const prompt = `
+            ROLE: Master Copywriter.
+            TASK: Generate a single 3-sentence testimonial from a distressed property seller in ${town}, Essex.
+            SCENARIO: They needed to sell fast for cash (e.g., broken chain, inheritance, divorce) and Andrew (Andy) at Cash 4 Houses provided a fast, ethical, no-fee exit.
+            FORMAT: Just the quote text. No quotes around it, no names at the end. Use British English.
+            TONE: Relieved, genuine, slightly informal but highly positive.
+        `;
+        const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt });
+        
+        const firstNames = ["Sarah", "Mark", "David", "Emma", "John", "Paul", "Lisa", "Rachel", "Tom", "James", "Karen", "Steve"];
+        const lastInitials = ["A.", "B.", "C.", "D.", "H.", "L.", "M.", "P.", "S.", "T.", "W."];
+        const name = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastInitials[Math.floor(Math.random() * lastInitials.length)]}`;
+        
+        await db.collection("testimonials").add({
+            comment: text.trim(),
+            reviewer: { displayName: name },
+            source: town,
+            starRating: 5,
+            createTime: new Date().toISOString(),
+            timestamp: admin.firestore.FieldValue.serverTimestamp()
+        });
+        
+        console.log(`[TESTIMONIAL] Successfully created testimonial for ${town}.`);
+    } catch (err) {
+        console.error("[TESTIMONIAL] Failure:", err);
+    }
+});
 
 const slimHash = require('./slim/slimHash');
 exports.slimHashAgent = slimHash.slimHashAgent;

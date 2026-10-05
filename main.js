@@ -4,7 +4,11 @@ import {
     addDoc, 
     serverTimestamp,
     doc,
-    getDoc
+    getDoc,
+    query,
+    orderBy,
+    limit,
+    getDocs
 } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 
@@ -277,23 +281,20 @@ async function fetchLatestNews() {
 
 fetchLatestNews();
 
-// --- GOOGLE REVIEWS INTEGRATION ---
-async function fetchGoogleReviews() {
+// --- TESTIMONIALS INTEGRATION ---
+async function fetchTestimonials() {
     const reviewsGrid = document.getElementById('google-reviews');
     const reviewsSection = document.getElementById('reviews');
     if (!reviewsGrid || !reviewsSection) return;
 
     try {
-        const resp = await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/getGoogleReviews');
-        if (!resp.ok) throw new Error("API Offline");
+        const q = query(collection(db, "testimonials"), orderBy("timestamp", "desc"), limit(6));
+        const snapshot = await getDocs(q);
         
-        const reviews = await resp.json();
+        const reviews = [];
+        snapshot.forEach(doc => reviews.push(doc.data()));
         
-        // Filter: Only show reviews that have actual text content
-        const verifiedReviews = (reviews || []).filter(r => r.comment && r.comment.trim().length > 0);
-        
-        if (verifiedReviews.length === 0) {
-            console.log("No text-based reviews found. Keeping section hidden.");
+        if (reviews.length === 0) {
             reviewsSection.style.display = 'none';
             return;
         }
@@ -301,31 +302,30 @@ async function fetchGoogleReviews() {
         reviewsSection.style.display = 'block';
 
         // Render Reviews
-        reviewsGrid.innerHTML = verifiedReviews.map(review => `
+        reviewsGrid.innerHTML = reviews.map(review => `
             <div class="review-card">
                 <div class="review-header">
-                    <img src="${review.reviewer.profilePhotoUrl || '/andy-avatar.jpg'}" alt="${review.reviewer.displayName}" class="reviewer-img">
+                    <img src="/andy-avatar.jpg" alt="${review.reviewer.displayName}" class="reviewer-img">
                     <div class="reviewer-info">
                         <strong>${review.reviewer.displayName}</strong>
                         <div class="stars">${'★'.repeat(review.starRating)}${'☆'.repeat(5 - review.starRating)}</div>
                     </div>
                 </div>
-                <p class="review-text">"${review.comment ? review.comment.split('\n')[0].substring(0, 150) + (review.comment.length > 150 ? '...' : '') : 'Excellent service from the team at Cash 4 Houses.'}"</p>
+                <p class="review-text">"${review.comment}"</p>
                 <div class="review-meta">
                     <small>${new Date(review.createTime).toLocaleDateString('en-GB')}</small>
-                    <span class="office-tag">${review.source || 'Verified Seller'}</span>
+                    <span class="office-tag">Property in ${review.source}</span>
                 </div>
             </div>
         `).join('');
 
     } catch (err) {
-        console.warn("Reviews Fetch Failure:", err);
-        // On failure, we hide the section to avoid "nothing to display" impression
+        console.warn("Testimonials Fetch Failure:", err);
         reviewsSection.style.display = 'none';
     }
 }
 
-fetchGoogleReviews();
+fetchTestimonials();
 
 // Smooth Scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
