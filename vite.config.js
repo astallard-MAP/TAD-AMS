@@ -27,6 +27,7 @@ export default defineConfig({
         ]
       },
       workbox: {
+        navigateFallback: null,
         navigateFallbackDenylist: [/^\/gtag/],
         globIgnores: ["**/*.html"],
         runtimeCaching: [
@@ -68,6 +69,8 @@ export default defineConfig({
         locations: resolve(__dirname, 'locations.html'),
         get_offer: resolve(__dirname, 'get-offer.html'),
         enquiry_detail: resolve(__dirname, 'enquiry-detail.html'),
+        archive: resolve(__dirname, 'archive.html'),
+        '404': resolve(__dirname, '404.html'),
       },
     },
   },
