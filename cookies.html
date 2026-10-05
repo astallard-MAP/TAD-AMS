@@ -13,17 +13,30 @@
     </style>
 </head>
 <body>
+
+    <!-- Google Translate Widget -->
+    <div id="google_translate_element" style="position: absolute; top: 10px; right: 10px; z-index: 9999;"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Accessibility Widget (UserWay free tier for contrast/text size/dyslexia) -->
+    <script src="https://cdn.userway.org/widget.js" data-account="V9zGkV4z3m"></script>
+
     <header>
         <div class="container">
             <nav>
-                <a href="/" class="logo">
+                <a href="/" class="logo" title="Home Page" aria-label="Home Page">
                     <img src="/logo.jpg" alt="Cash 4 Houses Logo">
                 </a>
                 <div class="menu-toggle" id="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </div>
                 <div class="nav-links">
-                    <a href="/" class="btn btn-outline">Back to Home</a>
+                    <a href="/" class="btn btn-outline" title="Back to Home" aria-label="Back to Home">Back to Home</a>
                 </div>
             </nav>
         </div>
@@ -134,9 +147,9 @@
         <h2>7. How to manage cookies</h2>
         <ul>
             <li><strong>On our Website:</strong> use the Cookie Settings link in the footer to accept, reject or change your choices at any time.</li>
-            <li><strong>In your browser:</strong> most browsers let you block or delete cookies. See your browser's help menu, or visit <a href="https://www.aboutcookies.org" target="_blank" rel="noopener">www.aboutcookies.org</a>.</li>
+            <li><strong>In your browser:</strong> most browsers let you block or delete cookies. See your browser's help menu, or visit <a href="https://www.aboutcookies.org" target="_blank" rel="noopener" title="www.aboutcookies.org" aria-label="www.aboutcookies.org">www.aboutcookies.org</a>.</li>
             <li><strong>Mobile devices:</strong> use your device's privacy and advertising settings.</li>
-            <li><strong>Opt out of Google Analytics:</strong> use Google's browser add-on at <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">tools.google.com/dlpage/gaoptout</a>.</li>
+            <li><strong>Opt out of Google Analytics:</strong> use Google's browser add-on at <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener" title="tools.google.com/dlpage/gaoptout" aria-label="tools.google.com/dlpage/gaoptout">tools.google.com/dlpage/gaoptout</a>.</li>
         </ul>
         <p>If you block or delete cookies, you will need to set your preferences again, and some features may not work properly.</p>
 
@@ -144,7 +157,7 @@
         <p>We may update this policy when our use of cookies changes, or when the law changes. The "Last updated" date shows the latest version. We will ask for consent again if our use of non-essential cookies changes significantly.</p>
 
         <h2>9. Contact us</h2>
-        <p>If you have questions about this policy, contact us at <a href="mailto:fast@cash4houses.co.uk">fast@cash4houses.co.uk</a>, or write to Cash 4 Houses, 377 Southchurch Road, Southend on Sea, Essex. SS1 2PQ.</p>
+        <p>If you have questions about this policy, contact us at <a href="mailto:fast@cash4houses.co.uk" title="fast@cash4houses.co.uk" aria-label="fast@cash4houses.co.uk">fast@cash4houses.co.uk</a>, or write to Cash 4 Houses, 377 Southchurch Road, Southend on Sea, Essex. SS1 2PQ.</p>
     </main>
 
     <footer>

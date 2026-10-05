@@ -9,8 +9,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="dashboard-body">
+
+    <!-- Google Translate Widget -->
+    <div id="google_translate_element" style="position: absolute; top: 10px; right: 10px; z-index: 9999;"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Accessibility Widget (UserWay free tier for contrast/text size/dyslexia) -->
+    <script src="https://cdn.userway.org/widget.js" data-account="V9zGkV4z3m"></script>
+
     <div class="dashboard-container">
-        <aside class="dashboard-sidebar">
+        <aside class="dashboard-sidebar" title="Interaction Record
+                Immutable Communication Log
+            
+            
+                 Back to Dashboard" aria-label="Interaction Record
+                Immutable Communication Log
+            
+            
+                 Back to Dashboard">
             <div class="profile-section">
                 <i class="fas fa-history" style="font-size: 3rem; color: #EB287A; margin-bottom: 1rem;"></i>
                 <h3>Interaction Record</h3>

@@ -64,28 +64,41 @@
     </script>
 </head>
 <body>
+
+    <!-- Google Translate Widget -->
+    <div id="google_translate_element" style="position: absolute; top: 10px; right: 10px; z-index: 9999;"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Accessibility Widget (UserWay free tier for contrast/text size/dyslexia) -->
+    <script src="https://cdn.userway.org/widget.js" data-account="V9zGkV4z3m"></script>
+
     <header>
         <div class="container">
             <nav>
-                <a href="/" class="logo">
+                <a href="/" class="logo" title="Home Page" aria-label="Home Page">
                     <img src="/logo.jpg" alt="Cash 4 Houses Logo">
                 </a>
                 <div class="menu-toggle" id="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </div>
                                 <div class="nav-links">
-                    <a href="/about.html">About</a>
-                    <a href="/locations.html">Locations</a>
-                    <a href="tel:07834555355" class="btn btn-primary"><i class="fas fa-phone"></i> 07834 555 355</a>
+                    <a href="/about.html" title="About" aria-label="About">About</a>
+                    <a href="/locations.html" title="Locations" aria-label="Locations">Locations</a>
+                    <a href="tel:07834555355" class="btn btn-primary" title="07834 555 355" aria-label="07834 555 355"><i class="fas fa-phone"></i> 07834 555 355</a>
                     
                     <!-- Auth Controls -->
                     <button id="login-btn" class="btn btn-outline">Login</button>
                     <div id="user-profile" class="user-profile" style="display: none;">
                         <span class="user-name">User</span>
                         <div class="user-dropdown">
-                            <a id="admin-toggle" href="/admin.html" style="display: none; color: #d32f2f;">Admin Dashboard</a>
-                            <a id="portfolio-link" href="/dashboard.html" style="display: none;">My Portfolio</a>
-                            <a href="/profile.html">My Profile</a>
+                            <a id="admin-toggle" href="/admin.html" style="display: none; color: #d32f2f;" title="Admin Dashboard" aria-label="Admin Dashboard">Admin Dashboard</a>
+                            <a id="portfolio-link" href="/dashboard.html" style="display: none;" title="My Portfolio" aria-label="My Portfolio">My Portfolio</a>
+                            <a href="/profile.html" title="My Profile" aria-label="My Profile">My Profile</a>
                             <button id="logout-btn" class="logout-btn">Sign Out</button>
                         </div>
                     </div>
@@ -322,19 +335,19 @@
                     <p>Hillsboro, 377 Southchurch Road,<br>Southend-On-Sea, Essex SS1 2PQ</p>
                     <p><strong>Tel:</strong> 07834 555 355</p>
                     <div class="social-links">
-                        <a href="https://www.facebook.com/Cash4Houses.co/" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="https://www.instagram.com/cash4houses.co.uk/" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/Cash4Houses.co/" target="_blank" title="Facebook Page" aria-label="Facebook Page"><i class="fab fa-facebook"></i></a>
+                        <a href="https://www.instagram.com/cash4houses.co.uk/" target="_blank" title="Instagram Profile" aria-label="Instagram Profile"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
                                 <div class="footer-links">
                     <h4>Quick Links</h4>
                     <ul>
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/about.html">About Our Service</a></li>
-                        <li><a href="/locations.html">Areas We Buy</a></li>
-                        <li><a href="/contact.html">Contact Us</a></li>
-                        <li><a href="/get-offer.html">Get an Offer</a></li>
-                        <li><a href="/archive.html">Daily Articles Archive</a></li>
+                        <li><a href="/" title="Home" aria-label="Home">Home</a></li>
+                        <li><a href="/about.html" title="About Our Service" aria-label="About Our Service">About Our Service</a></li>
+                        <li><a href="/locations.html" title="Areas We Buy" aria-label="Areas We Buy">Areas We Buy</a></li>
+                        <li><a href="/contact.html" title="Contact Us" aria-label="Contact Us">Contact Us</a></li>
+                        <li><a href="/get-offer.html" title="Get an Offer" aria-label="Get an Offer">Get an Offer</a></li>
+                        <li><a href="/archive.html" title="Daily Articles Archive" aria-label="Daily Articles Archive">Daily Articles Archive</a></li>
                     </ul>
                 </div>
                 <div class="footer-links">
@@ -344,10 +357,10 @@
                 <div class="footer-links">
                     <h4>Legal</h4>
                     <ul>
-                        <li><a href="/privacy.html">Privacy Policy</a></li>
-                        <li><a href="/cookies.html">Cookie Policy</a></li>
-                        <li><a href="/terms.html">Terms of Use</a></li>
-                        <li><a href="/sitemap.html">Sitemap</a></li>
+                        <li><a href="/privacy.html" title="Privacy Policy" aria-label="Privacy Policy">Privacy Policy</a></li>
+                        <li><a href="/cookies.html" title="Cookie Policy" aria-label="Cookie Policy">Cookie Policy</a></li>
+                        <li><a href="/terms.html" title="Terms of Use" aria-label="Terms of Use">Terms of Use</a></li>
+                        <li><a href="/sitemap.html" title="Sitemap" aria-label="Sitemap">Sitemap</a></li>
                     </ul>
                 </div>
             </div>

@@ -16,17 +16,30 @@
     </style>
 </head>
 <body>
+
+    <!-- Google Translate Widget -->
+    <div id="google_translate_element" style="position: absolute; top: 10px; right: 10px; z-index: 9999;"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Accessibility Widget (UserWay free tier for contrast/text size/dyslexia) -->
+    <script src="https://cdn.userway.org/widget.js" data-account="V9zGkV4z3m"></script>
+
     <header>
         <div class="container">
             <nav>
-                <a href="/" class="logo">
+                <a href="/" class="logo" title="Home Page" aria-label="Home Page">
                     <img src="/logo.jpg" alt="Cash 4 Houses Logo">
                 </a>
                 <div class="menu-toggle" id="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </div>
                 <div class="nav-links">
-                    <a href="/" class="btn btn-outline">Back to Home</a>
+                    <a href="/" class="btn btn-outline" title="Back to Home" aria-label="Back to Home">Back to Home</a>
                 </div>
             </nav>
         </div>
@@ -98,10 +111,10 @@
         <p>
             <strong>Cash4Houses.co.uk</strong><br>
             Address: 377 Southchurch Road, Southend-on-Sea, Essex. SS1 2PQ<br>
-            Email: <a href="mailto:fast@cash4houses.co.uk">fast@cash4houses.co.uk</a><br>
+            Email: <a href="mailto:fast@cash4houses.co.uk" title="fast@cash4houses.co.uk" aria-label="fast@cash4houses.co.uk">fast@cash4houses.co.uk</a><br>
             Telephone: 07834 555 355
         </p>
-        <p>If you feel that your data has not been handled correctly, you have the right to make a complaint at any time to the Information Commissioner's Office (ICO), the UK supervisory authority for data protection issues (<a href="https://ico.org.uk" target="_blank" rel="noopener">www.ico.org.uk</a>).</p>
+        <p>If you feel that your data has not been handled correctly, you have the right to make a complaint at any time to the Information Commissioner's Office (ICO), the UK supervisory authority for data protection issues (<a href="https://ico.org.uk" target="_blank" rel="noopener" title="www.ico.org.uk" aria-label="www.ico.org.uk">www.ico.org.uk</a>).</p>
     </main>
 
     <footer>

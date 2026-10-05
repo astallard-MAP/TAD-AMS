@@ -28,9 +28,16 @@ export default defineConfig({
       },
       workbox: {
         navigateFallbackDenylist: [/^\/gtag/],
-        // Google Tag Manager should be handled directly by the browser 
-        // to avoid Service Worker fetch rejections when blocked by ad-blockers.
-        runtimeCaching: []
+        globIgnores: ["**/*.html"],
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.destination === 'document',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'html-cache',
+            },
+          }
+        ]
       }
     })
   ],

@@ -158,8 +158,31 @@
     </style>
 </head>
 <body class="dashboard-body">
+
+    <!-- Google Translate Widget -->
+    <div id="google_translate_element" style="position: absolute; top: 10px; right: 10px; z-index: 9999;"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Accessibility Widget (UserWay free tier for contrast/text size/dyslexia) -->
+    <script src="https://cdn.userway.org/widget.js" data-account="V9zGkV4z3m"></script>
+
     <div class="dashboard-container">
-        <aside class="dashboard-sidebar">
+        <aside class="dashboard-sidebar" title="Andrew Stallard
+                Global Administrator
+            
+            
+            
+                 Back to Dashboard" aria-label="Andrew Stallard
+                Global Administrator
+            
+            
+            
+                 Back to Dashboard">
             <div class="profile-section">
                 <div class="profile-pic-container">
                     <img src="/andy-avatar.jpg" alt="Profile" class="profile-img">
@@ -171,9 +194,9 @@
             <nav class="sidebar-nav">
                 <a href="/admin.html"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
                 <div style="margin: 20px 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
-                <a href="#" class="active"><i class="fas fa-folder-open"></i> Lead Workspace</a>
-                <a href="/performance.html"><i class="fas fa-microchip"></i> Performance Hub</a>
-                <a href="/documents.html"><i class="fas fa-folder-tree"></i> Documents Hub</a>
+                <a href="#" class="active" title="Lead Workspace" aria-label="Lead Workspace"><i class="fas fa-folder-open"></i> Lead Workspace</a>
+                <a href="/performance.html" title="Performance Hub" aria-label="Performance Hub"><i class="fas fa-microchip"></i> Performance Hub</a>
+                <a href="/documents.html" title="Documents Hub" aria-label="Documents Hub"><i class="fas fa-folder-tree"></i> Documents Hub</a>
             </nav>
         </aside>
 
@@ -194,9 +217,9 @@
                     <div class="enquiry-header-card">
                         <div style="width: 100%;">
                             <div class="tab-nav">
-                                <a href="#" class="tab-link active">Property Profile</a>
-                                <a href="#" class="tab-link">Market Analysis</a>
-                                <a href="#" class="tab-link">Seller Motivation</a>
+                                <a href="#" class="tab-link active" title="Property Profile" aria-label="Property Profile">Property Profile</a>
+                                <a href="#" class="tab-link" title="Market Analysis" aria-label="Market Analysis">Market Analysis</a>
+                                <a href="#" class="tab-link" title="Seller Motivation" aria-label="Seller Motivation">Seller Motivation</a>
                             </div>
                             <div id="property-details" class="details-content">
                                 <!-- Populated by JS -->

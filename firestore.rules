@@ -12,9 +12,11 @@ service cloud.firestore {
       return request.auth != null && request.auth.token.email == email;
     }
 
-    // LEADS: Public can only create. Admin can do all. Users can read/update their own by email.
+    // LEADS: Public can only create if valid payload. Admin can do all. Users can read/update their own by email.
     match /leads/{leadId} {
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasAny(['email', 'phone']) 
+                    && request.resource.data.keys().hasAll(['name'])
+                    && (request.resource.data.name is string && request.resource.data.name.size() > 1);
       allow read, update: if isAdmin() || isEmailOwner(resource.data.email);
       allow delete: if isAdmin();
     }

@@ -13,17 +13,30 @@
     </style>
 </head>
 <body>
+
+    <!-- Google Translate Widget -->
+    <div id="google_translate_element" style="position: absolute; top: 10px; right: 10px; z-index: 9999;"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Accessibility Widget (UserWay free tier for contrast/text size/dyslexia) -->
+    <script src="https://cdn.userway.org/widget.js" data-account="V9zGkV4z3m"></script>
+
     <header>
         <div class="container">
             <nav>
-                <a href="/" class="logo">
+                <a href="/" class="logo" title="Home Page" aria-label="Home Page">
                     <img src="/logo.jpg" alt="Cash 4 Houses Logo">
                 </a>
                 <div class="menu-toggle" id="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </div>
                 <div class="nav-links">
-                    <a href="/" class="btn btn-outline">Back to Home</a>
+                    <a href="/" class="btn btn-outline" title="Back to Home" aria-label="Back to Home">Back to Home</a>
                 </div>
             </nav>
         </div>
@@ -43,7 +56,7 @@
             <li>Registered in England and Wales, company number [Insert Company Number]</li>
             <li>Registered office: 377 Southchurch Road, Southend on Sea, Essex. SS1 2PQ</li>
             <li>Trading addresses: 377 Southchurch Road, Southend on Sea, Essex. SS1 2PQ</li>
-            <li>Email: <a href="mailto:fast@cash4houses.co.uk">fast@cash4houses.co.uk</a> | Telephone: 07834 555 355</li>
+            <li>Email: <a href="mailto:fast@cash4houses.co.uk" title="fast@cash4houses.co.uk" aria-label="fast@cash4houses.co.uk">fast@cash4houses.co.uk</a> | Telephone: 07834 555 355</li>
         </ul>
 
         <h2>3. Who we buy from and what we do</h2>
@@ -99,7 +112,7 @@
         <p>We take reasonable steps to keep the Website free of harmful code but cannot guarantee it. You are responsible for using up-to-date antivirus and security on your devices.</p>
 
         <h2>14. If you have a complaint</h2>
-        <p>We want to hear from you if something goes wrong. Please contact Andrew Stallard at <a href="mailto:Fast@Cash4Houses.co.uk">Fast@Cash4Houses.co.uk</a>. We will acknowledge your complaint within 3 working days and aim to respond fully within 15 working days. For complaints about how we handle personal data, see section 9 of our Privacy Policy.</p>
+        <p>We want to hear from you if something goes wrong. Please contact Andrew Stallard at <a href="mailto:Fast@Cash4Houses.co.uk" title="Fast@Cash4Houses.co.uk" aria-label="Fast@Cash4Houses.co.uk">Fast@Cash4Houses.co.uk</a>. We will acknowledge your complaint within 3 working days and aim to respond fully within 15 working days. For complaints about how we handle personal data, see section 9 of our Privacy Policy.</p>
 
         <h2>15. Other important terms</h2>
         <ul>
@@ -112,7 +125,7 @@
         </ul>
 
         <h2>16. Contact us</h2>
-        <p>Cash 4 Houses trading as The Auction Department Limited, 377 Southchurch Road, Southend on Sea, Essex. SS1 2PQ | <a href="mailto:Fast@Cash4Houses.co.uk">Fast@Cash4Houses.co.uk</a> | 07834 555 355</p>
+        <p>Cash 4 Houses trading as The Auction Department Limited, 377 Southchurch Road, Southend on Sea, Essex. SS1 2PQ | <a href="mailto:Fast@Cash4Houses.co.uk" title="Fast@Cash4Houses.co.uk" aria-label="Fast@Cash4Houses.co.uk">Fast@Cash4Houses.co.uk</a> | 07834 555 355</p>
     </main>
 
     <footer>

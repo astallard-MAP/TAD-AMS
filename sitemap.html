@@ -20,14 +20,27 @@
     </style>
 </head>
 <body>
+
+    <!-- Google Translate Widget -->
+    <div id="google_translate_element" style="position: absolute; top: 10px; right: 10px; z-index: 9999;"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Accessibility Widget (UserWay free tier for contrast/text size/dyslexia) -->
+    <script src="https://cdn.userway.org/widget.js" data-account="V9zGkV4z3m"></script>
+
     <header>
         <div class="container">
             <nav>
-                <a href="/" class="logo">
+                <a href="/" class="logo" title="Home Page" aria-label="Home Page">
                     <img src="/logo.jpg" alt="Cash 4 Houses Logo">
                 </a>
                 <div class="nav-links">
-                    <a href="/" class="btn btn-primary">Back to Home</a>
+                    <a href="/" class="btn btn-primary" title="Back to Home" aria-label="Back to Home">Back to Home</a>
                 </div>
             </nav>
         </div>
@@ -39,30 +52,30 @@
         <section class="sitemap-section">
             <h2><i class="fas fa-home"></i> Primary Pages</h2>
             <ul class="sitemap-list">
-                <li><a href="/">Home - Sell Fast For Cash</a></li>
-                <li><a href="/#about">About Our Service</a></li>
-                <li><a href="/#locations">Areas We Buy in Essex</a></li>
-                <li><a href="/#get-offer">Get a Guaranteed Offer</a></li>
+                <li><a href="/" title="Home - Sell Fast For Cash" aria-label="Home - Sell Fast For Cash">Home - Sell Fast For Cash</a></li>
+                <li><a href="/#about" title="About Our Service" aria-label="About Our Service">About Our Service</a></li>
+                <li><a href="/#locations" title="Areas We Buy in Essex" aria-label="Areas We Buy in Essex">Areas We Buy in Essex</a></li>
+                <li><a href="/#get-offer" title="Get a Guaranteed Offer" aria-label="Get a Guaranteed Offer">Get a Guaranteed Offer</a></li>
             </ul>
         </section>
 
         <section class="sitemap-section">
             <h2><i class="fas fa-gavel"></i> Legal & Compliance</h2>
             <ul class="sitemap-list">
-                <li><a href="/privacy.html">Privacy Policy</a></li>
-                <li><a href="/cookies.html">Cookie Policy</a></li>
-                <li><a href="/terms.html">Terms and Conditions of Use</a></li>
+                <li><a href="/privacy.html" title="Privacy Policy" aria-label="Privacy Policy">Privacy Policy</a></li>
+                <li><a href="/cookies.html" title="Cookie Policy" aria-label="Cookie Policy">Cookie Policy</a></li>
+                <li><a href="/terms.html" title="Terms and Conditions of Use" aria-label="Terms and Conditions of Use">Terms and Conditions of Use</a></li>
             </ul>
         </section>
 
         <section class="sitemap-section">
             <h2><i class="fas fa-map-marker-alt"></i> Priority Essex Locations</h2>
             <ul class="sitemap-list">
-                <li><a href="/#locations">Southend-on-Sea</a></li>
-                <li><a href="/#locations">Basildon</a></li>
-                <li><a href="/#locations">Leigh-on-Sea</a></li>
-                <li><a href="/#locations">Rayleigh</a></li>
-                <li><a href="/#locations">Canvey Island</a></li>
+                <li><a href="/#locations" title="Southend-on-Sea" aria-label="Southend-on-Sea">Southend-on-Sea</a></li>
+                <li><a href="/#locations" title="Basildon" aria-label="Basildon">Basildon</a></li>
+                <li><a href="/#locations" title="Leigh-on-Sea" aria-label="Leigh-on-Sea">Leigh-on-Sea</a></li>
+                <li><a href="/#locations" title="Rayleigh" aria-label="Rayleigh">Rayleigh</a></li>
+                <li><a href="/#locations" title="Canvey Island" aria-label="Canvey Island">Canvey Island</a></li>
             </ul>
         </section>
     </main>
