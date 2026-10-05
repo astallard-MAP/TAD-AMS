@@ -401,7 +401,22 @@ GATE REPORT: [Phase/Task]
 
 #### 005.C Corrections Log (Registry accuracy)
 | Date | Correction |
-| :--- | :--- |
 | 05/10/2026 | Firebase Project ID corrected from `c4h-website-68fa8` (unverified, wrong) to `c4h-wesbite` (verified `.firebaserc`). |
 | 05/10/2026 | Schedule matrix rebuilt from code; added `emailQueueAgent`, `portalSentinel`, `generateDailySpotlight`, `seoSubmissionAgent`. |
 | 05/10/2026 | Removed unverified "28 Cloud Functions" figure. Verified count: 44 `exports.*` in code = 44 live functions. An interim "47" figure was a miscount: it included 3 hits in the scratch files fix.js/fix2.js. |
+
+---
+
+### [PHASE 008]: Deployment Repair & Legal/Sitemap UX Architecture
+- **Objective:** Repair critical Vite build and Firebase deployment failures, and completely overhaul the UX architecture for legal policies and sitemap routing to bypass SPA hosting conflicts.
+- **Date Executed:** 05 October 2026
+- **Status:** `[Completed]` (Committed in `b19d23f` & `0598e0e`)
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `008-A` | **Vite Build Repair (`admin.js`)**: Fixed syntax errors caused by escaped template literals and modernized the `window.toggleKillSwitch` to use Firebase v9 modular `updateDoc` syntax (replacing v8 `.update()`). | `[Completed]` |
+| `008-B` | **Firebase Deploy Repair (`slim/*.js`)**: Identified and fixed incorrect relative path imports. Executed a script to mass-replace `require('./hiveClient')` with `require('../hive/hiveClient')` across all 11 Slim modules. `node functions/index.js` now evaluates without `MODULE_NOT_FOUND`. | `[Completed]` |
+| `008-C` | **SPA Routing Bypass**: Identified that the hosting provider routes `/privacy.html` to `index.html` (standard SPA behavior), breaking normal links. Re-architected `main.js` to use Vite's `?raw` string imports, natively bundling the HTML contents of `privacy.html`, `cookies.html`, `terms.html`, and `sitemap.html` directly into the JavaScript chunk at build time. | `[Completed]` |
+| `008-D` | **Zero-Latency Modals**: Intercepted link clicks in the DOM to trigger instantaneous pop-up modals for the Legal Policies and Human Sitemap, removing the need for a network `fetch()` and entirely avoiding the server rewrite conflict. | `[Completed]` |
+| `008-E` | **SEO Compliance Preservation**: Verified that the modal-based `sitemap.html` only affects human navigation, leaving the automated `sitemap.xml` (served via the `serveSitemap` cloud function) completely intact for Google crawlers. | `[Completed]` |
+| `008-F` | **Git Commit & Push**: Safely staged, committed, and pushed all updates to the `main` branch to trigger the CI/CD deployment pipeline. | `[Completed]` |
