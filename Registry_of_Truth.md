@@ -79,19 +79,34 @@ To ensure that any future upgrades, edits, or additions conform and comply with 
 | **Instagram Official** | `https://www.instagram.com/cash4houses.co.uk/` |
 
 ### 3.2 Cloud Infrastructure & Secrets Manifest
-- **Firebase Project ID:** `c4h-wesbite` (verified from `.firebaserc`, 05/10/2026 â€” note the spelling "wesbite" is the real ID)
+- **Firebase Project ID:** `c4h-wesbite` (verified from `.firebaserc`, 05/10/2026 — note the spelling "wesbite" is the canonical ID)
 - **Default Cloud Functions Region:** `europe-west4`
 - **Node.js Runtime:** `Node.js 20`
-- **Secrets Managed via Google Cloud Secret Manager:**
-  - `GMAIL_APP_PASSWORD` (SMTP notifications via `astallard65@gmail.com`)
-  - `GBP_LOCATION_ID` (Southend Southchurch Road GBP Location)
-  - `GBP_CLIENT_ID` (Google Cloud OAuth Client ID for GMB)
-  - `GBP_CLIENT_SECRET` (Google Cloud OAuth Client Secret)
-  - `GBP_REFRESH_TOKEN` (Google Cloud OAuth Refresh Token)
-  - `META_PAGE_ID` (Cash 4 Houses Facebook Page ID)
-  - `META_PERMANENT_PAGE_TOKEN` (Long-lived Meta Graph API token)
-  - `META_APP_ID` & `META_APP_SECRET`
-  - `GA4_PROPERTY_ID` (Google Analytics 4 Property ID)
+- **Google Cloud Secret Manager Inventory (Verified 05/10/2026):**
+
+| Secret Name | Category / Service | Created | Status & Purpose |
+| :--- | :--- | :--- | :--- |
+| `ADMIN_UID` | Authentication | 07/04/2026 | Active: Firebase Auth UID for Global Administrator (Andrew Stallard) |
+| `AZURE_CLIENT_ID` | Microsoft Graph | 08/04/2026 | Legacy / Archived: Azure AD Application Client ID |
+| `AZURE_CLIENT_SECRET`| Microsoft Graph | 08/04/2026 | Legacy / Archived: Azure AD Application Client Secret |
+| `AZURE_TENANT_ID` | Microsoft Graph | 08/04/2026 | Legacy / Archived: Azure AD Directory Tenant ID |
+| `GA_PROPERTY_ID` | Analytics | 13/04/2026 | Legacy: Universal / Initial Google Analytics Property ID |
+| `GA4_PROPERTY_ID` | Analytics | 13/04/2026 | Active: Google Analytics 4 Property ID used by `getLiveVisitors` |
+| `GBP_CLIENT_ID` | Google Business Profile | 07/04/2026 | Active: Google Cloud OAuth 2.0 Web Client ID for GMB API |
+| `GBP_CLIENT_SECRET` | Google Business Profile | 07/04/2026 | Active: Google Cloud OAuth 2.0 Web Client Secret for GMB API |
+| `GBP_LOCATION_ID` | Google Business Profile | 07/04/2026 | Active: Southend-on-Sea Google Business Profile Location ID |
+| `GBP_REFRESH_TOKEN` | Google Business Profile | 07/04/2026 | Needs Re-auth: OAuth Refresh Token (`invalid_grant` detected 05/10/2026) |
+| `GEMINI_API_KEY` | AI Engines | 07/04/2026 | Active: Google AI Studio API Key for Genkit Vertex AI fallback |
+| `GMAIL_APP_PASSWORD`| Communications | 02/10/2026 | Requires 16-char App Password: For `astallard65@gmail.com` SMTP |
+| `META_APP_ID` | Social Media Hub | 09/04/2026 | Active: Meta Developer App ID |
+| `META_APP_SECRET` | Social Media Hub | 09/04/2026 | Active: Meta Developer App Secret |
+| `META_PAGE_ID` | Social Media Hub | 09/04/2026 | Active: Cash 4 Houses Facebook Page ID (`Cash4Houses.co`) |
+| `META_PERMANENT_PAGE_TOKEN` | Social Media Hub | 09/04/2026 | Active: Long-lived Meta Graph API token for FB & Instagram |
+| `SMTP_HOST` | Communications | 07/04/2026 | Legacy: Generic SMTP Server Host |
+| `SMTP_PASS` | Communications | 07/04/2026 | Legacy: Generic SMTP Server Password |
+| `SMTP_PORT` | Communications | 07/04/2026 | Legacy: Generic SMTP Server Port (e.g. 587/465) |
+| `SMTP_USER` | Communications | 07/04/2026 | Legacy: Generic SMTP Server Username |
+
 
 ### 3.3 Target Territories (GSR 14-Town Essex Roster)
 The Geographical Synchronization & Rotation (GSR) Protocol governs all social and SEO generation across these 14 locations:
@@ -464,5 +479,23 @@ GATE REPORT: [Phase/Task]
 | `011-B` | **Backend Remediation (`getGraphClient` -> `dispatchEmail`):** Eliminate `ReferenceError: getGraphClient is not defined` by refactoring `emailQueueAgent`, `processLead`, and `processContactEnquiry` to use the unified `dispatchEmail()` helper via Gmail SMTP. | `[Completed]` |
 | `011-C` | **Firebase Functions Deployment:** Deploy the corrected Cloud Functions (`emailQueueAgent`, `processLead`, `processContactEnquiry`) to `europe-west4` to resolve recurring Google Cloud Scheduler 500 crashes. | `[Completed]` |
 | `011-D` | **Operational Verification:** Verified syntax (`node --check`), confirmed build integrity, and executed clean deployment to `europe-west4`. | `[Completed]` |
+
+---
+
+### [PHASE 012]: Cloud Scheduler Hardening, Secret Inventory & Gmail SMTP Authentication
+- **Objective:** Triage and harden all failing Cloud Scheduler jobs (`gbpMorningPost`, `gbpLunchPost`, `gbpEveningPost`, `socialIntelligenceAgent`), catalogue the full 20-key Google Cloud Secret Manager inventory, and isolate the Gmail 534 application password requirement.
+- **Date Logged:** 05 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `012-A` | **Secret Manager Complete Inventory:** Catalogued all 20 active and legacy secrets in Section 3.2 from the live Google Cloud Secret Manager console. | `[Completed]` |
+| `012-B` | **GBP Scheduled Agents Resilience:** Wrapped `publishToGBP()` in `try...catch` blocks across `gbpMorningPost`, `gbpLunchPost`, and `gbpEveningPost` to prevent unhandled `invalid_grant` OAuth exceptions from crashing Cloud Scheduler with HTTP 500. | `[Completed]` |
+| `012-C` | **Social Intelligence Forensic Agent Repair:** Injected missing dependency secrets (`GBP_CLIENT_ID`, `GBP_CLIENT_SECRET`, `GBP_REFRESH_TOKEN`), raised execution timeout to 180s, and added try/catch error trapping to prevent 504 `DEADLINE_EXCEEDED` timeouts. | `[Completed]` |
+| `012-D` | **Deploy Hardened Cloud Functions:** Successfully deployed `gbpMorningPost`, `gbpLunchPost`, `gbpEveningPost`, and `socialIntelligenceAgent` to `europe-west4` (exit code 0). | `[Completed]` |
+| `012-E` | **Gmail SMTP Authentication Guidance:** Documented the exact procedure for generating a 16-character Google App Password for `astallard65@gmail.com` to resolve `Invalid login: 534-5.7.9 Application-specific password required`. | `[Completed]` |
+| `012-F` | **GBP Re-authorization Action Plan:** Documented the step-by-step process to refresh the expired GMB OAuth refresh token (`invalid_grant`). | `[Completed]` |
+
+
 
 

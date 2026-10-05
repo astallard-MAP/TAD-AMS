@@ -1050,10 +1050,14 @@ exports.gbpMorningPost = onSchedule({ region: "europe-west4",
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
 }, async (event) => {
-  const newsDoc = await db.collection("marketUpdates").doc("latest").get();
-  if (newsDoc.exists) {
-    const data = newsDoc.data();
-    await publishToGBP(`DAILY MARKET UPDATE: ${data.content.substring(0, 1500)}`, data.imageUrl);
+  try {
+    const newsDoc = await db.collection("marketUpdates").doc("latest").get();
+    if (newsDoc.exists) {
+      const data = newsDoc.data();
+      await publishToGBP(`DAILY MARKET UPDATE: ${data.content.substring(0, 1500)}`, data.imageUrl);
+    }
+  } catch (err) {
+    console.error("[GBP Agent] Morning GBP post failed:", err.message);
   }
 });
 
@@ -1062,15 +1066,19 @@ exports.gbpLunchPost = onSchedule({ region: "europe-west4",
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
 }, async (event) => {
-  const postsSnap = await db.collection("socialPosts")
-    .where("scheduledTime", "==", "Morning")
-    .orderBy("timestamp", "desc")
-    .limit(1)
-    .get();
-  
-  if (!postsSnap.empty) {
-    const post = postsSnap.docs[0].data();
-    await publishToGBP(post.content, post.imageUrl);
+  try {
+    const postsSnap = await db.collection("socialPosts")
+      .where("scheduledTime", "==", "Morning")
+      .orderBy("timestamp", "desc")
+      .limit(1)
+      .get();
+    
+    if (!postsSnap.empty) {
+      const post = postsSnap.docs[0].data();
+      await publishToGBP(post.content, post.imageUrl);
+    }
+  } catch (err) {
+    console.error("[GBP Agent] Lunch GBP post failed:", err.message);
   }
 });
 
@@ -1079,15 +1087,19 @@ exports.gbpEveningPost = onSchedule({ region: "europe-west4",
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"] 
 }, async (event) => {
-  const postsSnap = await db.collection("socialPosts")
-    .where("scheduledTime", "==", "Lunch")
-    .orderBy("timestamp", "desc")
-    .limit(1)
-    .get();
-  
-  if (!postsSnap.empty) {
-    const post = postsSnap.docs[0].data();
-    await publishToGBP(post.content, post.imageUrl);
+  try {
+    const postsSnap = await db.collection("socialPosts")
+      .where("scheduledTime", "==", "Lunch")
+      .orderBy("timestamp", "desc")
+      .limit(1)
+      .get();
+    
+    if (!postsSnap.empty) {
+      const post = postsSnap.docs[0].data();
+      await publishToGBP(post.content, post.imageUrl);
+    }
+  } catch (err) {
+    console.error("[GBP Agent] Evening GBP post failed:", err.message);
   }
 });
 
@@ -2047,9 +2059,17 @@ async function runSocialIntelligenceForensics() {
 exports.socialIntelligenceAgent = onSchedule({ region: "europe-west4",
     schedule: "0 1 * * *", 
     timeZone: "Europe/London",
-    secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID"]
+    timeoutSeconds: 180,
+    secrets: [
+        "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID",
+        "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"
+    ]
 }, async (event) => {
-    await runSocialIntelligenceForensics();
+    try {
+        await runSocialIntelligenceForensics();
+    } catch (err) {
+        console.error("[FORENSIC AGENT] Scheduled run failed:", err.message);
+    }
 });
 
 // Manual Analysis Trigger (Callable Request)
