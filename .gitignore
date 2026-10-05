@@ -28,4 +28,4 @@ yarn.lock
 *.sw?
 
 token.txt
-.firebase/
+.firebase/*.csv

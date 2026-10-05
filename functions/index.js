@@ -1834,7 +1834,7 @@ exports.generateGMBAuthUrl = onRequest({ region: "europe-west4",
 }, async (req, res) => {
     try {
         const clientId = GBP_CLIENT_ID.value();
-        const redirectUri = "https://exchangegmbtoken-vjikc6hdhq-uc.a.run.app"; // Next step handler
+        const redirectUri = "https://europe-west4-c4h-wesbite.cloudfunctions.net/exchangeGMBToken"; // Next step handler
         
         const scopes = [
             'https://www.googleapis.com/auth/business.manage',
@@ -1874,7 +1874,7 @@ exports.exchangeGMBToken = onRequest({ region: "europe-west4",
         const auth = new google.auth.OAuth2(
             GBP_CLIENT_ID.value(),
             GBP_CLIENT_SECRET.value(),
-            "https://exchangegmbtoken-vjikc6hdhq-uc.a.run.app"
+            "https://europe-west4-c4h-wesbite.cloudfunctions.net/exchangeGMBToken"
         );
         
         const { tokens } = await auth.getToken(code);

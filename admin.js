@@ -475,7 +475,7 @@ async function showSocialReport() {
             document.getElementById('trigger-social-audit').disabled = true;
             document.getElementById('trigger-social-audit').innerText = "Analyzing Content...";
             try {
-                const resp = await fetch('https://manualsocialaudit-vjikc6hdhq-uc.a.run.app');
+                const resp = await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/manualSocialAudit');
                 latestSocialAudit = await resp.json();
                 await loadDashboardStats();
                 showSocialReport();
@@ -530,8 +530,8 @@ function renderAuditContent(container, audit, title) {
             repairBtn.disabled = true;
             repairBtn.innerText = "Heal Initiated...";
             try {
-                await fetch('https://manualmarketupdate-vjikc6hdhq-uc.a.run.app'); // One heal
-                await fetch('https://manualsocialaudit-vjikc6hdhq-uc.a.run.app'); // Another heal
+                await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/manualMarketUpdate'); // One heal
+                await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/manualSocialAudit'); // Another heal
                 alert("Self-Repair Sequence Complete. Reloading stats...");
                 location.reload();
             } catch (e) {
@@ -558,7 +558,7 @@ if (genNewsAction) {
 
         try {
             const token = await auth.currentUser.getIdToken();
-            const resp = await fetch('https://manualmarketupdate-vjikc6hdhq-uc.a.run.app', {
+            const resp = await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/manualMarketUpdate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: token })
@@ -611,7 +611,7 @@ if (testEmailBtn) {
 
 
 // --- ANDY AI CHAT INTEGRATION ---
-const CHATBOT_URL = "https://chatbotandy-vjikc6hdhq-uc.a.run.app";
+const CHATBOT_URL = "https://europe-west4-c4h-wesbite.cloudfunctions.net/chatbotAndy";
 let chatHistory = [];
 
 const chatToggle = document.getElementById('chat-toggle');
@@ -697,7 +697,7 @@ if (publishGBPAction) {
                 return;
             }
             const token = await user.getIdToken();
-            const resp = await fetch('https://testgbppost-vjikc6hdhq-uc.a.run.app', {
+            const resp = await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/testGBPPost', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: token })

@@ -11,8 +11,8 @@ import {
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
-const MANUAL_GEN_URL = "https://manualsocialgenerate-vjikc6hdhq-uc.a.run.app";
-const PUBLISH_META_URL = "https://publishtometa-vjikc6hdhq-uc.a.run.app";
+const MANUAL_GEN_URL = "https://europe-west4-c4h-wesbite.cloudfunctions.net/manualSocialGenerate";
+const PUBLISH_META_URL = "https://europe-west4-c4h-wesbite.cloudfunctions.net/publishToMeta";
 
 onAuthStateChanged(auth, async (user) => {
     if (!user || user.uid !== ADMIN_UID) {

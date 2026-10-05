@@ -326,7 +326,7 @@ function setupMessagingHub(user) {
 }
 // --- ANDY AI CHAT INTEGRATION (Floating) ---
 // Keeping the floating widget for AI interaction if needed, or we can disable if user only wants direct admin chat.
-const CHATBOT_URL = "https://chatbotandy-vjikc6hdhq-uc.a.run.app";
+const CHATBOT_URL = "https://europe-west4-c4h-wesbite.cloudfunctions.net/chatbotAndy";
 let chatHistory = [];
 
 const chatToggle = document.getElementById('chat-toggle');

@@ -43,7 +43,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-const CHATBOT_URL = "https://chatbotandy-vjikc6hdhq-uc.a.run.app";
+const CHATBOT_URL = "https://europe-west4-c4h-wesbite.cloudfunctions.net/chatbotAndy";
 let chatHistory = [];
 
 // UI Element Selections
@@ -272,7 +272,7 @@ async function fetchGoogleReviews() {
     if (!reviewsGrid || !reviewsSection) return;
 
     try {
-        const resp = await fetch('https://getgooglereviews-vjikc6hdhq-uc.a.run.app');
+        const resp = await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/getGoogleReviews');
         if (!resp.ok) throw new Error("API Offline");
         
         const reviews = await resp.json();
