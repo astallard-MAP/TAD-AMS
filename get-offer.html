@@ -95,34 +95,148 @@
     </header>
     <main style="padding-top: 4rem; padding-bottom: 4rem; min-height: 60vh;">
         
-    <div class="container" style="max-width: 800px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 2rem;">
-            <h1>Get Your Cash Offer</h1>
-            <p style="margin-top:1rem;">Discrete, professional service. Get a guaranteed offer within 48 working hours.</p>
+        <div class="container" style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;">
+        
+        <div class="offer-info">
+            <h1 style="color: #0f172a; margin-bottom: 1rem;">Get Your Cash Offer</h1>
+            <p style="font-size: 1.15rem; color: #475569; margin-bottom: 2rem;">
+                Every property has a story, and we're here to listen. By providing a bit more detail, you help us formulate the fastest, fairest, and most accurate cash offer possible.
+            </p>
+
+            <div class="timeline" style="margin-top: 3rem;">
+                <h3 style="margin-bottom: 1.5rem; color: #1e293b;">What Happens Next?</h3>
+                
+                <div style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">1</div>
+                    <div>
+                        <h4 style="margin: 0 0 0.5rem; color: #0f172a;">Submit Your Details</h4>
+                        <p style="margin: 0; color: #64748b; font-size: 0.95rem;">Fill out the comprehensive form securely. Your details are 100% confidential and only reviewed by our senior team.</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">2</div>
+                    <div>
+                        <h4 style="margin: 0 0 0.5rem; color: #0f172a;">Appraisal & Valuation</h4>
+                        <p style="margin: 0; color: #64748b; font-size: 0.95rem;">Andy and our AI valuation systems will analyse local Essex market data and the condition of your property.</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1.5rem;">
+                    <div style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">3</div>
+                    <div>
+                        <h4 style="margin: 0 0 0.5rem; color: #0f172a;">Guaranteed Cash Offer</h4>
+                        <p style="margin: 0; color: #64748b; font-size: 0.95rem;">Within 48 hours, you'll receive a firm, no-obligation cash offer. If you accept, we cover all legal fees and complete in as little as 7 days.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="form-card" id="get-offer">
-                        <h2>Get Your Cash Offer</h2>
-                        <form id="lead-form">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="title">Title</label>
-                                    <select name="title" id="title" required>
-                                        <option value="">Select...</option>
-                                        <option value="Mr">Mr</option>
-                                        <option value="Mrs">Mrs</option>
-                                        <option value="Miss">Miss</option>
-                                        <option value="Ms">Ms</option>
-                                        <option value="Mx">Mx</option>
-                                        <option value="Dr">Dr</option>
-                                        <option value="Prof">Prof</option>
-                                        <option value="Rev">Rev</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="firstName">First Name</label>
-                                    <input type="text" name="firstName" id="firstName" required>
-                                </div>
-                            </div>
+
+        <div class="form-card" id="get-offer" style="background: #ffffff; padding: 2.5rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; width: 100%; box-sizing: border-box;">
+            <h2 style="margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; color: #0f172a;">Property Questionnaire</h2>
+            <form id="lead-form">
+                
+                <h4 style="color: var(--primary); margin-bottom: 1rem; margin-top: 1rem;">1. Your Details</h4>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Surname</label>
+                        <input type="text" name="surname" required>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="tel" name="mobile" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" name="email" required>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--primary); margin-bottom: 1rem; margin-top: 2rem;">2. Property Details</h4>
+                <div class="form-group">
+                    <label>Full Property Address & Postcode</label>
+                    <input type="text" name="address" placeholder="e.g. 12 High St, Southend-on-Sea, SS1 1AA" required>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Property Style</label>
+                        <select name="type" required>
+                            <option value="">Select...</option>
+                            <option value="Detached House">Detached House</option>
+                            <option value="Semi-Detached">Semi-Detached House</option>
+                            <option value="Terraced">Terraced House</option>
+                            <option value="Flat">Flat / Apartment</option>
+                            <option value="Bungalow">Bungalow</option>
+                            <option value="Commercial">Commercial / Land</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Bedrooms</label>
+                        <input type="number" name="bedrooms" min="0" required>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--primary); margin-bottom: 1rem; margin-top: 2rem;">3. Condition & Circumstances</h4>
+                <div class="form-group">
+                    <label>Overall Condition</label>
+                    <select name="condition" required>
+                        <option value="">Select...</option>
+                        <option value="Excellent">Pristine / Recently Decorated</option>
+                        <option value="Good">Good / Standard</option>
+                        <option value="Fair">Fair / Slightly Dated</option>
+                        <option value="Poor">Poor / Needs Modernisation</option>
+                        <option value="Derelict">Derelict / Structural Issues</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Are there any known issues? (Optional)</label>
+                    <select name="issues">
+                        <option value="None">No Major Issues</option>
+                        <option value="Structural">Structural Issues / Subsidence</option>
+                        <option value="Neighbours">Disputes with Neighbours</option>
+                        <option value="Damp">Japanese Knotweed / Severe Damp</option>
+                        <option value="Legal">Legal / Title Issues</option>
+                        <option value="Tenanted">Problematic Tenants</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Primary Reason for Selling</label>
+                    <select name="reason" required>
+                        <option value="">Select...</option>
+                        <option value="Financial">Financial Pressure / Repossession</option>
+                        <option value="Probate">Probate / Inheritance</option>
+                        <option value="Broken Chain">Broken Chain</option>
+                        <option value="Relocation">Relocation / Emigrating</option>
+                        <option value="Divorce">Divorce / Separation</option>
+                        <option value="Other">Other / Just want a fast sale</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Timescale</label>
+                    <select name="timescale" required>
+                        <option value="">How quickly do you need to complete?</option>
+                        <option value="ASAP">ASAP (Under 14 Days)</option>
+                        <option value="1 Month">Within 1 Month</option>
+                        <option value="1-3 Months">1-3 Months</option>
+                        <option value="Flexible">Flexible</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; margin-top: 1rem; padding: 1rem;">Submit Confidential Details</button>
+            </form>
+        </div>
+    </div>
                             
                             <div class="form-grid">
                                 <div class="form-group">

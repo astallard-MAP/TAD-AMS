@@ -93,31 +93,75 @@
             </nav>
         </div>
     </header>
-    <main style="padding-top: 4rem; padding-bottom: 4rem; min-height: 60vh;">
-        <section class="areas" id="locations">
-            <div class="container">
-                <h2>Serving South East Essex</h2>
-                <p style="text-align: center; margin-bottom: 2rem;">Specifically looking for properties in:</p>
-                <div class="area-list">
-                    <div class="area-item">Southend-on-Sea</div>
-                    <div class="area-item">Thorpe Bay</div>
-                    <div class="area-item">Shoeburyness</div>
-                    <div class="area-item">Westcliff-on-Sea</div>
-                    <div class="area-item">Leigh-on-Sea</div>
-                    <div class="area-item">Rayleigh</div>
-                    <div class="area-item">Eastwood</div>
-                    <div class="area-item">Rochford</div>
-                    <div class="area-item">Benfleet</div>
-                    <div class="area-item">South Benfleet</div>
-                    <div class="area-item">Canvey Island</div>
-                    <div class="area-item">Wickford</div>
-                    <div class="area-item">Basildon</div>
-                    <div class="area-item">Stanford-Le-Hope</div>
-                    <div class="area-item">Prittlewell</div>
+        <section class="contact-hero" style="background: #f8fafc; padding: 4rem 0;">
+        <div class="container" style="text-align: center;">
+            <h1 style="color: #0f172a; margin-bottom: 1rem;">Areas We Buy In</h1>
+            <p style="font-size: 1.15rem; color: #475569; max-width: 600px; margin: 0 auto;">We are specialist local cash buyers exclusively focused on South East Essex. If your property is in our catchment area, we can guarantee an offer.</p>
+        </div>
+    </section>
+
+    <main style="padding-bottom: 4rem;">
+        <div class="container" style="margin-top: 4rem;">
+            
+            <!-- Locations Grid -->
+            <div style="text-align: center; margin-bottom: 5rem;">
+                <h2 style="color: #0f172a; margin-bottom: 2.5rem; font-size: 2.25rem;">Our Core Operating Areas</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                    
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 2rem 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s;">
+                        <i class="fas fa-map-location-dot" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3 style="color: #0f172a; margin: 0;">Southend-on-Sea</h3>
+                    </div>
+                    
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 2rem 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s;">
+                        <i class="fas fa-map-location-dot" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3 style="color: #0f172a; margin: 0;">Basildon</h3>
+                    </div>
+                    
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 2rem 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s;">
+                        <i class="fas fa-map-location-dot" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3 style="color: #0f172a; margin: 0;">Leigh-on-Sea</h3>
+                    </div>
+                    
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 2rem 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s;">
+                        <i class="fas fa-map-location-dot" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3 style="color: #0f172a; margin: 0;">Stanford-le-Hope</h3>
+                    </div>
+                    
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 2rem 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s;">
+                        <i class="fas fa-map-location-dot" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3 style="color: #0f172a; margin: 0;">Grays & Thurrock</h3>
+                    </div>
+
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 2rem 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s;">
+                        <i class="fas fa-map-location-dot" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3 style="color: #0f172a; margin: 0;">Canvey Island</h3>
+                    </div>
+
                 </div>
-                <p style="text-align: center; margin-top: 2rem;">Plus all other areas across South East Essex.</p>
             </div>
-        </section>
+
+            <!-- Dynamic Success Stories -->
+            <div style="background: #f8fafc; border-radius: 24px; padding: 4rem 2rem; margin-bottom: 5rem;">
+                <div style="text-align: center; margin-bottom: 3rem;">
+                    <h2 style="color: #0f172a; font-size: 2.25rem;">Recent Purchases in Your Area</h2>
+                    <p style="color: #475569; font-size: 1.1rem; max-width: 600px; margin: 1rem auto 0;">Real outcomes for homeowners across South East Essex.</p>
+                </div>
+                <div class="success-stories-grid" id="success-stories-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <!-- Dynamically populated by main.js -->
+                </div>
+            </div>
+
+            <!-- Call to action -->
+            <div style="text-align: center; background: #0f172a; border-radius: 24px; padding: 4rem; color: white;">
+                <h2 style="margin-bottom: 1.5rem; font-size: 2.25rem;">Is your town missing from the list?</h2>
+                <p style="font-size: 1.15rem; color: #94a3b8; max-width: 600px; margin: 0 auto 2.5rem;">
+                    Even if your exact town isn't listed above, if you are within a 20-mile radius of Southend-On-Sea, we are likely still able to make you a cash offer.
+                </p>
+                <a href="/get-offer.html" class="btn btn-primary" style="font-size: 1.15rem; padding: 1rem 2.5rem;">Get Your Offer Now</a>
+            </div>
+
+        </div>
     </main>
     <footer>
         <div class="container">

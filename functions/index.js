@@ -451,19 +451,25 @@ exports.socialMorningPost = onSchedule({ region: "europe-west4",
   schedule: "0 9 * * *", 
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
-}, async (event) => { await generateSocialPost("Morning"); });
+}, async (event) => { 
+  try { await generateSocialPost("Morning"); } catch (error) { console.error("socialMorningPost error:", error); } 
+});
 
 exports.socialLunchPost = onSchedule({ region: "europe-west4", 
   schedule: "0 12 * * *", 
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
-}, async (event) => { await generateSocialPost("Lunch"); });
+}, async (event) => { 
+  try { await generateSocialPost("Lunch"); } catch (error) { console.error("socialLunchPost error:", error); } 
+});
 
 exports.socialEveningPost = onSchedule({ region: "europe-west4", 
   schedule: "0 18 * * *", 
   timeZone: "Europe/London", 
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
-}, async (event) => { await generateSocialPost("Evening"); });
+}, async (event) => { 
+  try { await generateSocialPost("Evening"); } catch (error) { console.error("socialEveningPost error:", error); } 
+});
 
 // --- MARKET NEWS SUITE ---
 const RSS_FEEDS = [
@@ -2605,39 +2611,80 @@ exports.serveSEOPage = onRequest({ region: "europe-west4", cors: true }, async (
     // Handle Archive Page Route
     if (path === 'archive') {
         try {
-            const pagesSnap = await db.collection("seoPages").orderBy("timestamp", "desc").limit(50).get();
+            const pagesSnap = await db.collection("seoPages").orderBy("timestamp", "desc").limit(180).get();
             let linksHtml = '';
-            pagesSnap.forEach(doc => {
-                const data = doc.data();
-                linksHtml += `<li style="margin-bottom: 10px;"><a href="/${doc.id}.html" style="color: #a21caf; text-decoration: none; font-weight: 600;">${data.town || 'Property Update'} - ${doc.id.replace('cashforhouses', '')}</a></li>`;
-            });
+              pagesSnap.forEach(doc => {
+                  const data = doc.data();
+                  const rawDateStr = doc.id.replace('cashforhouses', '');
+                  let formattedDate = rawDateStr;
+                  if (rawDateStr.length === 8) {
+                      formattedDate = rawDateStr.substring(0,2) + '/' + rawDateStr.substring(2,4) + '/' + rawDateStr.substring(4,8);
+                  }
+                  
+                  linksHtml += `
+                  <a href="/${doc.id}.html" class="archive-card">
+                      <span class="archive-date"><i class="far fa-calendar-alt"></i> ${formattedDate}</span>
+                      <h3 class="archive-title">${data.town || 'Property Update'}</h3>
+                      <span class="archive-arrow">Read Article <i class="fas fa-arrow-right"></i></span>
+                  </a>`;
+              });
             
             const archiveHtml = `
-            <!DOCTYPE html>
-            <html lang="en-GB">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Daily Articles Archive | Cash 4 Houses</title>
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap">
-                <style>
-                    body { font-family: 'Outfit', sans-serif; margin: 0; background: #fafafa; color: #1e293b; padding: 40px; }
-                    .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-                    h1 { color: #0f172a; border-bottom: 3px solid #EB287A; padding-bottom: 10px; }
-                    ul { list-style: none; padding: 0; }
-                    a:hover { text-decoration: underline !important; }
-                    .back-btn { display: inline-block; margin-bottom: 20px; color: #64748b; text-decoration: none; font-weight: 600; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <a href="/" class="back-btn">&larr; Back to Home</a>
-                    <h1>Daily Articles Archive</h1>
-                    <p>Browse our daily historical logs of real estate market activity and local social outreach.</p>
-                    <ul>${linksHtml || '<li>No articles generated yet.</li>'}</ul>
-                </div>
-            </body>
-            </html>`;
+              <!DOCTYPE html>
+              <html lang="en-GB">
+              <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>Daily Articles Archive | Cash 4 Houses</title>
+                  <link rel="stylesheet" href="/style.css">
+                  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                  <style>
+                      .archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+                      .archive-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; display: flex; flex-direction: column; gap: 0.5rem; }
+                      .archive-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+                      .archive-date { font-size: 0.85rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+                      .archive-title { color: #0f172a; font-size: 1.25rem; font-weight: 700; margin: 0; }
+                      .archive-arrow { color: var(--primary); margin-top: auto; padding-top: 1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+                  </style>
+              </head>
+              <body>
+                  <header>
+                      <div class="container">
+                          <nav>
+                              <a href="/" class="logo"><img src="/logo.jpg" alt="Cash 4 Houses Logo"></a>
+                              <div class="nav-links">
+                                  <a href="/about.html">About</a>
+                                  <a href="/locations.html">Locations</a>
+                                  <a href="/contact.html">Contact</a>
+                              </div>
+                          </nav>
+                      </div>
+                  </header>
+                  
+                  <section class="contact-hero" style="background: #f8fafc; padding: 4rem 0;">
+                      <div class="container" style="text-align: center;">
+                          <h1 style="color: #0f172a; margin-bottom: 1rem;">Daily Market Articles</h1>
+                          <p style="font-size: 1.15rem; color: #475569; max-width: 600px; margin: 0 auto;">Browse our historical archive of local property market updates and SEO content across South East Essex.</p>
+                      </div>
+                  </section>
+
+                  <main style="padding-bottom: 5rem; min-height: 50vh;">
+                      <div class="container">
+                          <div class="archive-grid">
+                              ${linksHtml || '<p style="grid-column: 1/-1; text-align: center; color: #64748b; font-size: 1.1rem; padding: 3rem;">No articles generated yet.</p>'}
+                          </div>
+                      </div>
+                  </main>
+
+                  <footer>
+                      <div class="container">
+                          <div class="footer-content" style="text-align: center; border-top: 1px solid #334155; padding-top: 2rem;">
+                              <p>&copy; 2026 Cash 4 Houses. All rights reserved.</p>
+                          </div>
+                      </div>
+                  </footer>
+              </body>
+              </html>`;
             return res.status(200).send(archiveHtml);
         } catch (err) {
             return res.status(500).send("Archive Error");
@@ -2701,34 +2748,52 @@ exports.manualSlimPsy = slimPsy.manualSlimPsy;
 exports.generateDailyTestimonial = onSchedule({ region: "europe-west4",
     schedule: "45 23 * * *", 
     timeZone: "Europe/London",
-    memory: "512MiB"
+    memory: "512MiB",
+    secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"]
 }, async (event) => {
-    console.log("[TESTIMONIAL] Generating daily dynamic testimonial...");
+    console.log("[SUCCESS_STORY] Generating daily dynamic success story...");
     try {
         const town = await getActiveGSRLocation();
         const prompt = `
             ROLE: Master Copywriter.
-            TASK: Generate a single 3-sentence testimonial from a distressed property seller in ${town}, Essex.
-            SCENARIO: They needed to sell fast for cash (e.g., broken chain, inheritance, divorce) and Andrew (Andy) at Cash 4 Houses provided a fast, ethical, no-fee exit.
-            FORMAT: Just the quote text. No quotes around it, no names at the end. Use British English.
-            TONE: Relieved, genuine, slightly informal but highly positive.
+            TASK: Generate a 3-sentence "Success Story" from a homeowner in ${town}, Essex who sold their house to Cash 4 Houses.
+            SCENARIO: They needed to sell fast for cash (e.g., broken chain, inheritance, divorce, financial pressure) and Andrew (Andy) provided a fast, ethical, no-fee exit.
+            FORMAT: Return ONLY a valid JSON object with the following keys:
+            - "title": A short title (e.g., "Probate Sale - ${town}").
+            - "content": The 3-sentence quote text (use British English).
+            - "icon": A FontAwesome class representing the scenario (e.g., "fas fa-home-lock", "fas fa-hand-holding-dollar", "fas fa-key").
         `;
         const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt });
         
-        const firstNames = ["Sarah", "Mark", "David", "Emma", "John", "Paul", "Lisa", "Rachel", "Tom", "James", "Karen", "Steve"];
-        const lastInitials = ["A.", "B.", "C.", "D.", "H.", "L.", "M.", "P.", "S.", "T.", "W."];
-        const name = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastInitials[Math.floor(Math.random() * lastInitials.length)]}`;
+        let storyData;
+        try {
+            storyData = JSON.parse(text.replace(/```json/g, '').replace(/```/g, '').trim());
+        } catch(e) {
+            console.error("Failed to parse JSON from AI", text);
+            return;
+        }
         
-        await db.collection("testimonials").add({
-            comment: text.trim(),
-            reviewer: { displayName: name },
-            source: town,
-            starRating: 5,
-            createTime: new Date().toISOString(),
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const today = new Date();
+        const metaDate = `${monthNames[today.getMonth()]} ${today.getFullYear()}`;
+
+        await db.collection("successStories").add({
+            title: storyData.title,
+            content: `"${storyData.content}"`,
+            icon: storyData.icon || "fas fa-home",
+            meta: `Completed: ${metaDate}`,
             timestamp: admin.firestore.FieldValue.serverTimestamp()
         });
         
-        console.log(`[TESTIMONIAL] Successfully created testimonial for ${town}.`);
+        // PUBLISH TO GOOGLE BUSINESS PROFILE
+        try {
+            await publishToGBP(`SUCCESS STORY: ${storyData.title}\n\n"${storyData.content}"`, null);
+            console.log(`[SUCCESS_STORY] Successfully published story for ${town} to GBP.`);
+        } catch (gbpErr) {
+            console.error(`[SUCCESS_STORY] Failed to publish story to GBP:`, gbpErr);
+        }
+
+        console.log(`[SUCCESS_STORY] Successfully created story for ${town}.`);
     } catch (err) {
         console.error("[TESTIMONIAL] Failure:", err);
     }
@@ -2761,3 +2826,64 @@ exports.slimLocalAgent = slimLocal.slimLocalAgent;
 
 const slimOrch = require('./slim/slimOrch');
 exports.slimOrchAgent = slimOrch.slimOrchAgent;
+
+
+exports.fillArchiveAdmin = onRequest({ region: "europe-west4", cors: true }, async (req, res) => {
+    try {
+        const towns = ["Southend-on-Sea", "Basildon", "Leigh-on-Sea", "Stanford-le-Hope", "Grays", "Canvey Island", "Rayleigh", "Rochford"];
+        const today = new Date();
+        const batch = db.batch();
+        let added = 0;
+        
+        for (let i = 1; i <= 180; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const yyyy = d.getFullYear();
+            const dateStr = `cashforhouses${dd}${mm}${yyyy}`;
+            const town = towns[Math.floor(Math.random() * towns.length)];
+            
+            const htmlContent = `
+            <!DOCTYPE html>
+            <html lang="en-GB">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Property Market Update: ${town} | Cash 4 Houses</title>
+                <link rel="stylesheet" href="/style.css">
+            </head>
+            <body style="padding: 40px; font-family: 'Inter', sans-serif;">
+                <div style="max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <a href="/archive.html" style="color: #64748b; text-decoration: none;">&larr; Back to Archive</a>
+                    <h1 style="color: #0f172a; margin-top: 20px;">Cash 4 Houses: Buying in ${town}</h1>
+                    <p style="color: #475569;">Published on ${dd}/${mm}/${yyyy}</p>
+                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: #334155;">
+                        The property market in ${town} continues to see strong demand from cash buyers. At Cash 4 Houses, we are actively looking for properties in this area, regardless of condition.
+                    </p>
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: #334155;">
+                        If you are facing financial difficulties, dealing with probate, or simply need a fast, guaranteed sale without the hassle of traditional estate agents, we can help.
+                    </p>
+                    <div style="margin-top: 40px;">
+                        <a href="/get-offer.html" style="background: #EB287A; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold;">Get Your Cash Offer Today</a>
+                    </div>
+                </div>
+            </body>
+            </html>`;
+            
+            const docRef = db.collection("seoPages").doc(dateStr);
+            batch.set(docRef, {
+                html: htmlContent,
+                date: dateStr,
+                town: town,
+                timestamp: admin.firestore.Timestamp.fromDate(d)
+            });
+            added++;
+        }
+        await batch.commit();
+        res.status(200).send("Successfully created "+added+" records.");
+    } catch(err) {
+        res.status(500).send(err.toString());
+    }
+});

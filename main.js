@@ -281,51 +281,36 @@ async function fetchLatestNews() {
 
 fetchLatestNews();
 
-// --- TESTIMONIALS INTEGRATION ---
-async function fetchTestimonials() {
-    const reviewsGrid = document.getElementById('google-reviews');
-    const reviewsSection = document.getElementById('reviews');
-    if (!reviewsGrid || !reviewsSection) return;
+// --- SUCCESS STORIES INTEGRATION ---
+async function fetchSuccessStories() {
+    const successGrid = document.querySelector('#success-stories .feature-grid');
+    if (!successGrid) return;
 
     try {
-        const q = query(collection(db, "testimonials"), orderBy("timestamp", "desc"), limit(6));
+        const q = query(collection(db, "successStories"), orderBy("timestamp", "desc"), limit(4));
         const snapshot = await getDocs(q);
         
-        const reviews = [];
-        snapshot.forEach(doc => reviews.push(doc.data()));
+        const stories = [];
+        snapshot.forEach(doc => stories.push(doc.data()));
         
-        if (reviews.length === 0) {
-            reviewsSection.style.display = 'none';
-            return;
-        }
+        if (stories.length === 0) return;
 
-        reviewsSection.style.display = 'block';
-
-        // Render Reviews
-        reviewsGrid.innerHTML = reviews.map(review => `
-            <div class="review-card">
-                <div class="review-header">
-                    <img src="/andy-avatar.jpg" alt="${review.reviewer.displayName}" class="reviewer-img">
-                    <div class="reviewer-info">
-                        <strong>${review.reviewer.displayName}</strong>
-                        <div class="stars">${'★'.repeat(review.starRating)}${'☆'.repeat(5 - review.starRating)}</div>
-                    </div>
-                </div>
-                <p class="review-text">"${review.comment}"</p>
-                <div class="review-meta">
-                    <small>${new Date(review.createTime).toLocaleDateString('en-GB')}</small>
-                    <span class="office-tag">Property in ${review.source}</span>
-                </div>
+        // Render Dynamic Success Stories
+        successGrid.innerHTML = stories.map(story => `
+            <div class="feature-card success-card">
+                <div class="success-icon"><i class="${story.icon || 'fas fa-home'}"></i></div>
+                <h3>${story.title}</h3>
+                <p>${story.content}</p>
+                <span class="success-meta">${story.meta}</span>
             </div>
         `).join('');
 
     } catch (err) {
-        console.warn("Testimonials Fetch Failure:", err);
-        reviewsSection.style.display = 'none';
+        console.warn("Success Stories Fetch Failure:", err);
     }
 }
 
-fetchTestimonials();
+fetchSuccessStories();
 
 // Smooth Scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

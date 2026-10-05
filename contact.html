@@ -153,86 +153,102 @@
         </div>
     </header>
 
-    <section class="contact-hero">
-        <div class="container">
-            <h1>Get In Touch</h1>
-            <p>Andrew Stallard and the team are here to help. Discrete, professional, and fast.</p>
+        <section class="contact-hero" style="background: #f8fafc; padding: 4rem 0;">
+        <div class="container" style="text-align: center;">
+            <h1 style="color: #0f172a; margin-bottom: 1rem;">Contact Us</h1>
+            <p style="font-size: 1.15rem; color: #475569; max-width: 600px; margin: 0 auto;">Andrew Stallard and the team are here to help. Reach out directly or speak to our AI Assistant, Andy, for immediate answers.</p>
         </div>
     </section>
 
-    <div class="contact-container container">
-        <aside class="contact-info-panel">
-            <div class="office-card">
-                <h3><i class="fas fa-map-marker-alt" style="color: var(--secondary);"></i> London Road Office</h3>
-                <p>
-                    124 London Road<br>
-                    Southend-on-Sea<br>
-                    Essex, SS1 1PA
-                </p>
-                <iframe class="map-frame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.9926487865246!2d0.704207!3d51.54148!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8d85f5e855555%3A0x6e9f9f9f9f9f9f9f!2s124%20London%20Rd%2C%20Southend-on-Sea%2C%20Westcliff-on-Sea%20SS1%201PA!5e0!3m2!1sen!2suk!4v1712750000000!5m2!1sen!2suk" allowfullscreen="" loading="lazy"></iframe>
-            </div>
+    <main style="padding-bottom: 4rem;">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin-top: 3rem;">
+                
+                <!-- Left Column: Contact Info & Chatbot -->
+                <div>
+                    <!-- Contact Cards -->
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 3rem;">
+                        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                            <div style="background: #f1f5f9; color: var(--primary); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 0.25rem; color: #0f172a;">Call Us Directly</h4>
+                                <a href="tel:07834555355" style="font-size: 1.25rem; font-weight: bold; color: var(--primary); text-decoration: none;">07834 555 355</a>
+                            </div>
+                        </div>
 
-            <div class="office-card">
-                <h3><i class="fas fa-location-dot"></i> Southchurch Road Office</h3>
-                <p>
-                    452 Southchurch Road<br>
-                    Southend-on-Sea<br>
-                    Essex, SS1 2RE
-                </p>
-                <iframe class="map-frame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.7431289123456!2d0.724567!3d51.54567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8d8f5f5f5f5f5%3A0xf5f5f5f5f5f5f5f5!2s452%20Southchurch%20Rd%2C%20Southend-on-Sea%20SS1%202RE!5e0!3m2!1sen!2suk!4v1712750000000!5m2!1sen!2suk" allowfullscreen="" loading="lazy"></iframe>
-            </div>
+                        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                            <div style="background: #f1f5f9; color: var(--primary); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                <i class="fas fa-location-dot"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 0.25rem; color: #0f172a;">Visit Our Office</h4>
+                                <p style="margin: 0; color: #475569;">Hillsboro, 377 Southchurch Road<br>Southend-On-Sea, Essex SS1 2PQ</p>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="office-card">
-                <h3><i class="fas fa-envelope"></i> Direct Email</h3>
-                <p>astallard65@gmail.com</p>
-            </div>
-        </aside>
-
-        <main class="contact-form-panel">
-            <div id="success-msg" class="success-message">
-                <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
-                <strong>Message Sent!</strong><br>
-                Thank you for reaching out. Andrew will review your enquiry and respond shortly.
-            </div>
-
-            <form id="contact-form">
-                <div class="form-group">
-                    <label for="name">Your Name</label>
-                    <input type="text" id="name" class="form-control" placeholder="Full Name" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="phone">Telephone Number</label>
-                    <input type="tel" id="phone" class="form-control" placeholder="Mobile or Home Number" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" class="form-control" placeholder="Email Address" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="comments">How can we help?</label>
-                    <textarea id="comments" class="form-control" rows="5" placeholder="Please describe your situation or ask a question..." required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Preferred method of response:</label>
-                    <div class="radio-group">
-                        <label class="radio-item text-sm">
-                            <input type="radio" name="responseMethod" value="Email" checked> Email
-                        </label>
-                        <label class="radio-item text-sm">
-                            <input type="radio" name="responseMethod" value="Phone"> Phone Call
-                        </label>
+                    <!-- Open Chatbot Window -->
+                    <div style="background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; overflow: hidden; display: flex; flex-direction: column; height: 400px;">
+                        <div style="background: var(--primary); color: white; padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                            <img src="/andy-avatar.jpg" alt="Andy" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid white;">
+                            <div>
+                                <h4 style="margin: 0;">Andy, AI Assistant</h4>
+                                <span style="font-size: 0.8rem; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-circle" style="color: #22c55e; font-size: 0.5rem;"></i> Online 24/7</span>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="contact-chat-messages" style="flex: 1; padding: 1.5rem; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="message message-bot" style="background: white; padding: 1rem; border-radius: 12px; border-bottom-left-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); align-self: flex-start; max-width: 85%;">
+                                Hi! I'm Andy. I'm an honest, local property expert here to help you move forward. You can ask me anything right here!
+                            </div>
+                        </div>
+                        <form id="contact-chat-form" style="padding: 1rem; background: white; border-top: 1px solid #e2e8f0; display: flex; gap: 0.5rem;">
+                            <input type="text" id="contact-chat-input" placeholder="Type your message here..." style="flex: 1; padding: 0.75rem 1rem; border: 1px solid #cbd5e1; border-radius: 8px; outline: none;">
+                            <button type="submit" class="btn btn-primary" style="padding: 0 1.5rem;"><i class="fas fa-paper-plane"></i></button>
+                        </form>
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn" id="submit-btn">
-                    <i class="fas fa-paper-plane"></i> Submit Enquiry
-                </button>
-            </form>
-        </main>
+                <!-- Right Column: Map and Simple Form -->
+                <div>
+                    <!-- Google Map -->
+                    <div style="border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 3rem; height: 300px;">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2478.899653068981!2d0.728994!3d51.540885!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8d85f8c61bb6d%3A0xc3b8a36c84b47eb5!2s377%20Southchurch%20Rd%2C%20Southend-on-Sea%20SS1%202PQ%2C%20UK!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+
+                    <!-- Streamlined Form -->
+                    <div style="background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid #e2e8f0;">
+                        <h3 style="margin-bottom: 1.5rem; color: #0f172a;">Send Us A Message</h3>
+                        <form id="simple-contact-form">
+                            <div class="form-group">
+                                <label>Your Name</label>
+                                <input type="text" name="name" required style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            </div>
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label>Email Address</label>
+                                <input type="email" name="email" required style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            </div>
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label>Message</label>
+                                <textarea name="message" rows="4" required style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; resize: vertical;"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem; padding: 1rem;">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
     </div>
 
     <footer>
