@@ -255,36 +255,36 @@ Turn the social and chatbot system into a fleet of specialised, self-learning AI
 **Phase 0: Diagnose zero leads (READ-ONLY)**
 | Order | Task ID | Description | Output | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 4 | `SLIM-0.1a` | Valuation form submits on mobile + desktop (browser test with evidence) | Pass/fail + screenshots | `[to be actioned]` |
-| 5 | `SLIM-0.1b` | Submission reaches Firestore (`processLead`) and admin notification actually arrives | Pass/fail + log/code refs | `[to be actioned]` |
-| 6 | `SLIM-0.1c` | TinyURL resolves with UTMs intact; GA4 records correct source/medium/campaign | Pass/fail + evidence | `[to be actioned]` |
-| 7 | `SLIM-0.1d` | Inventory GA4 conversion events (form_submit, click-to-call, WhatsApp, chatbot_to_form): exist vs missing | Event table | `[to be actioned]` |
-| 8 | `SLIM-0.1e` | Phone/WhatsApp present and clickable (`tel:` / `wa.me`) on posts + site, on mobile | Pass/fail | `[to be actioned]` |
-| 9 | `SLIM-0.1f` | 180-day review: spam folders, form errors, Cloud Function error logs | Findings | `[to be actioned]` |
-| 10 | `SLIM-0.1g` | **Added:** verify that frontend endpoints still work after the region move (see 005.P-1) | Pass/fail per endpoint | `[to be actioned]` |
-| 11 | `SLIM-0.2a` | 180 days: posts scheduled vs published per channel (FB, IG, GBPÃ—2) | Table | `[to be actioned]` |
-| 12 | `SLIM-0.2b` | Failed/rejected/removed/limited posts + reasons | List | `[to be actioned]` |
-| 13 | `SLIM-0.2c` | Reach, impressions, clicks, comments, shares, saves per channel; total site link clicks | Metrics table | `[to be actioned]` |
-| 14 | `SLIM-0.2d` | Page follower count + location split (are followers in SE Essex?) | Data | `[to be actioned]` |
-| 15 | `SLIM-0.2e` | Meta Page-quality flags / GBP rejections; GBP duplicate-post volume (see 005.P-2) | Findings | `[to be actioned]` |
-| 16 | `SLIM-0.3a` | Chatbot stats: total conversations, avg length, drop-off point, reached-form count, distress-topic count (no PII in report) | Aggregates | `[to be actioned]` |
-| 17 | `SLIM-0.3b` | Top 10 questions asked; top 5 answered badly/evasively | Lists | `[to be actioned]` |
-| 18 | `SLIM-0.4` | Review 30 recent posts: template repetition, 3-a-day same-town fatigue, artificial-looking AI images, audience reality | Honest assessment | `[to be actioned]` |
-| 19 | `SLIM-0.5a` | List every public claim in post prompts, chatbot prompt, site (e.g. 48-hr offer, legal fees, 7 days, any condition) + whether a documented process backs it | Claims register | `[to be actioned]` |
-| 20 | `SLIM-0.5b` | Check against CAP/ASA, CPUTR as amended by DMCC Act 2024, Meta standards, GBP policy, UK GDPR (chat logs), cash-buyer trade body codes | Compliance matrix | `[to be actioned]` |
-| 21 | `SLIM-0.5c` | AI-generated "real street" imagery: disclosure and misleading-ness | Finding | `[to be actioned]` |
-| 22 | `SLIM-0.6` | Data fixes list (Battelsbridgeâ†’Battlesbridge; verify "Rayleigh Weir"; hashtags 5â€“8â†’3â€“7; plus 005.P items) | Fix list | `[to be actioned]` |
-| 23 | `SLIM-0.7` | Write `PHASE-0-DIAGNOSIS.md`: findings 0.1â€“0.6, top 5 likely causes with evidence + confidence (H/M/L), recommended fixes | **MILESTONE 0** | `[to be actioned]` |
-| 24 | `GATE 0` | Gate report â†’ wait for "APPROVED"; Andrew sets targets | Approval | `[to be actioned]` |
+| 4 | `SLIM-0.1a` | Valuation form submits on mobile + desktop (browser test with evidence) | Pass/fail + screenshots | `[Completed]` |
+| 5 | `SLIM-0.1b` | Submission reaches Firestore (`processLead`) and admin notification actually arrives | Pass/fail + log/code refs | `[Completed]` |
+| 6 | `SLIM-0.1c` | TinyURL resolves with UTMs intact; GA4 records correct source/medium/campaign | Pass/fail + evidence | `[Completed]` |
+| 7 | `SLIM-0.1d` | Inventory GA4 conversion events (form_submit, click-to-call, WhatsApp, chatbot_to_form): exist vs missing | Event table | `[Completed]` |
+| 8 | `SLIM-0.1e` | Phone/WhatsApp present and clickable (`tel:` / `wa.me`) on posts + site, on mobile | Pass/fail | `[Completed]` |
+| 9 | `SLIM-0.1f` | 180-day review: spam folders, form errors, Cloud Function error logs | Findings | `[Completed]` |
+| 10 | `SLIM-0.1g` | **Added:** verify that frontend endpoints still work after the region move (see 005.P-1) | Pass/fail per endpoint | `[Completed]` |
+| 11 | `SLIM-0.2a` | 180 days: posts scheduled vs published per channel (FB, IG, GBPÃ—2) | Table | `[Completed]` |
+| 12 | `SLIM-0.2b` | Failed/rejected/removed/limited posts + reasons | List | `[Completed]` |
+| 13 | `SLIM-0.2c` | Reach, impressions, clicks, comments, shares, saves per channel; total site link clicks | Metrics table | `[Completed]` |
+| 14 | `SLIM-0.2d` | Page follower count + location split (are followers in SE Essex?) | Data | `[Completed]` |
+| 15 | `SLIM-0.2e` | Meta Page-quality flags / GBP rejections; GBP duplicate-post volume (see 005.P-2) | Findings | `[Completed]` |
+| 16 | `SLIM-0.3a` | Chatbot stats: total conversations, avg length, drop-off point, reached-form count, distress-topic count (no PII in report) | Aggregates | `[Completed]` |
+| 17 | `SLIM-0.3b` | Top 10 questions asked; top 5 answered badly/evasively | Lists | `[Completed]` |
+| 18 | `SLIM-0.4` | Review 30 recent posts: template repetition, 3-a-day same-town fatigue, artificial-looking AI images, audience reality | Honest assessment | `[Completed]` |
+| 19 | `SLIM-0.5a` | List every public claim in post prompts, chatbot prompt, site (e.g. 48-hr offer, legal fees, 7 days, any condition) + whether a documented process backs it | Claims register | `[Completed]` |
+| 20 | `SLIM-0.5b` | Check against CAP/ASA, CPUTR as amended by DMCC Act 2024, Meta standards, GBP policy, UK GDPR (chat logs), cash-buyer trade body codes | Compliance matrix | `[Completed]` |
+| 21 | `SLIM-0.5c` | AI-generated "real street" imagery: disclosure and misleading-ness | Finding | `[Completed]` |
+| 22 | `SLIM-0.6` | Data fixes list (Battelsbridgeâ†’Battlesbridge; verify "Rayleigh Weir"; hashtags 5â€“8â†’3â€“7; plus 005.P items) | Fix list | `[Completed]` |
+| 23 | `SLIM-0.7` | Write `PHASE-0-DIAGNOSIS.md`: findings 0.1â€“0.6, top 5 likely causes with evidence + confidence (H/M/L), recommended fixes | **MILESTONE 0** | `[Completed]` |
+| 24 | `GATE 0` | Gate report â†’ wait for "APPROVED"; Andrew sets targets | Approval | `[Completed]` |
 
 **Phase 1: UK Property Market Research (READ-ONLY, CITED)**
 | Order | Task ID | Description | Output | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| 25 | `SLIM-1.1` | Source register, â‰¥40 sources (Official/Economic, Market data, Industry press, Auction/distressed, Local, Global): name, URL, data type, frequency, RSS/API/CSV, licence/terms checked | `SOURCE-REGISTER.md` | `[to be actioned]` |
-| 26 | `SLIM-1.2` | Driver map: rates/mortgage cliff, affordability, inflation, tax, landlord exits, EPC/Renters' Rights, probate delays, divorce, possessions, fall-through rates, regional (London/Essex/East), global shocks. Each driver: what, data point, direction, how it creates a distressed seller | `MARKET-DRIVER-MAP.md` | `[to be actioned]` |
-| 27 | `SLIM-1.3` | 9 seller segment profiles (broken chain, probate, divorce, arrears, unmortgageable, landlord exit, relocation/job loss, elderly/care fees, auction fall-through). Each cited or labelled "practitioner assumption - to be validated" | `SELLER-SEGMENTS.md` | `[to be actioned]` |
-| 28 | `SLIM-1.4` | Trust & scam landscape + Trust Checklist (inside SELLER-SEGMENTS.md) | Checklist | `[to be actioned]` |
-| 29 | `GATE 1` | Gate report â†’ "APPROVED" | Approval | `[to be actioned]` |
+| 25 | `SLIM-1.1` | Source register, â‰¥40 sources (Official/Economic, Market data, Industry press, Auction/distressed, Local, Global): name, URL, data type, frequency, RSS/API/CSV, licence/terms checked | `SOURCE-REGISTER.md` | `[Completed]` |
+| 26 | `SLIM-1.2` | Driver map: rates/mortgage cliff, affordability, inflation, tax, landlord exits, EPC/Renters' Rights, probate delays, divorce, possessions, fall-through rates, regional (London/Essex/East), global shocks. Each driver: what, data point, direction, how it creates a distressed seller | `MARKET-DRIVER-MAP.md` | `[Completed]` |
+| 27 | `SLIM-1.3` | 9 seller segment profiles (broken chain, probate, divorce, arrears, unmortgageable, landlord exit, relocation/job loss, elderly/care fees, auction fall-through). Each cited or labelled "practitioner assumption - to be validated" | `SELLER-SEGMENTS.md` | `[Completed]` |
+| 28 | `SLIM-1.4` | Trust & scam landscape + Trust Checklist (inside SELLER-SEGMENTS.md) | Checklist | `[Completed]` |
+| 29 | `GATE 1` | Gate report â†’ "APPROVED" | Approval | `[Completed]` |
 
 **Phase 2: Hive Mind**
 | Order | Task ID | Description | Output | Status |
