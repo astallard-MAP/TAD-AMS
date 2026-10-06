@@ -65,6 +65,9 @@ All external HTTP requests (fetch, axios, etc.) across all API integrations (Met
 
 **The Resilient Loop Protocol:** Any loop iterating over multiple external endpoints, locations, or files MUST NOT use `throw e;` inside its inner catch block unless a total system halt is strictly required. The loop must log the individual error and continue to the next iteration to ensure partial data retrieval succeeds.
 
+### LAW VIII: THE STANDARDIZED INSTRUCTION MANDATE
+All future interactions, AI directives, and operational prompts MUST be prefaced with the "MISSION OVERVIEW & ARCHITECTURE" and "THE MANDATORY PROTOCOL" headers. This ensures zero operational drift across sessions.
+
 ---
 
 ## 3. Master Configuration Settings & Build Standards
@@ -595,3 +598,15 @@ GATE REPORT: [Phase/Task]
 | `018.01-C` | **Secret Labelling via ADC:** Executed `node functions/label_secrets.cjs` manually to successfully append `firebase-managed: functions` labels to `GBP_CLIENT_ID` and `GBP_CLIENT_SECRET`. | `[Completed]` |
 | `017.5-B` | **Inject Secret Dependencies:** Parsed `functions/index.js` and injected explicit `secrets` arrays into `generateDailySpotlight` (GBP secrets), `portalSentinel` (META & GBP secrets), and `autonomousSEOGenerator` (GA4 secrets). Memory limits of 2GiB were also strictly validated during injection. | `[Completed]` |
 - *Note:* The API failures (`invalid_grant`) require manual re-authentication by the Principal to cycle the Google Business Profile refresh tokens.
+
+---
+
+### [PHASE 018.03]: Safe Error Payload Implementation & Missing Boundary Fortification
+- **Objective:** Rectify fatal blind `.json()` parses on error payloads (HTML pages) via the Safe Extraction Protocol, and fortify exposed fetch operations with LAW VII boundaries.
+- **Date Logged:** 06 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `018.03-A` | **Rectify Vulnerability 1, 2 & 3:** Applied Safe Extraction Protocol to `publishToGBP`, `portalReadinessSentinel`, and `getGBPInsights` to prevent HTML JSON parsing crashes. | `[Completed]` |
+| `018.03-B` | **Fortify Missing Boundaries:** Injected LAW VII `!response.ok` checks with Safe Extraction Protocol into exposed fetches in `verifyMetaConnection` and `runSocialIntelligenceForensics`. | `[Completed]` |

@@ -948,6 +948,13 @@ exports.verifyMetaConnection = onRequest({ region: "europe-west4",
     const token = META_PERMANENT_PAGE_TOKEN.value();
     const url = `https://graph.facebook.com/v19.0/${pageId}?fields=name,username,followers_count&access_token=${token}`;
     const resp = await fetch(url);
+    if (!resp.ok) {
+        let errData;
+        const errText = await resp.text();
+        try { errData = JSON.parse(errText); } 
+        catch (e) { errData = { error: { message: `HTTP ${resp.status}: ${errText.substring(0, 100)}...` } }; }
+        throw new Error(errData.error?.message || "Meta API Fail");
+    }
     const data = await resp.json();
     
     if (data.error) {
@@ -1067,7 +1074,10 @@ async function publishToGBP(content, imageUrl) {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            let errorData;
+            const errText = await response.text();
+            try { errorData = JSON.parse(errText); } 
+            catch (e) { errorData = { error: { message: `HTTP ${response.status}: ${errText.substring(0, 100)}...` } }; }
             console.warn(`GBP API Warning for ${locationId}:`, errorData);
             results.push({ locationId, status: "Failed", error: errorData });
         } else {
@@ -1784,7 +1794,10 @@ exports.portalReadinessSentinel = onRequest({ region: "europe-west4",
             report.googleMyBusiness.status = "AUTHENTICATED";
             report.googleMyBusiness.accountsCount = data.accounts?.length || 0;
         } else {
-            const errData = await locationsResp.json();
+            let errData;
+            const errText = await locationsResp.text();
+            try { errData = JSON.parse(errText); }
+            catch (e) { errData = { error: { message: `HTTP ${locationsResp.status}: ${errText.substring(0, 100)}...` } }; }
             throw new Error(errData.error?.message || "GBP Auth Fail");
         }
     } catch (err) {
@@ -2029,6 +2042,13 @@ async function runSocialIntelligenceForensics() {
             try {
                 const url = `https://graph.facebook.com/v19.0/${p.fbPostId}/insights?metric=post_impressions_unique,post_engaged_users&access_token=${metaToken}`;
                 const resp = await fetch(url);
+                if (!resp.ok) {
+                    let errData;
+                    const errText = await resp.text();
+                    try { errData = JSON.parse(errText); }
+                    catch (e) { errData = { error: { message: `HTTP ${resp.status}: ${errText.substring(0, 100)}...` } }; }
+                    throw new Error(errData.error?.message || "Meta Insights Fail");
+                }
                 const data = await resp.json();
                 if (data.data) {
                     pStats.views = data.data.find(m => m.name === 'post_impressions_unique')?.values?.[0]?.value || 0;
@@ -2038,6 +2058,13 @@ async function runSocialIntelligenceForensics() {
                 // Get Shares & Likes via fields
                 const fieldsUrl = `https://graph.facebook.com/v19.0/${p.fbPostId}?fields=shares,likes.summary(true)&access_token=${metaToken}`;
                 const fieldsResp = await fetch(fieldsUrl);
+                if (!fieldsResp.ok) {
+                    let errData;
+                    const errText = await fieldsResp.text();
+                    try { errData = JSON.parse(errText); }
+                    catch (e) { errData = { error: { message: `HTTP ${fieldsResp.status}: ${errText.substring(0, 100)}...` } }; }
+                    throw new Error(errData.error?.message || "Meta Fields Fail");
+                }
                 const fieldsData = await fieldsResp.json();
                 pStats.shares = fieldsData.shares?.count || 0;
                 pStats.likes = fieldsData.likes?.summary?.total_count || 0;
@@ -2461,7 +2488,10 @@ exports.getGBPInsights = onRequest({ region: "europe-west4",
         });
 
         if (!resp.ok) {
-            const errData = await resp.json();
+            let errData;
+            const errText = await resp.text();
+            try { errData = JSON.parse(errText); }
+            catch (e) { errData = { error: { message: `HTTP ${resp.status}: ${errText.substring(0, 100)}...` } }; }
             throw new Error(errData.error?.message || "Failed to fetch GMB insights");
         }
 
