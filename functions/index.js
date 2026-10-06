@@ -1,3 +1,4 @@
+process.env.GENKIT_ENV = "prod";
 const { setGlobalOptions } = require("firebase-functions/v2");
 setGlobalOptions({ region: "europe-west4" });
 
