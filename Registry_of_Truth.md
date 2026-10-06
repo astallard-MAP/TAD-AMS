@@ -68,6 +68,9 @@ All external HTTP requests (fetch, axios, etc.) across all API integrations (Met
 ### LAW VIII: THE STANDARDIZED INSTRUCTION MANDATE
 All future interactions, AI directives, and operational prompts MUST be prefaced with the "MISSION OVERVIEW & ARCHITECTURE" and "THE MANDATORY PROTOCOL" headers. This ensures zero operational drift across sessions.
 
+### LAW IX: THE FORENSIC CADENCE (CHECK, IDENTIFY, PLAN, ACT)
+No code mutation may occur based on an initial error report. The engineer or AI must first conduct an independent read-only audit to identify the root cause, present a formalized Plan of Action detailing every proposed file change, update the Registry of Truth, and await explicit approval from the Principal before writing any code. "Check, identify, recheck confirm, recheck verify."
+
 ---
 
 ## 3. Master Configuration Settings & Build Standards
@@ -610,3 +613,16 @@ GATE REPORT: [Phase/Task]
 | :--- | :--- | :--- |
 | `018.03-A` | **Rectify Vulnerability 1, 2 & 3:** Applied Safe Extraction Protocol to `publishToGBP`, `portalReadinessSentinel`, and `getGBPInsights` to prevent HTML JSON parsing crashes. | `[Completed]` |
 | `018.03-B` | **Fortify Missing Boundaries:** Injected LAW VII `!response.ok` checks with Safe Extraction Protocol into exposed fetches in `verifyMetaConnection` and `runSocialIntelligenceForensics`. | `[Completed]` |
+
+---
+
+### [PHASE 018.05]: Forensic Cadence Execution: Rectify Secrets, Meta ID, & Error Transparency
+- **Objective:** Rectify email secret dependencies, store valid Meta post_ids for forensics, and enforce robust error transparency in background tasks.
+- **Date Logged:** 06 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `018.05-A` | **Rectify Email Secret Dependencies:** Injected `GMAIL_APP_PASSWORD` into `weeklyPerformanceDigest` and `manualWeeklyDigest` secrets arrays. | `[Completed]` |
+| `018.05-B` | **Rectify Meta Post ID Storage:** Stored `fbResult.post_id` in `publishToMetaInternal` to allow feed-level insights without triggering Error #100. | `[Completed]` |
+| `018.05-C` | **Error Transparency:** Replaced generic `HttpsError` with standard Node `Error` and detailed stack logging in `performSpotlightGeneration`. | `[Completed]` |

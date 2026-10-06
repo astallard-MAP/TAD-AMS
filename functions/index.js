@@ -912,7 +912,7 @@ async function publishToMetaInternal(postId) {
   // Final Database Update
   await db.collection("socialPosts").doc(postId).update({ 
     published: true, 
-    fbPostId: fbResult.id || null,
+    fbPostId: fbResult.post_id || fbResult.id || null,
     igPostId: igResult.id || null,
     metaPublishedAt: admin.firestore.FieldValue.serverTimestamp(),
     metaStatus: {
@@ -1359,8 +1359,8 @@ async function performSpotlightGeneration() {
         return { success: true, town: town };
 
     } catch (error) {
-        console.error("Spotlight Helper Error:", error);
-        throw new HttpsError("internal", "Spotlight Generation Failed");
+        console.error("Spotlight Helper Error:", error.stack || error.message || error);
+        throw new Error(`Spotlight Generation Failed: ${error.message || error}`);
     }
 }
 
@@ -2182,7 +2182,7 @@ exports.weeklyPerformanceDigest = onSchedule({ region: "europe-west4",
     timeZone: "Europe/London",
     secrets: [
         "AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET", 
-        "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_REFRESH_TOKEN", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET"
+        "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_REFRESH_TOKEN", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GMAIL_APP_PASSWORD"
     ]
 }, async (event) => {
     console.log("[DIGEST AGENT] Generating Weekly Performance Forensic Report...");
@@ -2247,7 +2247,7 @@ exports.manualWeeklyDigest = onRequest({ region: "europe-west4",
     cors: true,
     secrets: [
         "AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET", 
-        "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_REFRESH_TOKEN", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET"
+        "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_REFRESH_TOKEN", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GMAIL_APP_PASSWORD"
     ]
 }, async (req, res) => {
     console.log("[UI-TRIGGER] Manual Performance Digest Initiated...");
