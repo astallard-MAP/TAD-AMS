@@ -60,6 +60,9 @@ The platform deals with individuals under emotional, relational, or financial di
 ### LAW VI: BUILD DISCIPLINE & ARTIFACT REGENERATION
 Whenever modifications are made to root HTML, CSS, or JS files, a production build (`npm run build`) must be executed to ensure the `dist/` directory mirrors the source files before any deployment or git commit.
 
+### LAW VII: THE HOLISTIC ERROR BOUNDARY PROTOCOL
+All external HTTP requests (fetch, axios, etc.) across all API integrations (Meta, Google, etc.) must explicitly validate the response status (e.g., `if (!response.ok)`) and throw a descriptive Error containing the HTTP status and text before executing `.json()` or any parsing logic. This prevents catastrophic silent failures or parsing errors (like `SyntaxError`) from HTML error pages.
+
 ---
 
 ## 3. Master Configuration Settings & Build Standards
@@ -575,5 +578,18 @@ GATE REPORT: [Phase/Task]
 | `018.00-J` | **Legacy Hosting Eradication:** Remove the `hosting` block from `firebase.json` and the tracked `.firebase/hosting.*.cache`. Replace the Firebase-CLI boilerplate `404.html` with a branded page. Correct the SPA-era `/#anchor` entries in `sitemap.html` to real MPA pages. | `[Completed]` |
 | `018.00-K` | **Documentation Alignment:** Correct `README.md`, `WEBSITE_OPERATIONS_BRIEF.md`, Registry Law III and `008-E` (no `serveSitemap` function exists anywhere in the codebase). | `[Completed]` |
 | `018.00-L` | **Verification:** Run a production build (`npm run build --concurrency=1`), then test HTTP routing locally against the production server. | `[Completed]` |
+
+---
+
+### [PHASE 018.01]: Holistic Error Boundary Enforcement & Secret Labelling Verification
+- **Objective:** Enforce LAW VII (Error Boundary Protocol) across Meta Graph integrations, downgrade dependencies for Node 20 harmony, and execute manual Secret Manager labelling via ADC.
+- **Date Logged:** 06 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `018.01-A` | **Meta Error Boundaries:** Injected explicit `if (!response.ok)` checks that throw descriptive Errors before JSON parsing across all `publishToMetaInternal`, `verifyMetaConnection`, `portalReadinessSentinel`, and `testMetaInsights` fetches. | `[Completed]` |
+| `018.01-B` | **Node Engine Harmonization (v20):** Changed `functions/package.json` engines to `node: 20` and downgraded `@google-cloud/secret-manager` to `^5.0.0` to achieve a clean `npm install` with zero EBADENGINE warnings. | `[Completed]` |
+| `018.01-C` | **Secret Labelling via ADC:** Executed `node functions/label_secrets.cjs` manually to successfully append `firebase-managed: functions` labels to `GBP_CLIENT_ID` and `GBP_CLIENT_SECRET`. | `[Completed]` |
 | `017.5-B` | **Inject Secret Dependencies:** Parsed `functions/index.js` and injected explicit `secrets` arrays into `generateDailySpotlight` (GBP secrets), `portalSentinel` (META & GBP secrets), and `autonomousSEOGenerator` (GA4 secrets). Memory limits of 2GiB were also strictly validated during injection. | `[Completed]` |
 - *Note:* The API failures (`invalid_grant`) require manual re-authentication by the Principal to cycle the Google Business Profile refresh tokens.

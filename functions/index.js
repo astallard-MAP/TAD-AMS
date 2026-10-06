@@ -863,11 +863,17 @@ async function publishToMetaInternal(postId) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(fbPayload)
   });
+  if (!fbResp.ok) {
+    throw new Error(`Meta API Error: ${fbResp.status} - ${fbResp.statusText}`);
+  }
   const fbResult = await fbResp.json();
 
   // --- 2. INSTAGRAM ---
   const igAccountUrl = `https://graph.facebook.com/v19.0/${pageId}?fields=instagram_business_account&access_token=${token}`;
   const igAccountResp = await fetch(igAccountUrl);
+  if (!igAccountResp.ok) {
+    throw new Error(`Meta API Error: ${igAccountResp.status} - ${igAccountResp.statusText}`);
+  }
   const igAccountData = await igAccountResp.json();
   const igAccountId = igAccountData.instagram_business_account?.id;
 
@@ -881,6 +887,9 @@ async function publishToMetaInternal(postId) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image_url: imageUrl, caption: content, access_token: token })
       });
+      if (!containerResp.ok) {
+        throw new Error(`Meta API Error: ${containerResp.status} - ${containerResp.statusText}`);
+      }
       const containerData = await containerResp.json();
       
       if (containerData.id) {
@@ -890,6 +899,9 @@ async function publishToMetaInternal(postId) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ creation_id: containerData.id, access_token: token })
         });
+        if (!publishResp.ok) {
+          throw new Error(`Meta API Error: ${publishResp.status} - ${publishResp.statusText}`);
+        }
         igResult = await publishResp.json();
       } else {
         igResult = { error: containerData.error || "Container Fail" };
@@ -1732,6 +1744,9 @@ exports.portalReadinessSentinel = onRequest({ region: "europe-west4",
         // Check Page Details & Debug Token
         const debugUrl = `https://graph.facebook.com/v19.0/debug_token?input_token=${token}&access_token=${token}`;
         const debugResp = await fetch(debugUrl);
+        if (!debugResp.ok) {
+            throw new Error(`Meta API Error: ${debugResp.status} - ${debugResp.statusText}`);
+        }
         const debugData = await debugResp.json();
         
         if (debugData.data && debugData.data.scopes) {
@@ -1748,12 +1763,10 @@ exports.portalReadinessSentinel = onRequest({ region: "europe-west4",
         } else {
             // Fallback: Simple Profile Check
             const profileResp = await fetch(`https://graph.facebook.com/v19.0/${pageId}?fields=name&access_token=${token}`);
-            if (profileResp.ok) {
-                report.metaGraph.status = "CONNECTED (Limited Scopes)";
-            } else {
-                const errData = await profileResp.json();
-                throw new Error(errData.error?.message || "Meta Handshake Fail");
+            if (!profileResp.ok) {
+                throw new Error(`Meta API Error: ${profileResp.status} - ${profileResp.statusText}`);
             }
+            report.metaGraph.status = "CONNECTED (Limited Scopes)";
         }
     } catch (err) {
         report.metaGraph.status = "FAIL";
@@ -1837,6 +1850,9 @@ exports.testMetaInsights = onRequest({ region: "europe-west4",
         // 1. Fetch Page Level Insights (24hr window sample)
         const url = `https://graph.facebook.com/v19.0/${pageId}/insights?metric=page_impressions&access_token=${token}`;
         const resp = await fetch(url);
+        if (!resp.ok) {
+            throw new Error(`Meta API Error: ${resp.status} - ${resp.statusText}`);
+        }
         const data = await resp.json();
         
         if (data.error) {
@@ -1850,6 +1866,9 @@ exports.testMetaInsights = onRequest({ region: "europe-west4",
         // 2. Fetch specific Share count (Sample from latest post)
         const postsUrl = `https://graph.facebook.com/v19.0/${pageId}/feed?limit=1&fields=shares,message&access_token=${token}`;
         const postsResp = await fetch(postsUrl);
+        if (!postsResp.ok) {
+            throw new Error(`Meta API Error: ${postsResp.status} - ${postsResp.statusText}`);
+        }
         const postsData = await postsResp.json();
         const latestPost = postsData.data?.[0];
         
