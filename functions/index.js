@@ -1013,7 +1013,6 @@ async function fetchGoogleReviews() {
         }
       } catch (e) {
         console.error(`Could not fetch reviews for ${locationId}:`, e.message);
-        throw e;
       }
     }
 

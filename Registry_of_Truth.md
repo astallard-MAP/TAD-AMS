@@ -63,6 +63,8 @@ Whenever modifications are made to root HTML, CSS, or JS files, a production bui
 ### LAW VII: THE HOLISTIC ERROR BOUNDARY PROTOCOL
 All external HTTP requests (fetch, axios, etc.) across all API integrations (Meta, Google, etc.) must explicitly validate the response status (e.g., `if (!response.ok)`) and throw a descriptive Error containing the HTTP status and text before executing `.json()` or any parsing logic. This prevents catastrophic silent failures or parsing errors (like `SyntaxError`) from HTML error pages.
 
+**The Resilient Loop Protocol:** Any loop iterating over multiple external endpoints, locations, or files MUST NOT use `throw e;` inside its inner catch block unless a total system halt is strictly required. The loop must log the individual error and continue to the next iteration to ensure partial data retrieval succeeds.
+
 ---
 
 ## 3. Master Configuration Settings & Build Standards
