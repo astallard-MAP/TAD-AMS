@@ -1065,7 +1065,7 @@ async function fetchGoogleReviews() {
     const locations = [GBP_LOCATION_ID.value(), "11040427386174604764"];
     
     // 1. Get Account ID
-    const accountsResp = await fetch("https://mybusiness.googleapis.com/v4/accounts", {
+    const accountsResp = await fetch("https://mybusinessaccountmanagement.googleapis.com/v1/accounts", {
       headers: { 'Authorization': `Bearer ${accessToken}` }
     });
     if (!accountsResp.ok) {
@@ -1080,7 +1080,7 @@ async function fetchGoogleReviews() {
     for (const locationId of locations) {
       console.log(`Fetching reviews for location: ${locationId}`);
       try {
-        const url = `https://mybusiness.googleapis.com/v4/accounts/${accountId}/locations/${locationId}/reviews`;
+        const url = `https://mybusinessreviews.googleapis.com/v1/accounts/${accountId}/locations/${locationId}/reviews`;
         const resp = await fetch(url, {
           headers: { 'Authorization': `Bearer ${accessToken}` }
         });
@@ -1122,11 +1122,22 @@ async function publishToGBP(content, imageUrl) {
     ];
     const accessToken = await getGBPAuth();
     
+    // 1. Get Account ID (Required for v4 localPosts)
+    const accountsResp = await fetch("https://mybusinessaccountmanagement.googleapis.com/v1/accounts", {
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+    if (!accountsResp.ok) {
+        throw new Error(`GBP API Error (Accounts): ${accountsResp.status} - ${accountsResp.statusText}`);
+    }
+    const { accounts } = await accountsResp.json();
+    if (!accounts || accounts.length === 0) throw new Error("No GBP accounts found.");
+    const accountId = accounts[0].name.split("/")[1];
+    
     const results = [];
     
     for (const locationId of locations) {
       console.log(`Publishing to GBP location: ${locationId}`);
-      const url = `https://mybusiness.googleapis.com/v4/locations/${locationId}/localPosts`;
+      const url = `https://mybusiness.googleapis.com/v4/accounts/${accountId}/locations/${locationId}/localPosts`;
       
       const postBody = {
         languageCode: "en-GB",

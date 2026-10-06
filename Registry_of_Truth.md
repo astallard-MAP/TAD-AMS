@@ -679,3 +679,18 @@ GATE REPORT: [Phase/Task]
 | :--- | :--- | :--- |
 | `018.08-A` | **Dispatcher Retry Hardening:** Implemented a strict 3-attempt limit for `socialPublishingDispatcher`. Failures now log the exact error message and gracefully mark the post as `FAILED` rather than indefinitely stalling the queue. | `[Completed]` |
 | `018.08-B` | **Registry Harmonization:** Edited `Registry_of_Truth.md` to properly re-index the prior dual 018.06 phases to `018.06a` and `018.06b` to adhere to Ledger Continuity rules without losing historical context. | `[Completed]` |
+
+---
+
+### [PHASE 018.09]: GBP API Modernization (Legacy v4 to Modern)
+- **Objective:** Architecturally cure the `404 Not Found` crashes by migrating Google Business Profile integrations from the deprecated v4 legacy API to the modern, fragmented GBP APIs (Account Management v1, Reviews v1, and Local Posts v4).
+- **Date Logged:** 06 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `018.09-A` | **Ledger Alignment:** Formally document the GBP API modernization plan and endpoints in `Registry_of_Truth.md`. | `[Completed]` |
+| `018.09-B` | **Account Resolution Migration:** Update `fetchGoogleReviews` and `publishToGBP` to resolve the Account ID using `https://mybusinessaccountmanagement.googleapis.com/v1/accounts`. | `[Completed]` |
+| `018.09-C` | **Reviews Endpoint Migration:** Update the review fetch loop to query `https://mybusinessreviews.googleapis.com/v1/accounts/{accountId}/locations/{locationId}/reviews`. | `[Completed]` |
+| `018.09-D` | **Local Posts Endpoint Migration:** Update `publishToGBP` to accurately format the publication URL as `https://mybusiness.googleapis.com/v4/accounts/{accountId}/locations/{locationId}/localPosts` (the legacy `v4/locations/...` path is strictly invalid). | `[Completed]` |
+| `018.09-E` | **Pre-flight Verification:** Execute local Node syntax and MPA build checks to confirm structural stability. | `[Completed]` |
