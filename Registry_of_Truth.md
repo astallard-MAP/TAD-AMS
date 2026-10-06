@@ -536,4 +536,14 @@ GATE REPORT: [Phase/Task]
 | `015-B` | **Slim Fleet File Integrity:** Physically inspected `update-memory.cjs` and `slimFunnel.js`. Confirmed the RegExp replace targeted only the string literal inside `onSchedule` config headers. No asynchronous loops or scopes were elevated to top-level execution context. | `[Completed]` |
 | `015-C` | **Node Version Harmonization (GENKIT Bypass):** Diagnosed that Genkit instances locally initialize background telemetry and credential polling loops if `GENKIT_ENV` is not set to `prod`, which stalls the Firebase CLI discovery process. Injected `process.env.GENKIT_ENV = "prod";` at line 1 of `index.js` to suppress this polling, restoring immediate function discovery. | `[Completed]` |
 
+---
 
+### [PHASE 017]: Forensic PWA Eradication & Fleet-Wide Memory Hardening
+- **Objective:** Structurally eradicate the orphaned Vite PWA Service Worker caching trap causing MPA routing hijacks, and uprate peripheral AI agents that were missing the 2GiB memory limits causing OOM crashes.
+- **Date Logged:** 06 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `017-A` | **PWA Service Worker Eradication:** Root Cause: Orphaned Vite PWA caching trap hijacking `.html` routes. Fixed by injecting `selfDestroying: true` into `vite.config.js` and inserting an aggressive client-side service worker kill-switch at the top of `main.js`. | `[Completed]` |
+| `017-B` | **Fleet-Wide Memory Hardening:** Root Cause: Peripheral AI agents were missing the 2GiB limit uprate from Phase 014. Uprated `dailyMarketAnalysis`, `weeklyPerformanceDigest`, `portalSentinel`, `socialMediaSentinel`, `dailyMobileAudit`, `generateDailySpotlight`, `autonomousSEOGenerator`, and `generateDailyTestimonial` to `memory: "2GiB", timeoutSeconds: 300` in `functions/index.js`. Uprated `seoSubmissionAgent` to `1GiB` and `120s`. | `[Completed]` |

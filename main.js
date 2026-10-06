@@ -17,6 +17,15 @@ import cookiesRaw from './cookies.html?raw';
 import termsRaw from './terms.html?raw';
 import sitemapRaw from './sitemap.html?raw';
 
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+            registration.unregister();
+            console.log("Forensic Audit: Orphaned Service Worker Unregistered.");
+        }
+    });
+}
+
 const policyHTML = {
     '/privacy.html': privacyRaw,
     '/cookies.html': cookiesRaw,
