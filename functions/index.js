@@ -1342,7 +1342,9 @@ async function performSpotlightGeneration() {
 exports.portalSentinel = onSchedule({ region: "europe-west4",
     schedule: "every 2 hours",
     timeZone: "Europe/London",
-    memory: "1GiB"
+    memory: "2GiB",
+    timeoutSeconds: 300,
+    secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"]
 }, async (event) => {
     console.log("Portal Sentinel Audit Initiated...");
     const auditId = `audit-${new Date().toISOString().split('T')[0]}-${Date.now()}`;
@@ -1427,7 +1429,9 @@ exports.portalSentinel = onSchedule({ region: "europe-west4",
 exports.generateDailySpotlight = onSchedule({ region: "europe-west4", 
     schedule: "0 0 * * *", 
     timeZone: "Europe/London", 
-    memory: "1GiB" 
+    memory: "2GiB",
+    timeoutSeconds: 300,
+    secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"]
 }, performSpotlightGeneration);
 
 exports.seoSubmissionAgent = onSchedule({ region: "europe-west4",
@@ -2492,7 +2496,9 @@ async function harvestTopKeywords() {
 exports.autonomousSEOGenerator = onSchedule({ region: "europe-west4",
     schedule: "0 23 * * *", 
     timeZone: "Europe/London",
-    memory: "1GiB"
+    memory: "2GiB",
+    timeoutSeconds: 300,
+    secrets: ["GA4_PROPERTY_ID"]
 }, async (event) => {
     console.log("[WP-SEO] Initiating Autonomous Generation Protocol (SS-KI Upgrade)...");
     

@@ -19,6 +19,8 @@
     "rules": "storage.rules"
   },
   "hosting": {
+    "cleanUrls": false,
+    "trailingSlash": false,
     "public": "dist",
     "ignore": [
       "firebase.json",

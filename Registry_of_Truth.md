@@ -547,3 +547,16 @@ GATE REPORT: [Phase/Task]
 | :--- | :--- | :--- |
 | `017-A` | **PWA Service Worker Eradication:** Root Cause: Orphaned Vite PWA caching trap hijacking `.html` routes. Fixed by injecting `selfDestroying: true` into `vite.config.js` and inserting an aggressive client-side service worker kill-switch at the top of `main.js`. | `[Completed]` |
 | `017-B` | **Fleet-Wide Memory Hardening:** Root Cause: Peripheral AI agents were missing the 2GiB limit uprate from Phase 014. Uprated `dailyMarketAnalysis`, `weeklyPerformanceDigest`, `portalSentinel`, `socialMediaSentinel`, `dailyMobileAudit`, `generateDailySpotlight`, `autonomousSEOGenerator`, and `generateDailyTestimonial` to `memory: "2GiB", timeoutSeconds: 300` in `functions/index.js`. Uprated `seoSubmissionAgent` to `1GiB` and `120s`. | `[Completed]` |
+
+---
+
+### [PHASE 017.5]: Server Routing Rectification & Secret Dependency Injection
+- **Objective:** Rectify Firebase Hosting cleanUrls stripping `.html` extensions breaking MPA routing, and inject missing secrets arrays into `functions/index.js` scheduled agents to cure `invalid_grant` errors.
+- **Date Logged:** 06 October 2026
+- **Status:** `[Completed]` (Manual Re-auth Required by Principal)
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `017.5-A` | **Rectify Firebase Hosting Configuration:** Parsed `firebase.json` and injected `"cleanUrls": false` and `"trailingSlash": false` into the `hosting` configuration block to permanently prevent Firebase from artificially stripping `.html` extensions. | `[Completed]` |
+| `017.5-B` | **Inject Secret Dependencies:** Parsed `functions/index.js` and injected explicit `secrets` arrays into `generateDailySpotlight` (GBP secrets), `portalSentinel` (META & GBP secrets), and `autonomousSEOGenerator` (GA4 secrets). Memory limits of 2GiB were also strictly validated during injection. | `[Completed]` |
+- *Note:* The API failures (`invalid_grant`) require manual re-authentication by the Principal to cycle the Google Business Profile refresh tokens.
