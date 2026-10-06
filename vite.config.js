@@ -1,48 +1,10 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import { VitePWA } from 'vite-plugin-pwa';
+import { mpaDevMiddleware } from './server/vite-plugin-mpa.js';
 
 export default defineConfig({
-  plugins: [
-    VitePWA({
-      selfDestroying: true,
-      registerType: 'autoUpdate',
-      injectRegister: 'auto',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'logo.png'],
-      manifest: {
-        name: 'Cash 4 Houses',
-        short_name: 'C4H',
-        description: 'Fast property sales in South East Essex',
-        theme_color: '#10b981',
-        icons: [
-          {
-            src: 'favicon.png',
-            sizes: '32x32',
-            type: 'image/png'
-          },
-          {
-            src: 'android-chrome-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
-      },
-      workbox: {
-        navigateFallback: null,
-        navigateFallbackDenylist: [/^\/gtag/],
-        globIgnores: ["**/*.html"],
-        runtimeCaching: [
-          {
-            urlPattern: ({ request }) => request.destination === 'document',
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'html-cache-v2',
-            },
-          }
-        ]
-      }
-    })
-  ],
+  appType: 'mpa',
+  plugins: [mpaDevMiddleware()],
   build: {
     rollupOptions: {
       input: {

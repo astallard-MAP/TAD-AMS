@@ -49,7 +49,7 @@ Whenever an instruction is issued by the Principal (Andrew Stallard), work **mus
 3. No task may be marked `[Completed]` without verification of implementation and build validation.
 
 ### LAW III: REGIONAL INTEGRITY & DEPLOYMENT COHERENCE
-All Firebase Cloud Functions v2 and corresponding Firebase Hosting rewrites must strictly reside in **`europe-west4`**. Multi-region divergence without explicit recorded dispensation is strictly prohibited to avoid deployment collisions, routing latency, and 409 conflict errors.
+All Firebase Cloud Functions v2 and the First-Party MPA Runtime Server (App Hosting) must strictly reside in **`europe-west4`**. Multi-region divergence without explicit recorded dispensation is strictly prohibited to avoid deployment collisions, routing latency, and 409 conflict errors. (Legacy Firebase Hosting rewrites are deprecated and superseded by the MPA Runtime Server.)
 
 ### LAW IV: DOCUMENTARY REALISM (THE ANTI-POLISHING RULE)
 Public-facing marketing imagery, social posts, and visual assets must adhere to Hyper-Local Visual Fidelity (HL-VF). Sterile, shiny, high-spec "show home" imagery is prohibited as it alienates distressed sellers. All generated assets must reflect genuine UK streetscapes, lived-in architectural vernacular, and documentary authenticity.
@@ -432,9 +432,9 @@ GATE REPORT: [Phase/Task]
 | :--- | :--- | :--- |
 | `008-A` | **Vite Build Repair (`admin.js`)**: Fixed syntax errors caused by escaped template literals and modernized the `window.toggleKillSwitch` to use Firebase v9 modular `updateDoc` syntax (replacing v8 `.update()`). | `[Completed]` |
 | `008-B` | **Firebase Deploy Repair (`slim/*.js`)**: Identified and fixed incorrect relative path imports. Executed a script to mass-replace `require('./hiveClient')` with `require('../hive/hiveClient')` across all 11 Slim modules. `node functions/index.js` now evaluates without `MODULE_NOT_FOUND`. | `[Completed]` |
-| `008-C` | **SPA Routing Bypass**: Identified that the hosting provider routes `/privacy.html` to `index.html` (standard SPA behavior), breaking normal links. Re-architected `main.js` to use Vite's `?raw` string imports, natively bundling the HTML contents of `privacy.html`, `cookies.html`, `terms.html`, and `sitemap.html` directly into the JavaScript chunk at build time. | `[Completed]` |
+| `008-C` | **SPA Routing Bypass**: Identified that the hosting provider routes `/privacy.html` to `index.html` (standard SPA behavior), breaking normal links. *(Correction 06/10/2026, Phase 018.00: the "hosting provider" behaviour was in fact our own `package.json` `start` script `serve -s dist`, see `018.00-A`.)* Re-architected `main.js` to use Vite's `?raw` string imports, natively bundling the HTML contents of `privacy.html`, `cookies.html`, `terms.html`, and `sitemap.html` directly into the JavaScript chunk at build time. | `[Completed]` |
 | `008-D` | **Zero-Latency Modals**: Intercepted link clicks in the DOM to trigger instantaneous pop-up modals for the Legal Policies and Human Sitemap, removing the need for a network `fetch()` and entirely avoiding the server rewrite conflict. | `[Completed]` |
-| `008-E` | **SEO Compliance Preservation**: Verified that the modal-based `sitemap.html` only affects human navigation, leaving the automated `sitemap.xml` (served via the `serveSitemap` cloud function) completely intact for Google crawlers. | `[Completed]` |
+| `008-E` | **SEO Compliance Preservation**: *(Correction 06/10/2026, Phase 018.00: there is no `serveSitemap` function. The `sitemap.xml` is now served dynamically by the first-party MPA Runtime Server at request time from Firestore `seoPages`.)* | `[Completed]` |
 | `008-F` | **Git Commit & Push**: Safely staged, committed, and pushed all updates to the `main` branch to trigger the CI/CD deployment pipeline. | `[Completed]` |
 
 ---
@@ -507,7 +507,7 @@ GATE REPORT: [Phase/Task]
 | Task ID | Description | Status |
 | :--- | :--- | :--- |
 | `013-A` | **Cloud Functions Memory Limit Increase:** Diagnosed HTTP 500 errors in `slimFunnelAgent` and the Social Post agents. They were exceeding the default 256MiB limit when initializing Vertex AI `imagen-3` models or large Firestore queries. Increased `memory: "512MiB"` for `socialMorningPost`, `socialLunchPost`, `socialEveningPost`, `socialIntelligenceAgent`, `slimFunnelAgent`, and `slimPerfAgent`. | `[Completed]` |
-| `013-B` | **PWA Cache Busting (Quick Links Fix):** Diagnosed that the `dist/sw.js` (Service Worker) was retaining an old SPA fallback configuration in `html-cache`. This caused `NetworkFirst` HTML navigation requests (e.g. clicking Quick Links for `/about.html`) to serve the precached `index.html`. Renamed `cacheName` to `html-cache-v2` in `vite.config.js` to invalidate all clients and strictly enforce MPA static routing. | `[Completed]` |
+| `013-B` | **PWA Cache Busting (Quick Links Fix):** Diagnosed that the `dist/sw.js` (Service Worker) was retaining an old SPA fallback configuration in `html-cache`. This caused `NetworkFirst` HTML navigation requests (e.g. clicking Quick Links for `/about.html`) to serve the precached `index.html`. Renamed `cacheName` to `html-cache-v2` in `vite.config.js` to invalidate all clients and strictly enforce MPA static routing. *(Correction 06/10/2026: symptom only. Root cause was the server-side SPA rewrite, see `018.00-A`.)* | `[Superseded]` |
 
 ---
 
@@ -550,13 +550,30 @@ GATE REPORT: [Phase/Task]
 
 ---
 
-### [PHASE 017.5]: Server Routing Rectification & Secret Dependency Injection
-- **Objective:** Rectify Firebase Hosting cleanUrls stripping `.html` extensions breaking MPA routing, and inject missing secrets arrays into `functions/index.js` scheduled agents to cure `invalid_grant` errors.
-- **Date Logged:** 06 October 2026
-- **Status:** `[Completed]` (Manual Re-auth Required by Principal)
+### [PHASE 017.5 / 018.00]: Server Routing Rectification (Root Cause) & Secret Dependency Injection
+- **Objective:** Rectify MPA routing failure on the live site (Quick Links resolving to the Home Page, `.html` stripped from URLs), and inject missing secrets arrays into `functions/index.js` scheduled agents to cure `invalid_grant` errors.
+- **Date Logged:** 06 October 2026 (018.00 root-cause investigation: 06/10/2026 12:26 BST)
+- **Status:** `[Completed]` (Manual Re-auth Required by Principal; 018.00 fix awaiting App Hosting rollout via GitHub push)
 
 | Task ID | Description | Status |
 | :--- | :--- | :--- |
-| `017.5-A` | **Rectify Firebase Hosting Configuration:** Parsed `firebase.json` and injected `"cleanUrls": false` and `"trailingSlash": false` into the `hosting` configuration block to permanently prevent Firebase from artificially stripping `.html` extensions. | `[Completed]` |
+| `017.5-A` | **Rectify Firebase Hosting Configuration:** Parsed `firebase.json` and injected `"cleanUrls": false` and `"trailingSlash": false` into the `hosting` configuration block. *(Correction, 018.00: no effect. The `hosting` block in `firebase.json` is read only by legacy Firebase Hosting (`firebase deploy`), which is forbidden here. App Hosting ignores it, along with its `headers`/CSP entries.)* | `[Superseded / Ineffective]` |
+| `018.00-A` | **Root Cause Identified (package.json `start`):** App Hosting builds with `npm run build` and serves the site with `npm start`, which was `serve -s dist`. The `-s` (single-page) flag makes `serve` add a catch-all rewrite `** → /index.html` (`node_modules/serve/build/main.js` L537-547). In `serve-handler` (`src/index.js` L282), once any rewrite matches, `findRelated()` checks **only** the rewrite target and skips clean-URL resolution (`/about → about.html`). Separately, `cleanUrls` defaults to true (L256-273), so `/about.html` gets a 301 to `/about` (L121-143). Result: `/about.html` → 301 `/about` → served `index.html`. Every MPA page, and every unknown path, returned the Home Page with HTTP 200. Confirmed live (`server: envoy`; `/about`, `/contact` and `/does-not-exist` all returned the same 22,577-byte body) and reproduced locally. Vite dev/preview serve MPA inputs natively, which is why the local environment never showed the fault. | `[Completed]` |
+| `018.00-B` | **Fix Applied:** `package.json` `"start": "serve -s dist"` → `"start": "serve dist"`. Local A/B check against `dist/`: `/about`, `/locations`, `/contact` and `/get-offer` now return their own pages; `/about.html` returns a 301 to `/about`, which serves the correct page; unknown paths return the real `404.html` with HTTP 404. URLs stay extensionless (clean URLs, SEO-neutral and compatible with 301s browsers have already cached). | `[Completed]` |
+| `018.00-C` | **Symptom Mask Identified:** The `main.js` `?raw` policy modals (`008-C/D`) intercept `/privacy.html`, `/cookies.html`, `/terms.html` and `/sitemap.html` on the client, so those footer links never reached the server. That is why they appeared to work while the Quick Links failed. Principal approved removal on 06/10/2026; actioned under `018.00-I`. | `[Completed]` |
+| `018.00-D` | **Latent Defect, Archive Stub:** `archive.html` is committed to git as a 53-byte stub (`Archive Stub`). `generate-static-content.js` only regenerates it when `GOOGLE_APPLICATION_CREDENTIALS`, `FIREBASE_APP_HOSTING` or `CI` is set during the build. Whether the App Hosting build sets any of these is UNVERIFIED. If none is set, `/archive` will serve the stub. Actioned under `018.00-G`. | `[Completed]` |
+| `018.00-E` | **Latent Defect, SEO Pages Wiped:** `generate-static-content.js` writes the dynamic SEO pages and `sitemap.xml` into `dist/` **before** `vite build` runs. Vite's default `emptyOutDir: true` then deletes `dist/`, so those files never reach production. Also, because content was fixed at build time, the nightly 23:00 article could only go live after a manual GitHub push. Actioned under `018.00-G`. | `[Completed]` |
+
+**018.00 Plan of Action (Principal instruction 06/10/2026 12:32 BST: "fix all problems; full MPA; no SPA contamination"):** Replace the third-party static server with a first-party MPA runtime server for App Hosting. Serve Firestore-backed content (the archive, daily articles and `sitemap.xml`) at request time through the firebase-admin SDK (`getAdminFirestore()`). Harden Vite as a strict MPA. Remove every SPA, PWA and legacy-Hosting artefact. Verify with a production build and local HTTP tests.
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `018.00-F` | **First-Party MPA Runtime Server:** Create `server/index.js` (Node built-ins only). It does explicit file-to-route resolution with no catch-all rewrite, never strips `.html`, still resolves extensionless URLs (so 301s browsers have already cached keep working), returns a real 404 status with `404.html`, and sets security and cache headers. `start` → `node server/index.js`. Remove the `serve` dependency. | `[Completed]` |
+| `018.00-G` | **Runtime Firestore Content (resolves D and E):** Create `server/firebase-admin.js` (`getAdminFirestore()`) and `server/dynamic-content.js`. Serve `/archive.html`, `/cashforhousesDDMMYYYY.html` and `/sitemap.xml` from `seoPages` at request time, with a 5-minute in-memory cache. Turn `archive.html` into a committed MPA template. Retire `generate-static-content.js`; `build` → `vite build`. | `[Completed]` |
+| `018.00-H` | **Vite Strict MPA:** Set `appType: 'mpa'` (Vite's default is `'spa'`, which adds a history fallback in dev and preview). Auto-discover every root `*.html` as a Rollup input. Remove `vite-plugin-pwa`. Add `public/sw.js` as a one-way decommission kill-switch for browsers still running the old service worker. Add a dev-only middleware so `npm run dev` matches production for the dynamic routes. | `[Completed]` |
+| `018.00-I` | **main.js De-SPA:** Remove the `?raw` imports, the `policyHTML` map and the policy-modal interception, so that legal and sitemap links navigate as normal MPA documents. | `[Completed]` |
+| `018.00-J` | **Legacy Hosting Eradication:** Remove the `hosting` block from `firebase.json` and the tracked `.firebase/hosting.*.cache`. Replace the Firebase-CLI boilerplate `404.html` with a branded page. Correct the SPA-era `/#anchor` entries in `sitemap.html` to real MPA pages. | `[Completed]` |
+| `018.00-K` | **Documentation Alignment:** Correct `README.md`, `WEBSITE_OPERATIONS_BRIEF.md`, Registry Law III and `008-E` (no `serveSitemap` function exists anywhere in the codebase). | `[Completed]` |
+| `018.00-L` | **Verification:** Run a production build (`npm run build --concurrency=1`), then test HTTP routing locally against the production server. | `[Completed]` |
 | `017.5-B` | **Inject Secret Dependencies:** Parsed `functions/index.js` and injected explicit `secrets` arrays into `generateDailySpotlight` (GBP secrets), `portalSentinel` (META & GBP secrets), and `autonomousSEOGenerator` (GA4 secrets). Memory limits of 2GiB were also strictly validated during injection. | `[Completed]` |
 - *Note:* The API failures (`invalid_grant`) require manual re-authentication by the Principal to cycle the Google Business Profile refresh tokens.

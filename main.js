@@ -12,10 +12,7 @@ import {
 } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 
-import privacyRaw from './privacy.html?raw';
-import cookiesRaw from './cookies.html?raw';
-import termsRaw from './terms.html?raw';
-import sitemapRaw from './sitemap.html?raw';
+
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then((registrations) => {
@@ -26,12 +23,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-const policyHTML = {
-    '/privacy.html': privacyRaw,
-    '/cookies.html': cookiesRaw,
-    '/terms.html': termsRaw,
-    '/sitemap.html': sitemapRaw
-};
+
 
 const ADMIN_UID = "Djh7uHK2yZYHC4Ta4xhbguaCJVl1";
 
@@ -335,104 +327,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// --- POLICY MODAL LOGIC ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Inject modal CSS dynamically
-    const style = document.createElement('style');
-    style.innerHTML = `
-        .policy-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px);
-            z-index: 999999; display: flex; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-        }
-        .policy-modal-overlay.active { opacity: 1; pointer-events: all; }
-        .policy-modal-container {
-            background: #fff; width: 90%; max-width: 800px; max-height: 90vh;
-            border-radius: 12px; display: flex; flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            transform: translateY(20px); transition: transform 0.3s ease;
-        }
-        .policy-modal-overlay.active .policy-modal-container { transform: translateY(0); }
-        .policy-modal-content {
-            padding: 2rem; overflow-y: auto; flex-grow: 1;
-            font-family: inherit; line-height: 1.6; color: #1e293b;
-        }
-        .policy-modal-footer {
-            padding: 1.5rem 2rem; border-top: 1px solid #e2e8f0; background: #f8fafc;
-            border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
-            display: flex; justify-content: flex-end;
-        }
-        .policy-modal-btn {
-            background: #10b981; color: #fff; border: none; padding: 0.75rem 2rem;
-            border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s;
-            font-size: 1rem;
-        }
-        .policy-modal-btn:hover { background: #059669; }
-        .policy-content-body h1 { font-family: 'Outfit', sans-serif; font-size: 2rem; margin-bottom: 1.5rem; color: #0f172a; }
-        .policy-content-body h2 { font-size: 1.3rem; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #0f172a; }
-        .policy-content-body p { margin-bottom: 1rem; }
-        .policy-content-body ul { margin-bottom: 1rem; padding-left: 1.5rem; }
-        .policy-content-body li { margin-bottom: 0.5rem; }
-        .policy-content-body table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; text-align: left; }
-        .policy-content-body th, .policy-content-body td { border-bottom: 1px solid #e2e8f0; padding: 8px; }
-        /* Add some basic scrollbar styling for the modal */
-        .policy-modal-content::-webkit-scrollbar { width: 8px; }
-        .policy-modal-content::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
-        .policy-modal-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .policy-modal-content::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    `;
-    document.head.appendChild(style);
 
-    const overlay = document.createElement('div');
-    overlay.className = 'policy-modal-overlay';
-    overlay.innerHTML = `
-        <div class="policy-modal-container">
-            <div class="policy-modal-content">
-                <div class="policy-content-body" id="policy-modal-body">Loading...</div>
-            </div>
-            <div class="policy-modal-footer">
-                <button class="policy-modal-btn" id="policy-modal-agree">I Agree & Close</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(overlay);
-
-    const closeBtn = document.getElementById('policy-modal-agree');
-    const modalBody = document.getElementById('policy-modal-body');
-
-    closeBtn.addEventListener('click', () => {
-        overlay.classList.remove('active');
-    });
-
-    const links = document.querySelectorAll('a[href="/privacy.html"], a[href="/cookies.html"], a[href="/terms.html"], a[href="/sitemap.html"]');
-    links.forEach(link => {
-        link.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const url = link.getAttribute('href');
-            overlay.classList.add('active');
-            
-            const rawText = policyHTML[url];
-            if (rawText) {
-                try {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(rawText, 'text/html');
-                    const mainContent = doc.querySelector('.policy-content') || doc.querySelector('.sitemap-container');
-                    if (mainContent) {
-                        modalBody.innerHTML = mainContent.innerHTML;
-                    } else {
-                        modalBody.innerHTML = '<p>Failed to extract content. Please try again later.</p>';
-                    }
-                } catch (err) {
-                    console.error("Failed to parse content", err);
-                    modalBody.innerHTML = '<p>Failed to parse content. Please try again later.</p>';
-                }
-            } else {
-                modalBody.innerHTML = '<p>Content not found.</p>';
-            }
-        });
-    });
-});
 
 // Mobile Menu Toggle Logic
 document.addEventListener('DOMContentLoaded', () => {

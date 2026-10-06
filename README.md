@@ -16,16 +16,16 @@ A premium, AI-powered platform for distressed property sellers in London, Hertfo
 - **SMTP**: Microsoft Office 365 Exchange
 
 ## 📦 Deployment
-The project is configured for Firebase Hosting with the `dist` directory.
+The project is configured for Firebase App Hosting using a custom Node.js MPA runtime server.
 
 ### Production Build:
 ```bash
 npm run build
 ```
 
-### Deploy to Live:
+### Local Production Server:
 ```bash
-firebase deploy
+npm start
 ```
 
 ---

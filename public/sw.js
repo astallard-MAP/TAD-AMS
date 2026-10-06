@@ -1,0 +1,20 @@
+// Decommission service worker to undo PWA caching trap
+self.addEventListener('install', (e) => {
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', (e) => {
+    e.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    return caches.delete(cacheName);
+                })
+            );
+        }).then(() => {
+            return self.clients.claim();
+        }).then(() => {
+            return self.registration.unregister();
+        })
+    );
+});

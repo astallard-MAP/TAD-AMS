@@ -969,6 +969,9 @@ async function fetchGoogleReviews() {
     const accountsResp = await fetch("https://mybusiness.googleapis.com/v4/accounts", {
       headers: { 'Authorization': `Bearer ${accessToken}` }
     });
+    if (!accountsResp.ok) {
+        throw new Error(`GBP API Error: ${accountsResp.status} - ${accountsResp.statusText}`);
+    }
     const { accounts } = await accountsResp.json();
     if (!accounts || accounts.length === 0) throw new Error("No GBP accounts found.");
     const accountId = accounts[0].name.split("/")[1];
@@ -983,19 +986,22 @@ async function fetchGoogleReviews() {
           headers: { 'Authorization': `Bearer ${accessToken}` }
         });
         
-        if (resp.ok) {
-          const data = await resp.json();
-          if (data.reviews) {
-            const formatted = data.reviews.map(r => ({
-              ...r,
-              locationId: locationId,
-              source: locationId === "11040427386174604764" ? "London Rd" : "Southchurch Rd"
-            }));
-            allReviews.push(...formatted);
-          }
+        if (!resp.ok) {
+            throw new Error(`GBP API Error: ${resp.status} - ${resp.statusText}`);
+        }
+        
+        const data = await resp.json();
+        if (data.reviews) {
+          const formatted = data.reviews.map(r => ({
+            ...r,
+            locationId: locationId,
+            source: locationId === "11040427386174604764" ? "London Rd" : "Southchurch Rd"
+          }));
+          allReviews.push(...formatted);
         }
       } catch (e) {
-        console.warn(`Could not fetch reviews for ${locationId}:`, e.message);
+        console.error(`Could not fetch reviews for ${locationId}:`, e.message);
+        throw e;
       }
     }
 
@@ -1005,7 +1011,7 @@ async function fetchGoogleReviews() {
     return allReviews;
   } catch (error) {
     console.error("Review Fetch Error:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -1333,7 +1339,7 @@ async function performSpotlightGeneration() {
 
     } catch (error) {
         console.error("Spotlight Helper Error:", error);
-        throw error;
+        throw new HttpsError("internal", "Spotlight Generation Failed");
     }
 }
 

@@ -39,9 +39,9 @@ The platform is driven by an advanced, multi-agent AI framework known as the "SL
 
 The entire application is engineered on a serverless architecture within the **Google Cloud / Firebase Ecosystem**:
 
-1. **Frontend Delivery (Firebase Hosting / App Hosting)**: 
-   - Configured via `firebase.json` and `apphosting.yaml` (minInstances: 0, maxInstances: 10, concurrency: 80). 
-   - The Vite-bundled Single Page Application (`dist/` directory) is served instantly via a global CDN.
+1. **Frontend Delivery (Firebase App Hosting)**: 
+   - Configured via `apphosting.yaml` (minInstances: 0, maxInstances: 10, concurrency: 80). 
+   - Uses a custom first-party MPA Runtime Server (`server/index.js`) to serve the Vite-bundled static HTML pages while intercepting dynamic requests like daily SEO articles and the sitemap.
 2. **Backend Compute (Cloud Functions for Firebase)**:
    - Serverless Node.js functions (in `functions/`) handle AI agents, API integrations, and webhook events, scaling automatically with traffic.
 3. **Real-time Database (Firestore)**:
