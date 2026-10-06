@@ -629,7 +629,21 @@ GATE REPORT: [Phase/Task]
 
 ---
 
-### [PHASE 018.06]: Decoupled Event-Driven Pipeline & Jitter Generation
+### [PHASE 018.06a]: Non-Blocking GBP Reviews & Resilient Meta Forensics
+- **Objective:** Isolate GBP location reviews with non-blocking fallback and ensure resilient Meta insights metrics with legacy photo ID handling.
+- **Date Logged:** 06 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `018.06-1` | **Ledger Update:** Update the Ledger (Registry_of_Truth.md) and Genkit deprecation deferral. | `[Completed]` |
+| `018.06-2` | **Non-Blocking GBP Review Isolation:** Isolate GBP location reviews with non-blocking fallback in `fetchGoogleReviews`. | `[Completed]` |
+| `018.06-3` | **Resilient Meta Metrics Handling:** Resilient Meta insights metrics with legacy photo ID handling in `runSocialIntelligenceForensics`. | `[Completed]` |
+| `018.06-4` | **Update Task Statuses:** Mark Tasks 2 and 3 as `[Completed]` in the Phase 018.06 block. | `[Completed]` |
+
+---
+
+### [PHASE 018.06b]: Decoupled Event-Driven Pipeline & Jitter Generation
 - **Objective:** Restructure the social media publishing pipeline to introduce a 60-minute window jitter (-30 to +30 minutes) and decouple AI text generation from AI image generation for resilience.
 - **Date Logged:** 06 October 2026
 - **Status:** `[Completed]`
@@ -653,3 +667,15 @@ GATE REPORT: [Phase/Task]
 | `018.07-A` | **Dispatcher Composite Index:** Identified and rectified a fatal missing index. Added `socialPosts` composite index (`status` ASC, `targetPublishTime` ASC) to `firestore.indexes.json` to prevent the Dispatcher from crashing on its compound query. | `[Completed]` |
 | `018.07-B` | **Image Library Forensics Index:** Identified and rectified a historical missing index for `imageLibrary` (`imageUrl` ASC, `isAI` ASC, `timestamp` ASC). This omission was silently failing the 30-day duplication check. | `[Completed]` |
 | `018.07-C` | **Storage Rule Security Audit:** Discovered that Vertex AI generated assets were being saved to `/social_images/` without an explicit public read rule, risking broken images in production if ACLs were restricted. Added explicit `match /social_images/{allPaths=**}` rule to `storage.rules`. | `[Completed]` |
+
+---
+
+### [PHASE 018.08]: Dispatcher Retry Hardening & Pipeline Harmonization
+- **Objective:** Secure the `socialPublishingDispatcher` against infinite retry loops from API failures and formally harmonize the dual Phase 018.06 entries into 018.06a and 018.06b.
+- **Date Logged:** 06 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `018.08-A` | **Dispatcher Retry Hardening:** Implemented a strict 3-attempt limit for `socialPublishingDispatcher`. Failures now log the exact error message and gracefully mark the post as `FAILED` rather than indefinitely stalling the queue. | `[Completed]` |
+| `018.08-B` | **Registry Harmonization:** Edited `Registry_of_Truth.md` to properly re-index the prior dual 018.06 phases to `018.06a` and `018.06b` to adhere to Ledger Continuity rules without losing historical context. | `[Completed]` |

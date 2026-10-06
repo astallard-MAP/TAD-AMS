@@ -555,14 +555,25 @@ exports.socialPublishingDispatcher = onSchedule({
         
     for (const doc of snap.docs) {
         const post = doc.data();
-        console.log(`[DISPATCHER] Target hit! Publishing post ${doc.id}`);
+        const currentAttempts = (post.publishAttempts || 0) + 1;
+        console.log(`[DISPATCHER] Target hit! Publishing post ${doc.id} (Attempt ${currentAttempts})`);
         try {
             await publishToMetaInternal(doc.id);
             try { await publishToGBP(post.content, post.imageUrl); } catch(e) { console.error("GBP dispatch failed", e.message); }
             
-            await doc.ref.update({ status: "PUBLISHED" });
+            await doc.ref.update({ 
+                status: "PUBLISHED", 
+                published: true, 
+                publishedAt: admin.firestore.FieldValue.serverTimestamp() 
+            });
         } catch (e) {
-            console.error(`[DISPATCHER] Publish fail ${doc.id}:`, e);
+            if (currentAttempts >= 3) {
+                console.error(`[DISPATCHER] Max attempts reached for ${doc.id}. Marking FAILED.`);
+                await doc.ref.update({ status: "FAILED", publishAttempts: currentAttempts, lastError: e.message });
+            } else {
+                console.warn(`[DISPATCHER] Publish attempt ${currentAttempts} failed for ${doc.id}. Will retry.`);
+                await doc.ref.update({ publishAttempts: currentAttempts, lastError: e.message });
+            }
         }
     }
 });
@@ -1075,7 +1086,8 @@ async function fetchGoogleReviews() {
         });
         
         if (!resp.ok) {
-            throw new Error(`GBP API Error: ${resp.status} - ${resp.statusText}`);
+            console.warn(`GBP Reviews Warning for ${locationId}: HTTP ${resp.status}`);
+            continue;
         }
         
         const data = await resp.json();
@@ -1098,7 +1110,7 @@ async function fetchGoogleReviews() {
     return allReviews;
   } catch (error) {
     console.error("Review Fetch Error:", error);
-    throw error;
+    return [];
   }
 }
 
@@ -2113,19 +2125,22 @@ async function runSocialIntelligenceForensics() {
         // A. Meta Data (FB/IG)
         if (p.fbPostId) {
             try {
-                const url = `https://graph.facebook.com/v19.0/${p.fbPostId}/insights?metric=post_impressions_unique,post_engaged_users&access_token=${metaToken}`;
+                const url = `https://graph.facebook.com/v19.0/${p.fbPostId}/insights?metric=post_impressions,post_clicks&access_token=${metaToken}`;
                 const resp = await fetch(url);
                 if (!resp.ok) {
                     let errData;
                     const errText = await resp.text();
                     try { errData = JSON.parse(errText); }
                     catch (e) { errData = { error: { message: `HTTP ${resp.status}: ${errText.substring(0, 100)}...` } }; }
-                    throw new Error(errData.error?.message || "Meta Insights Fail");
+                    console.warn(`Meta Metrics Warning for ${p.fbPostId}:`, errData.error?.message || "Meta Insights Fail");
+                    pStats.views = 0;
+                    pStats.clicks = 0;
+                    continue;
                 }
                 const data = await resp.json();
                 if (data.data) {
-                    pStats.views = data.data.find(m => m.name === 'post_impressions_unique')?.values?.[0]?.value || 0;
-                    pStats.clicks = data.data.find(m => m.name === 'post_engaged_users')?.values?.[0]?.value || 0;
+                    pStats.views = data.data.find(m => m.name === 'post_impressions')?.values?.[0]?.value || 0;
+                    pStats.clicks = data.data.find(m => m.name === 'post_clicks')?.values?.[0]?.value || 0;
                 }
                 
                 // Get Shares & Likes via fields
