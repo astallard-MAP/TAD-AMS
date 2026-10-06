@@ -39,6 +39,23 @@
         { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "sendAt", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "socialPosts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "targetPublishTime", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "imageLibrary",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "imageUrl", "order": "ASCENDING" },
+        { "fieldPath": "isAI", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

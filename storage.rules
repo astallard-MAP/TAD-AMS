@@ -28,6 +28,12 @@ service firebase.storage {
       allow write: if isAdmin();
     }
 
+    // SOCIAL MEDIA ASSETS
+    match /social_images/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // ADMIN OVERRIDE
     match /{allPaths=**} {
       allow read, write: if isAdmin();

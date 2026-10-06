@@ -626,3 +626,30 @@ GATE REPORT: [Phase/Task]
 | `018.05-A` | **Rectify Email Secret Dependencies:** Injected `GMAIL_APP_PASSWORD` into `weeklyPerformanceDigest` and `manualWeeklyDigest` secrets arrays. | `[Completed]` |
 | `018.05-B` | **Rectify Meta Post ID Storage:** Stored `fbResult.post_id` in `publishToMetaInternal` to allow feed-level insights without triggering Error #100. | `[Completed]` |
 | `018.05-C` | **Error Transparency:** Replaced generic `HttpsError` with standard Node `Error` and detailed stack logging in `performSpotlightGeneration`. | `[Completed]` |
+
+---
+
+### [PHASE 018.06]: Decoupled Event-Driven Pipeline & Jitter Generation
+- **Objective:** Restructure the social media publishing pipeline to introduce a 60-minute window jitter (-30 to +30 minutes) and decouple AI text generation from AI image generation for resilience.
+- **Date Logged:** 06 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `018.06-A` | **Jitter Engine Implementation:** Created `calculateJitterOffset` to randomly select a minute offset that has not been used in the prior 9 days. | `[Completed]` |
+| `018.06-B` | **The Content Generator:** Refactored `generateSocialContent` to run 35 minutes prior to the target hour, compute the target jitter time, and flag the post as `AWAITING_MEDIA`. | `[Completed]` |
+| `018.06-C` | **The Visual Studio:** Created `onSocialPostCreated` to listen asynchronously for new posts, trigger Vertex AI Imagen, and transition status to `READY_TO_PUBLISH`. | `[Completed]` |
+| `018.06-D` | **The Dispatcher:** Implemented a 2-minute pulse cron job `socialPublishingDispatcher` that pushes content to Meta/GBP only once the exact `targetPublishTime` is met. | `[Completed]` |
+
+---
+
+### [PHASE 018.07]: Critical Infrastructure Verification (Indexes & Storage)
+- **Objective:** Independently verify that the architectural changes in Phase 018.06 (and historical components) are supported by the foundational GCP/Firebase infrastructure (Firestore Indexes, Storage Rules). Do not assume. Verify.
+- **Date Logged:** 06 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `018.07-A` | **Dispatcher Composite Index:** Identified and rectified a fatal missing index. Added `socialPosts` composite index (`status` ASC, `targetPublishTime` ASC) to `firestore.indexes.json` to prevent the Dispatcher from crashing on its compound query. | `[Completed]` |
+| `018.07-B` | **Image Library Forensics Index:** Identified and rectified a historical missing index for `imageLibrary` (`imageUrl` ASC, `isAI` ASC, `timestamp` ASC). This omission was silently failing the 30-day duplication check. | `[Completed]` |
+| `018.07-C` | **Storage Rule Security Audit:** Discovered that Vertex AI generated assets were being saved to `/social_images/` without an explicit public read rule, risking broken images in production if ACLs were restricted. Added explicit `match /social_images/{allPaths=**}` rule to `storage.rules`. | `[Completed]` |

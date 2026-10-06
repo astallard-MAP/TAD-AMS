@@ -353,16 +353,42 @@ async function getActiveGSRLocation() {
     return nextLocation;
 }
 
-async function generateSocialPost(timeOfDay) {
+async function calculateJitterOffset(timeOfDay) {
+    const strategyRef = admin.firestore().collection("systemState").doc("jitterStrategy");
+    let doc = await strategyRef.get();
+    let history = [];
+    if (doc.exists && doc.data().history) {
+        history = doc.data().history;
+    }
+    
+    const forbiddenMinutes = history.map(h => h.minute);
+    let candidates = [];
+    
+    for (let offset = -30; offset <= 30; offset++) {
+        const absoluteMinute = (60 + offset) % 60;
+        if (!forbiddenMinutes.includes(absoluteMinute)) {
+            candidates.push({ offset, minute: absoluteMinute });
+        }
+    }
+    
+    if (candidates.length === 0) candidates.push({ offset: 0, minute: 0 });
+    
+    const choice = candidates[Math.floor(Math.random() * candidates.length)];
+    history.push({ minute: choice.minute, timestamp: Date.now() });
+    
+    const nineDaysAgo = Date.now() - (9 * 24 * 60 * 60 * 1000);
+    history = history.filter(h => h.timestamp > nineDaysAgo);
+    
+    await strategyRef.set({ history });
+    return choice.offset;
+}
+
+async function generateSocialContent(timeOfDay, targetHour) {
   const town = await getActiveGSRLocation();
   
-  // 1. Fetch Market & Local News Context
   let newsContext = "";
   try {
-    const feeds = [
-      "https://www.propertyindustryeye.com/feed/",
-      "https://www.mortgagestrategy.co.uk/feed/"
-    ];
+    const feeds = ["https://www.propertyindustryeye.com/feed/", "https://www.mortgagestrategy.co.uk/feed/"];
     let newsItems = [];
     for (const url of feeds) {
       const feed = await parser.parseURL(url);
@@ -371,7 +397,6 @@ async function generateSocialPost(timeOfDay) {
     newsContext = newsItems.join(". ");
   } catch (e) { console.warn("News Context Fail"); }
 
-  // --- INTEGRATED STRATEGIC INTELLIGENCE (GEO-AWARE) ---
   const strategySnap = await db.collection("socialStrategy").doc("latest").get();
   let strategicInjections = "";
   if (strategySnap.exists) {
@@ -393,10 +418,6 @@ async function generateSocialPost(timeOfDay) {
       `;
   }
 
-  // Generate Shortened Tracking Link
-  const rawUrl = `Https://cash4houses.co.uk?utm_source=social&utm_medium=${timeOfDay.toLowerCase()}_post&utm_campaign=essex_outreach&utm_content=${town.toLowerCase().replace(/\s+/g, '_')}`;
-  const shortUrl = await shortenUrl(rawUrl);
-
   const prompt = `
     ROLE: High-Conversion Copywriter & 'South East Essex Social Media Agent' for Cash 4 Houses.
     ETHEREAL PERSONA: "The Warm Blanket" - Empathetic, professional, and a lifeline for those under pressure.
@@ -410,13 +431,13 @@ async function generateSocialPost(timeOfDay) {
     
     STRICT RULES (NO EXCEPTIONS):
     1. WORD LIMIT: Maximum 80 words. Every word must earn its place.
-    2. NO INTRODUCTIONS: Do NOT start with "In today's market", "Are you looking to...", or "At Cash 4 Houses...". Start DIRECTLY with a pain point (Broken Chain, Probate, Divorce, Financial Distress).
+    2. NO INTRODUCTIONS: Do NOT start with "In today's market". Start DIRECTLY with a pain point.
     3. TONE: Empathetic, professional, and urgent.
-    4. STYLE: "Copywriting" (selling), not "Content Writing" (educating). Use British English (e.g., 'flats' instead of 'apartments').
+    4. STYLE: "Copywriting" (selling), not "Content Writing" (educating). Use British English.
     5. HEADLINE: A scroll-stopping headline centered on a problem.
-    6. SCAN-ABILITY: Exactly 3 bullet points (using emojis like ✅ or •) to list benefits (e.g., Cash payment, No fees, Any condition).
+    6. SCAN-ABILITY: Exactly 3 bullet points.
     7. PSYCHOLOGICAL TRIGGER: Explicitly use the phrase "We Buy As-Is" and mention "no repairs or cleaning needed".
-    8. MARKET CONTEXT: Sellers in 2026 prioritize "certainty" and "speed" over "top price" due to market competition.
+    8. MARKET CONTEXT: Sellers in 2026 prioritize "certainty" and "speed".
     9. CALL TO ACTION: One clear CTA pointing to Https://cash4houses.co.uk.
     
     OUTPUT FORMAT:
@@ -433,69 +454,117 @@ async function generateSocialPost(timeOfDay) {
 
   try {
     const { text } = await ai.generate({ model: 'vertexai/gemini-2.5-flash', prompt: prompt });
-    const imageUrl = await generateSocialImage(town, newsContext, "Social Post");
     
-    const docRef = await db.collection("socialPosts").add({ 
+    const offsetMinutes = await calculateJitterOffset(timeOfDay);
+    
+    // Cron runs at 25 mins past the hour (e.g. 08:25). Adding 35 mins sets base time to EXACTLY the target hour (09:00).
+    const targetTime = new Date(Date.now() + (35 * 60000) + (offsetMinutes * 60000));
+    
+    await db.collection("socialPosts").add({ 
       content: text, 
-      imageUrl: imageUrl,
       scheduledTime: timeOfDay, 
       town: town, 
-      timestamp: admin.firestore.FieldValue.serverTimestamp(), 
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      targetPublishTime: admin.firestore.Timestamp.fromDate(targetTime),
+      status: "AWAITING_MEDIA",
       published: false 
     });
 
-    // --- AGENTIC AUTOMATION: AUTO-PUBLISH TO ALL CHANNELS ---
-    console.log(`[AGENT] Auto-publishing post ${docRef.id} to Meta and GBP...`);
-    
-    // 1. Publish to Meta (FB & IG)
-    try {
-      await publishToMetaInternal(docRef.id);
-    } catch (metaErr) {
-      console.error(`[AGENT] Meta auto-publish failed for ${docRef.id}:`, metaErr.message);
-    }
-
-    // 2. Publish to GBP (Dual Locations)
-    try {
-      await publishToGBP(text, imageUrl);
-    } catch (gbpErr) {
-      console.error(`[AGENT] GBP auto-publish failed for ${docRef.id}:`, gbpErr.message);
-    }
-
+    console.log(`[CONTENT AGENT] Generated ${timeOfDay} content. Target publish time: ${targetTime.toISOString()}`);
     return text;
   } catch (error) {
-    console.error("AI Error (Social):", error);
+    console.error("AI Error (Social Content):", error);
     return "Social content generation failed.";
   }
 }
 
+
+// --- DECOUPLED SOCIAL MEDIA PUBLISHING ENGINE ---
+
+// 1. Content Generators (Runs 35 minutes before target hour to allow jitter buffer)
 exports.socialMorningPost = onSchedule({ region: "europe-west4", 
-  schedule: "0 9 * * *", 
+  schedule: "25 8 * * *", 
   timeZone: "Europe/London", 
   memory: "2GiB",
   timeoutSeconds: 300,
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
 }, async (event) => { 
-  try { await generateSocialPost("Morning"); } catch (error) { console.error("socialMorningPost error:", error); } 
+  try { await generateSocialContent("Morning", 9); } catch (error) { console.error("socialMorningPost error:", error); } 
 });
 
 exports.socialLunchPost = onSchedule({ region: "europe-west4", 
-  schedule: "0 12 * * *", 
+  schedule: "25 11 * * *", 
   timeZone: "Europe/London", 
   memory: "2GiB",
   timeoutSeconds: 300,
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
 }, async (event) => { 
-  try { await generateSocialPost("Lunch"); } catch (error) { console.error("socialLunchPost error:", error); } 
+  try { await generateSocialContent("Lunch", 12); } catch (error) { console.error("socialLunchPost error:", error); } 
 });
 
 exports.socialEveningPost = onSchedule({ region: "europe-west4", 
-  schedule: "0 18 * * *", 
+  schedule: "25 17 * * *", 
   timeZone: "Europe/London", 
   memory: "2GiB",
   timeoutSeconds: 300,
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
 }, async (event) => { 
-  try { await generateSocialPost("Evening"); } catch (error) { console.error("socialEveningPost error:", error); } 
+  try { await generateSocialContent("Evening", 18); } catch (error) { console.error("socialEveningPost error:", error); } 
+});
+
+// 2. The Visual Studio (Event Trigger for Image Generation)
+exports.onSocialPostCreated = onDocumentCreated({
+    document: "socialPosts/{postId}",
+    region: "europe-west4",
+    memory: "2GiB",
+    timeoutSeconds: 540, // 9 minute generous timeout for image gen
+    secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"]
+}, async (event) => {
+    const snap = event.data;
+    if (!snap) return;
+    const post = snap.data();
+    
+    if (post.status !== "AWAITING_MEDIA") return;
+    
+    console.log(`[VISUAL STUDIO] Generating image for post ${event.params.postId}...`);
+    try {
+        const imageUrl = await generateSocialImage(post.town, post.content, "Social Post");
+        await snap.ref.update({
+            imageUrl: imageUrl,
+            status: "READY_TO_PUBLISH"
+        });
+        console.log(`[VISUAL STUDIO] Image generated and attached to ${event.params.postId}.`);
+    } catch (error) {
+        console.error(`[VISUAL STUDIO] Failed to generate image for ${event.params.postId}:`, error);
+    }
+});
+
+// 3. The Dispatcher (Sweeps and Publishes based on target time)
+exports.socialPublishingDispatcher = onSchedule({
+    region: "europe-west4",
+    schedule: "*/2 * * * *", // Every 2 minutes for precision
+    timeZone: "Europe/London",
+    secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"]
+}, async (event) => {
+    console.log("[DISPATCHER] Sweeping for ready posts...");
+    const now = admin.firestore.Timestamp.now();
+    const snap = await db.collection("socialPosts")
+        .where("status", "==", "READY_TO_PUBLISH")
+        .where("targetPublishTime", "<=", now)
+        .get();
+        
+    for (const doc of snap.docs) {
+        const post = doc.data();
+        console.log(`[DISPATCHER] Target hit! Publishing post ${doc.id}`);
+        try {
+            await publishToMetaInternal(doc.id);
+            try { await publishToGBP(post.content, post.imageUrl); } catch(e) { console.error("GBP dispatch failed", e.message); }
+            
+            await doc.ref.update({ status: "PUBLISHED" });
+        } catch (e) {
+            console.error(`[DISPATCHER] Publish fail ${doc.id}:`, e);
+        }
+    }
 });
 
 // --- MARKET NEWS SUITE ---
@@ -1135,7 +1204,9 @@ exports.gbpLunchPost = onSchedule({ region: "europe-west4",
     
     if (!postsSnap.empty) {
       const post = postsSnap.docs[0].data();
-      await publishToGBP(post.content, post.imageUrl);
+      if (post.published === true && post.imageUrl) {
+        await publishToGBP(post.content, post.imageUrl);
+      }
     }
   } catch (err) {
     console.error("[GBP Agent] Lunch GBP post failed:", err.message);
@@ -1156,7 +1227,9 @@ exports.gbpEveningPost = onSchedule({ region: "europe-west4",
     
     if (!postsSnap.empty) {
       const post = postsSnap.docs[0].data();
-      await publishToGBP(post.content, post.imageUrl);
+      if (post.published === true && post.imageUrl) {
+        await publishToGBP(post.content, post.imageUrl);
+      }
     }
   } catch (err) {
     console.error("[GBP Agent] Evening GBP post failed:", err.message);
