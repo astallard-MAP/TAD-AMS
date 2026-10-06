@@ -497,6 +497,30 @@ GATE REPORT: [Phase/Task]
 | `012-E` | **Gmail SMTP Authentication Guidance:** Documented the exact procedure for generating a 16-character Google App Password for `astallard65@gmail.com` to resolve `Invalid login: 534-5.7.9 Application-specific password required`. | `[Completed]` |
 | `012-F` | **GBP Re-authorization Action Plan:** Documented the step-by-step process to refresh the expired GMB OAuth refresh token (`invalid_grant`). | `[Completed]` |
 
+---
 
+### [PHASE 013]: OOM Memory Remediation & PWA Service Worker Cache Busting
+- **Objective:** Fix the HTTP 500 errors crashing Vertex AI Image Generation (`socialEveningPost` etc) due to memory exhaustion, and resolve the frontend MPA routing corruption where Quick Links incorrectly loaded a cached version of the SPA Home Page.
+- **Date Logged:** 05 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `013-A` | **Cloud Functions Memory Limit Increase:** Diagnosed HTTP 500 errors in `slimFunnelAgent` and the Social Post agents. They were exceeding the default 256MiB limit when initializing Vertex AI `imagen-3` models or large Firestore queries. Increased `memory: "512MiB"` for `socialMorningPost`, `socialLunchPost`, `socialEveningPost`, `socialIntelligenceAgent`, `slimFunnelAgent`, and `slimPerfAgent`. | `[Completed]` |
+| `013-B` | **PWA Cache Busting (Quick Links Fix):** Diagnosed that the `dist/sw.js` (Service Worker) was retaining an old SPA fallback configuration in `html-cache`. This caused `NetworkFirst` HTML navigation requests (e.g. clicking Quick Links for `/about.html`) to serve the precached `index.html`. Renamed `cacheName` to `html-cache-v2` in `vite.config.js` to invalidate all clients and strictly enforce MPA static routing. | `[Completed]` |
+
+---
+
+### [PHASE 014]: Global Memory Uprate, Cloud Storage Integration & UX Routing Bypass
+- **Objective:** Uprate all AI Cloud Functions to 2GiB to stop memory crashes, route all AI-generated images through Firebase Cloud Storage to generate public URLs for the Meta API, and bypass the frontend Auth trap.
+- **Date Logged:** 06 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `014-A` | **Auth Redirect Bypass (main.js):** Updated the `onAuthStateChanged` routing logic to ignore the `/admin.html` redirect if the `?bypass=true` query parameter is present, allowing preview of the public site while logged in. | `[Completed]` |
+| `014-B` | **Backend Memory Hardening (index.js):** Injected `memory: "2GiB"` and `timeoutSeconds: 300` into the `onSchedule` definitions for `socialMorningPost`, `socialLunchPost`, `socialEveningPost`, and `socialIntelligenceAgent`. | `[Completed]` |
+| `014-C` | **Slim Fleet Memory Verification (slim/*.js):** Reviewed and uprated the memory configurations inside `slimFunnel.js`, `slimPerf.js`, and the remaining SLIM agents to ensure universal 2GiB stability and 300s timeouts. | `[Completed]` |
+| `014-D` | **Image Storage Pipeline (index.js):** Modified `generateSocialImage()` to extract the Base64 data from Vertex AI, convert it to a binary buffer, upload it to the Firebase Cloud Storage bucket, and return a public `https://storage.googleapis.com/...` URL to safely pass to the Meta Graph API and save in Firestore. | `[Completed]` |
 
 

@@ -244,8 +244,28 @@ async function generateSocialImage(town, context, source = "Social Post") {
   try {
     // Production Asset Generation via Vertex AI
     const result = await ai.generate({ model: 'vertexai/imagen-3', prompt: prompt });
-    const imageUrl = result.media[0].url; 
+    const mediaData = result.media[0].url; 
     
+    let imageUrl = mediaData;
+    if (mediaData.startsWith("data:image")) {
+      const base64Data = mediaData.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, 'base64');
+      const filename = `social_images/img_${Date.now()}_${Math.floor(Math.random() * 1000)}.png`;
+      const bucket = admin.storage().bucket('c4h-wesbite.firebasestorage.app');
+      const file = bucket.file(filename);
+      
+      await file.save(buffer, {
+        metadata: { contentType: 'image/png' }
+      });
+      
+      try {
+        await file.makePublic();
+      } catch (e) {
+        console.warn("Could not make public (bucket might restrict ACLs):", e.message);
+      }
+      imageUrl = `https://storage.googleapis.com/${bucket.name}/${filename}`;
+    }
+
     // Check for reuse ONLY for AI generated images
     const used = await isImageRecentlyUsed(imageUrl);
     if (!used) {
@@ -450,6 +470,8 @@ async function generateSocialPost(timeOfDay) {
 exports.socialMorningPost = onSchedule({ region: "europe-west4", 
   schedule: "0 9 * * *", 
   timeZone: "Europe/London", 
+  memory: "2GiB",
+  timeoutSeconds: 300,
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
 }, async (event) => { 
   try { await generateSocialPost("Morning"); } catch (error) { console.error("socialMorningPost error:", error); } 
@@ -458,6 +480,8 @@ exports.socialMorningPost = onSchedule({ region: "europe-west4",
 exports.socialLunchPost = onSchedule({ region: "europe-west4", 
   schedule: "0 12 * * *", 
   timeZone: "Europe/London", 
+  memory: "2GiB",
+  timeoutSeconds: 300,
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
 }, async (event) => { 
   try { await generateSocialPost("Lunch"); } catch (error) { console.error("socialLunchPost error:", error); } 
@@ -466,6 +490,8 @@ exports.socialLunchPost = onSchedule({ region: "europe-west4",
 exports.socialEveningPost = onSchedule({ region: "europe-west4", 
   schedule: "0 18 * * *", 
   timeZone: "Europe/London", 
+  memory: "2GiB",
+  timeoutSeconds: 300,
   secrets: ["GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN"] 
 }, async (event) => { 
   try { await generateSocialPost("Evening"); } catch (error) { console.error("socialEveningPost error:", error); } 
@@ -2065,7 +2091,8 @@ async function runSocialIntelligenceForensics() {
 exports.socialIntelligenceAgent = onSchedule({ region: "europe-west4",
     schedule: "0 1 * * *", 
     timeZone: "Europe/London",
-    timeoutSeconds: 180,
+    timeoutSeconds: 300,
+    memory: "2GiB",
     secrets: [
         "META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID",
         "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN"

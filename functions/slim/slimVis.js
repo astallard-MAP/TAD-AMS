@@ -76,4 +76,4 @@ async function runSlimVis() {
 }
 
 // Scheduled Trigger: 07:15 Daily (Shortly after SLIM-COPY)
-exports.slimVisAgent = onSchedule({ region: "europe-west4", schedule: "15 7 * * *", timeZone: "Europe/London", memory: "256MiB" }, async () => { await runSlimVis(); });
+exports.slimVisAgent = onSchedule({ region: "europe-west4", schedule: "15 7 * * *", timeZone: "Europe/London", memory: "2GiB", timeoutSeconds: 300 }, async () => { await runSlimVis(); });

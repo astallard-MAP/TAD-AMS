@@ -72,4 +72,4 @@ async function runSlimCopy() {
 }
 
 // Scheduled Trigger: 07:00 Daily to prep the morning slot
-exports.slimCopyAgent = onSchedule({ region: "europe-west4", schedule: "0 7 * * *", timeZone: "Europe/London", memory: "256MiB" }, async () => { await runSlimCopy(); });
+exports.slimCopyAgent = onSchedule({ region: "europe-west4", schedule: "0 7 * * *", timeZone: "Europe/London", memory: "2GiB", timeoutSeconds: 300 }, async () => { await runSlimCopy(); });

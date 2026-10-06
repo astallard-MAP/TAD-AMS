@@ -42,7 +42,10 @@ onAuthStateChanged(auth, async (user) => {
         }
 
         // Global Redirect Logic
-        if (window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const bypassAuth = urlParams.has('bypass');
+
+        if (!bypassAuth && (window.location.pathname === '/' || window.location.pathname.includes('index.html'))) {
             const isImpersonating = localStorage.getItem('impersonate_seller') === 'true';
             if (user.uid === ADMIN_UID && !isImpersonating) {
                 if (adminToggle) adminToggle.style.display = 'block';

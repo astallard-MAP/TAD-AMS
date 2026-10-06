@@ -91,7 +91,7 @@ exports.slimPsyAgent = onSchedule({
     region: "europe-west4", 
     schedule: "0 2 * * *", 
     timeZone: "Europe/London",
-    memory: "256MiB"
+    memory: "2GiB", timeoutSeconds: 300
 }, async (event) => { 
     await runSlimPsy(); 
 });

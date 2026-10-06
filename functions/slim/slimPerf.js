@@ -94,4 +94,4 @@ async function runSlimPerf() {
 }
 
 // Scheduled Trigger: 01:00 Daily
-exports.slimPerfAgent = onSchedule({ region: "europe-west4", schedule: "0 1 * * *", timeZone: "Europe/London", memory: "256MiB" }, async () => { await runSlimPerf(); });
+exports.slimPerfAgent = onSchedule({ region: "europe-west4", schedule: "0 1 * * *", timeZone: "Europe/London", memory: "2GiB", timeoutSeconds: 300 }, async () => { await runSlimPerf(); });

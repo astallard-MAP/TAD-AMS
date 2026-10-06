@@ -83,4 +83,4 @@ async function runSlimOrch() {
 }
 
 // Scheduled Trigger: 06:00 Daily
-exports.slimOrchAgent = onSchedule({ region: "europe-west4", schedule: "0 6 * * *", timeZone: "Europe/London", memory: "256MiB" }, async () => { await runSlimOrch(); });
+exports.slimOrchAgent = onSchedule({ region: "europe-west4", schedule: "0 6 * * *", timeZone: "Europe/London", memory: "2GiB", timeoutSeconds: 300 }, async () => { await runSlimOrch(); });

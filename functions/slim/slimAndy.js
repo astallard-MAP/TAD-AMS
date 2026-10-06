@@ -10,7 +10,7 @@ const db = admin.firestore();
  * Extracts anonymized segments at the end of the chat.
  */
 
-exports.slimAndyAgent = onRequest({ region: "europe-west4", cors: true, memory: "512MiB" }, async (req, res) => {
+exports.slimAndyAgent = onRequest({ region: "europe-west4", cors: true, memory: "2GiB", timeoutSeconds: 300 }, async (req, res) => {
     // SLIM-6.3: Enforce Firebase App Check to prevent unauthorized API abuse
     if (req.appCheckToken === undefined && process.env.FUNCTIONS_EMULATOR !== "true") {
         res.status(401).json({ error: "Unauthorized. App Check token missing." });

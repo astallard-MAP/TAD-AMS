@@ -82,7 +82,7 @@ async function runSlimHash() {
 }
 
 // Scheduled Trigger: 04:00 Daily to prep sets for the day
-exports.slimHashAgent = onSchedule({ region: "europe-west4", schedule: "0 4 * * *", timeZone: "Europe/London", memory: "256MiB" }, async () => { await runSlimHash(); });
+exports.slimHashAgent = onSchedule({ region: "europe-west4", schedule: "0 4 * * *", timeZone: "Europe/London", memory: "2GiB", timeoutSeconds: 300 }, async () => { await runSlimHash(); });
 
 // Synchronous callable function for pre-publish validation
 exports.generateHashtags = runSlimHash;

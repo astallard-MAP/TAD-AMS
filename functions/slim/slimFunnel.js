@@ -67,4 +67,4 @@ async function runSlimFunnel() {
 }
 
 // Scheduled Trigger: Hourly
-exports.slimFunnelAgent = onSchedule({ region: "europe-west4", schedule: "0 * * * *", timeZone: "Europe/London", memory: "256MiB" }, async () => { await runSlimFunnel(); });
+exports.slimFunnelAgent = onSchedule({ region: "europe-west4", schedule: "0 * * * *", timeZone: "Europe/London", memory: "2GiB", timeoutSeconds: 300 }, async () => { await runSlimFunnel(); });

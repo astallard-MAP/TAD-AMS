@@ -94,7 +94,7 @@ async function runSlimComp() {
 }
 
 // Scheduled Trigger: 07:30 Daily (Before 08:00 publish) and pre-publish hook
-exports.slimCompAgent = onSchedule({ region: "europe-west4", schedule: "30 7 * * *", timeZone: "Europe/London", memory: "256MiB" }, async () => { await runSlimComp(); });
+exports.slimCompAgent = onSchedule({ region: "europe-west4", schedule: "30 7 * * *", timeZone: "Europe/London", memory: "2GiB", timeoutSeconds: 300 }, async () => { await runSlimComp(); });
 
 // Synchronous callable for direct manual checking
 exports.checkCompliance = runSlimComp;

@@ -44,4 +44,4 @@ async function runSlimLocal() {
 }
 
 // Scheduled Trigger: Daily
-exports.slimLocalAgent = onSchedule({ region: "europe-west4", schedule: "0 10 * * *", timeZone: "Europe/London", memory: "256MiB" }, async () => { await runSlimLocal(); });
+exports.slimLocalAgent = onSchedule({ region: "europe-west4", schedule: "0 10 * * *", timeZone: "Europe/London", memory: "2GiB", timeoutSeconds: 300 }, async () => { await runSlimLocal(); });

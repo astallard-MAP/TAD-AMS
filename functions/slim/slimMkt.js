@@ -99,7 +99,7 @@ exports.slimMktAgent = onSchedule({
     region: "europe-west4", 
     schedule: "30 5 * * *", 
     timeZone: "Europe/London",
-    memory: "256MiB"
+    memory: "2GiB", timeoutSeconds: 300
 }, async (event) => { 
     await runSlimMkt(); 
 });

@@ -35,7 +35,7 @@ export default defineConfig({
             urlPattern: ({ request }) => request.destination === 'document',
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'html-cache',
+              cacheName: 'html-cache-v2',
             },
           }
         ]
