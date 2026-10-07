@@ -30,7 +30,7 @@ function getAIClient() {
         // Compute in europe-west4. API Routing global.
         _aiClient = new GoogleGenAI({ 
             vertexai: { 
-                project: "c4h-wesbite", 
+                project: "1089937234221", 
                 location: "global" 
             }
         });
