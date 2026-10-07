@@ -9,7 +9,8 @@ const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 const Parser = require("rss-parser");
 
-const { GoogleGenAI } = require("@google/genai");
+const { genkit } = require("genkit");
+const { googleGenAI } = require("@genkit-ai/google-genai");
 const { google } = require("googleapis");
 const { defineSecret } = require("firebase-functions/params");
 const { BetaAnalyticsDataClient } = require('@google-analytics/data');
@@ -20,14 +21,9 @@ const GA4_PROPERTY_ID = defineSecret("GA4_PROPERTY_ID");
 admin.initializeApp();
 const db = admin.firestore();
 
-// Lazy-load Agent Platform Client to prevent CLI parsing crashes
-let _aiClient = null;
-function getAIClient() {
-    if (!_aiClient) {
-        _aiClient = new GoogleGenAI({ vertexai: { project: process.env.GCLOUD_PROJECT || "c4h-wesbite", location: 'europe-west4' } });
-    }
-    return _aiClient;
-}
+const ai = genkit({
+    plugins: [googleGenAI({ location: 'europe-west4' })]
+});
 
 // Secrets
 const GMAIL_APP_PASSWORD = defineSecret("GMAIL_APP_PASSWORD");
@@ -176,7 +172,7 @@ async function performVisualFidelityAudit(town) {
       
       OUTPUT: Return a single technical description identifying the specific house type and textures for an image generation prompt.
     `;
-    const { text } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: auditPrompt });
+    const { text } = await ai.generate({ model: 'gemini-2.5-pro', prompt: auditPrompt });
     return text.trim();
   } catch (e) {
     return `red brick 1930s semi-detached houses with low brick garden walls and weathered facades`;
@@ -249,8 +245,8 @@ async function generateSocialImage(town, context, source = "Social Post") {
 
   try {
     // Production Asset Generation via Vertex AI
-    const result = await (getAIClient()).models.generateImages({ model: 'gemini-3.1-flash-image', prompt: prompt, config: { numberOfImages: 1 } });
-    const mediaData = result.generatedImages[0].image.imageUri || `data:image/png;base64,${result.generatedImages[0].image.imageBytes}`;
+    const result = await ai.generate({ model: 'gemini-3.1-flash-image', prompt: prompt });
+    const mediaData = result.media[0].url;
     let imageUrl = mediaData;
     if (mediaData.startsWith("data:image")) {
       const base64Data = mediaData.replace(/^data:image\/\w+;base64,/, "");
@@ -457,7 +453,7 @@ async function generateSocialContent(timeOfDay, targetHour) {
   `;
 
   try {
-    const { text } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
+    const { text } = await ai.generate({ model: 'gemini-2.5-pro', prompt: prompt });
     
     const offsetMinutes = await calculateJitterOffset(timeOfDay);
     
@@ -622,7 +618,7 @@ async function updateMarketNews() {
   `;
 
   try {
-    const { text } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
+    const { text } = await ai.generate({ model: 'gemini-2.5-pro', prompt: prompt });
     
     // Generate a unique photographic image for this news
     const town = await getActiveGSRLocation();
@@ -824,7 +820,7 @@ exports.instantSocialTestAgent = onRequest({ region: "europe-west4",
     const town = await getActiveGSRLocation();
     const prompt = `ROLE: High-Conversion Copywriter. Generate an urgent 70-word social media post for distressed property sellers in ${town}. 
     RULES: No intros, start with pain point, exactly 3 bullet benefits, mention "We Buy As-Is", CTA to Https://cash4houses.co.uk. Use British English.`;
-    const { text } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
+    const { text } = await ai.generate({ model: 'gemini-2.5-pro', prompt: prompt });
     steps.push(`Step 2: AI Content Generated for ${town}.`);
     
     // 2. Image Generation
@@ -1329,9 +1325,9 @@ exports.chatbotAndy = onRequest({ region: "europe-west4",
       CURRENT UK TIME (GMT/BST): ${currentUKTime} (If the user asks for the time, tell them exactly this time. You are fully aware of GMT/BST shifts).
     `;
 
-    const { text } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: `History: ${JSON.stringify(history)}\nUser: ${message}`, config: { systemInstruction: systemPrompt } });
+    const { text } = await ai.generate({ model: 'gemini-2.5-pro', prompt: `History: ${JSON.stringify(history)}\nUser: ${message}`, system: systemPrompt });
     // SENTINEL SAFETY CHECK
-    const safetyCheck = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: `Review this chat response for safety: ${text}`, config: { systemInstruction: "You are the 'Sentinel Moderation AI'. Rejects racism, sexism, abuse, foul language, and religious content. Reply ONLY with 'SAFE' or 'FAIL: [Reason]'" } });
+    const safetyCheck = await ai.generate({ model: 'gemini-2.5-pro', prompt: `Review this chat response for safety: ${text}`, system: "You are the 'Sentinel Moderation AI'. Rejects racism, sexism, abuse, foul language, and religious content. Reply ONLY with 'SAFE' or 'FAIL: [Reason]'" });
 
     if (!safetyCheck.text.includes('SAFE')) {
       await db.collection("systemAlerts").add({
@@ -1403,15 +1399,15 @@ async function performSpotlightGeneration() {
             MISSION: Detailed description & history of ${town}. Mention unique landmarks & residential evolution. Max 400 words.
         `;
 
-        const introRes = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: promptIntro });
-        const historyRes = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: promptHistory });
+        const introRes = await ai.generate({ model: 'gemini-2.5-pro', prompt: promptIntro });
+        const historyRes = await ai.generate({ model: 'gemini-2.5-pro', prompt: promptHistory });
 
         // 4. Sign-off
         const promptSignoff = `
             ROLE: Andy. AREA: ${town}.
             MISSION: Powerful 1-paragraph sign-off explaining why residents choose our cash service & the relief they feel.
         `;
-        const signoffRes = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: promptSignoff });
+        const signoffRes = await ai.generate({ model: 'gemini-2.5-pro', prompt: promptSignoff });
 
         // 5. Fetch Reviews
         const reviews = await fetchGoogleReviews();
@@ -1646,7 +1642,7 @@ async function performSocialAudit() {
             REPORT: Reply ONLY with 'PASSED' or 'FAILED: [Reason]'.
         `;
 
-        const { text: policyResult } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: policyPrompt });
+        const { text: policyResult } = await ai.generate({ model: 'gemini-2.5-pro', prompt: policyPrompt });
 
         if (!policyResult.includes("PASSED")) {
             issues.push({ component: "Policy Drift", severity: "Critical", issue: `Policy Violation: ${policyResult}`, plan: "Instant Agent Quarantine & Prompt Realignment." });
@@ -1806,7 +1802,7 @@ exports.portalReadinessSentinel = onRequest({ region: "europe-west4",
     // 1. VERIFY VERTEX AI / GENKIT
     try {
         const testPrompt = "Return the word 'OPERATIONAL' if you are active.";
-        const { text } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: testPrompt });
+        const { text } = await ai.generate({ model: 'gemini-2.5-pro', prompt: testPrompt });
         if (text.includes("OPERATIONAL")) {
             report.vertexAI.status = "VERIFIED";
         } else {
@@ -2181,7 +2177,7 @@ async function runSocialIntelligenceForensics() {
     `;
 
     try {
-        const { text } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: analysisPrompt });
+        const { text } = await ai.generate({ model: 'gemini-2.5-pro', prompt: analysisPrompt });
         const strategy = JSON.parse(text.replace(/```json|```/g, "").trim());
 
         await db.collection("socialStrategy").doc("latest").set({
@@ -2286,7 +2282,7 @@ exports.weeklyPerformanceDigest = onSchedule({ region: "europe-west4",
         RETURN: HTML Email Body (Clean, structured HTML).
         `;
 
-        const { text: emailBody } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: digestPrompt });
+        const { text: emailBody } = await ai.generate({ model: 'gemini-2.5-pro', prompt: digestPrompt });
 
         // 3. Dispatch via Office 365 Graph API
         await dispatchEmail({
@@ -2344,7 +2340,7 @@ exports.manualWeeklyDigest = onRequest({ region: "europe-west4",
         RETURN: HTML Email Body.
         `;
 
-        const { text: emailBody } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: digestPrompt });
+        const { text: emailBody } = await ai.generate({ model: 'gemini-2.5-pro', prompt: digestPrompt });
 
         // 3. Dispatch
         await dispatchEmail({
@@ -2399,7 +2395,7 @@ exports.researchPropertyValuation = onRequest({ region: "europe-west4",
         }
         `;
 
-        const { text } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: researchPrompt });
+        const { text } = await ai.generate({ model: 'gemini-2.5-pro', prompt: researchPrompt });
         const result = JSON.parse(text.replace(/```json|```/g, "").trim());
 
         if (result.limitedData) {
@@ -2640,7 +2636,7 @@ exports.autonomousSEOGenerator = onSchedule({ region: "europe-west4",
             
             INCLUDE: Local landmarks, demographic character, and property market trends.
         `;
-        const { text: block1 } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: overviewPrompt });
+        const { text: block1 } = await ai.generate({ model: 'gemini-2.5-pro', prompt: overviewPrompt });
 
         // BLOCK 2: DAILY AI ANALYSIS
         const newsSnap = await db.collection("marketUpdates").doc("latest").get();
@@ -2783,7 +2779,7 @@ exports.generateDailyTestimonial = onSchedule({ region: "europe-west4",
             - "content": The 3-sentence quote text (use British English).
             - "icon": A FontAwesome class representing the scenario (e.g., "fas fa-home-lock", "fas fa-hand-holding-dollar", "fas fa-key").
         `;
-        const { text } = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
+        const { text } = await ai.generate({ model: 'gemini-2.5-pro', prompt: prompt });
         
         let storyData;
         try {
