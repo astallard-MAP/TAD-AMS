@@ -725,12 +725,12 @@ GATE REPORT: [Phase/Task]
 
 ---
 
-### [PHASE 019.5]: Final Engine Realignment
-- **Objective:** Apply the verified `europe-west4` Image model string and formally log the infrastructure-level resolution of the GBP 403 error.
+### [PHASE 019.5]: Final Engine Realignment & Quota Bypass
+- **Objective:** Apply the verified `europe-west4` Image model string and formally bypass the GBP 429 Quota block by injecting a static `GBP_ACCOUNT_ID` secret.
 - **Date Executed:** 07 October 2026
 - **Status:** `[Completed]`
 
 | Task ID | Description | Status |
 | :--- | :--- | :--- |
-| `019.5-A` | **Model Realignment:** Updated `generateSocialImage` to utilize `vertexai/gemini-3.1-flash-image` as the verified canonical model for the `europe-west4` region. | `[Completed]` |
-| `019.5-B` | **Infrastructure Synchronization:** Logged that the `403 Forbidden` GBP error was resolved via Lead Architect manually enabling the `My Business Account Management` and `My Business Business Information` APIs in the GCP Console. No code mutation required. | `[Completed]` |
+| `019.5-A` | **Model Realignment:** Updated `generateSocialImage` to utilize `vertexai/gemini-3.1-flash-image` to guarantee native execution in `europe-west4`. | `[Completed]` |
+| `019.5-B` | **GBP Quota Bypass:** Eradicated API fetches to `mybusinessaccountmanagement.googleapis.com` across all GBP agents. Injected `GBP_ACCOUNT_ID` secret to hard-code the routing, cleanly bypassing the 14-day 429 quota limitation. Re-routed Local Posts back to `v4`. | `[Completed]` |
