@@ -71,6 +71,9 @@ All future interactions, AI directives, and operational prompts MUST be prefaced
 ### LAW IX: THE FORENSIC CADENCE (CHECK, IDENTIFY, PLAN, ACT)
 No code mutation may occur based on an initial error report. The engineer or AI must first conduct an independent read-only audit to identify the root cause, present a formalized Plan of Action detailing every proposed file change, update the Registry of Truth, and await explicit approval from the Principal before writing any code. "Check, identify, recheck confirm, recheck verify."
 
+### LAW X: NATIVE SDK MANDATE (NO ORCHESTRATION FRAMEWORKS)
+The system MUST interface with Vertex AI / Agent Platform API using ONLY the native, unified `@google/genai` Node.js SDK. The use of abstraction or orchestration frameworks (such as `genkit` or LangChain) is strictly prohibited as they conflict with Firebase App Hosting deployment constraints and Application Default Credentials (ADC). AI Client initialization MUST be deferred using a lazy-loaded Singleton pattern.
+
 ---
 
 ## 3. Master Configuration Settings & Build Standards
@@ -783,4 +786,9 @@ GATE REPORT: [Phase/Task]
 | `019.9-A` | **Package Correction:** Updated `functions/package.json` to lock into the stable `@google/genai@^2.27.0` SDK and completely eradicate Genkit dependencies. | `[Completed]` |
 | `019.9-B` | **Client Initialization Fix:** Re-implemented the lazy-loaded `GoogleGenAI` initialization pattern strictly utilizing `{ vertexai: true, project: process.env.GCLOUD_PROJECT, location: 'europe-west4' }` to resolve Authentication configuration failures. | `[Completed]` |
 | `019.9-C` | **Inline Instantiation:** Hardened all 18+ AI generation calls across `functions/index.js` to execute inline via `await (getAIClient()).models.generateContent(...)`, mathematically eliminating scope hoisting risks. | `[Completed]` |
-| `019.9-D` | **Model Routing Conformity:** Swept the codebase to formally route all textual operations to `gemini-2.5-pro` and visual operations to `gemini-3.1-flash-image` in accordance with the Architectural Master Brief. | `[Completed]` |
+
+
+### [PHASE 019.10]: Native SDK Unification & Law Revision
+- **Objective:** Eradicate Genkit dependencies, implement the unified `@google/genai` SDK natively relying on ADC, and enshrine LAW X.
+- **Date Executed:** 07 October 2026
+- **Status:** `[Completed]`
