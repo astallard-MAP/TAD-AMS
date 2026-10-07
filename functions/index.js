@@ -27,7 +27,7 @@ let _aiClient = null;
 function getAIClient() {
     if (!_aiClient) {
         // Native SDK using ADC via aiplatform.user IAM role
-        _aiClient = new GoogleGenAI({ vertexAI: { project: "c4h-wesbite", location: 'europe-west4' } });
+        _aiClient = new GoogleGenAI({ vertexai: { project: "c4h-wesbite", location: 'europe-west4' } });
     }
     return _aiClient;
 }
