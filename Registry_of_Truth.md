@@ -94,7 +94,7 @@ To ensure that any future upgrades, edits, or additions conform and comply with 
 | **Instagram Official** | `https://www.instagram.com/cash4houses.co.uk/` |
 
 ### 3.2 Cloud Infrastructure & Secrets Manifest
-- **Firebase Project ID:** `c4h-wesbite` (verified from `.firebaserc`, 05/10/2026 — note the spelling "wesbite" is the canonical ID)
+- **Firebase Project ID:** c4h-wesbite (CRITICAL: The spelling 'wesbite' is the permanent, canonical Google Cloud Project ID. Do not attempt to correct this to 'website' in any code or configuration).
 - **Default Cloud Functions Region:** `europe-west4`
 - **Node.js Runtime:** `Node.js 20`
 - **Google Cloud Secret Manager Inventory (Verified 05/10/2026):**
@@ -817,6 +817,12 @@ GATE REPORT: [Phase/Task]
 
 ### [PHASE 019.16]: SDK Routing Rectification & Law Enshrinement
 - **Objective:** Flatten the @google/genai configuration object and route requests to the global API gateway to resolve 404 and 403 API crashes, and enshrine LAW XI.
+- **Date Executed:** 07 October 2026
+- **Status:** `[Completed]`
+
+
+### [PHASE 019.17]: Node.js SDK Syntax Alignment & Typo Enshrinement
+- **Objective:** Realign the Native SDK configuration to the nested Node.js syntax (`vertexai: { project, location }`) to resolve 404 URL construction errors, and formally enshrine the Project ID typo.
 - **Date Executed:** 07 October 2026
 - **Status:** `[Completed]`
 

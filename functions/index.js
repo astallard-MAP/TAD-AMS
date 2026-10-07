@@ -26,12 +26,13 @@ const { GoogleGenAI } = require("@google/genai");
 let _aiClient = null;
 function getAIClient() {
     if (!_aiClient) {
-        // Native SDK using ADC via aiplatform.user IAM role. 
-        // Compute remains in europe-west4, but API routing must use global.
+        // Native SDK using ADC. 
+        // Compute in europe-west4. API Routing global.
         _aiClient = new GoogleGenAI({ 
-            vertexai: true, 
-            project: "c4h-wesbite", 
-            location: "global" 
+            vertexai: { 
+                project: "c4h-wesbite", 
+                location: "global" 
+            }
         });
     }
     return _aiClient;
