@@ -71,8 +71,7 @@ All future interactions, AI directives, and operational prompts MUST be prefaced
 ### LAW IX: THE FORENSIC CADENCE (CHECK, IDENTIFY, PLAN, ACT)
 No code mutation may occur based on an initial error report. The engineer or AI must first conduct an independent read-only audit to identify the root cause, present a formalized Plan of Action detailing every proposed file change, update the Registry of Truth, and await explicit approval from the Principal before writing any code. "Check, identify, recheck confirm, recheck verify."
 
-### LAW X: NATIVE SDK MANDATE (NO ORCHESTRATION FRAMEWORKS)
-The system MUST interface with Vertex AI / Agent Platform API using ONLY the native, unified `@google/genai` Node.js SDK. The use of abstraction or orchestration frameworks (such as `genkit` or LangChain) is strictly prohibited as they conflict with Firebase App Hosting deployment constraints and Application Default Credentials (ADC). AI Client initialization MUST be deferred using a lazy-loaded Singleton pattern.
+
 
 ---
 
@@ -792,3 +791,19 @@ GATE REPORT: [Phase/Task]
 - **Objective:** Eradicate Genkit dependencies, implement the unified `@google/genai` SDK natively relying on ADC, and enshrine LAW X.
 - **Date Executed:** 07 October 2026
 - **Status:** `[Completed]`
+
+### [PHASE 019.12]: Full Architectural Rollback
+- **Objective:** Revert destructive SDK migration. Restore the stable `genkit` architecture that natively supports Cloud Run Application Default Credentials.
+- **Date Executed:** 07 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `019.12-A` | **Dependency Restoration:** Purged `@google/genai` and restored `genkit` and `@genkit-ai/google-genai` to `functions/package.json`. | `[Completed]` |
+| `019.12-B` | **Syntax Rollback:** Reverted global initialization and all 18+ generation calls back to `ai.generate()`. | `[Completed]` |
+
+### [PHASE 019.13]: Final Native SDK Unification
+- **Objective:** Eradicate Genkit and migrate to the unified @google/genai SDK using a lazy-loaded Singleton and correct `vertexAI` casing to restore ADC authentication.
+- **Date Executed:** 07 October 2026
+- **Status:** `[Completed]`
+

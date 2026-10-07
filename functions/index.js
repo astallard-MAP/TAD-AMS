@@ -9,7 +9,6 @@ const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 const Parser = require("rss-parser");
 
-const { GoogleGenAI } = require("@google/genai");
 const { google } = require("googleapis");
 const { defineSecret } = require("firebase-functions/params");
 const { BetaAnalyticsDataClient } = require('@google-analytics/data');
@@ -22,11 +21,13 @@ const db = admin.firestore();
 
 
 
+const { GoogleGenAI } = require("@google/genai");
+
 let _aiClient = null;
 function getAIClient() {
     if (!_aiClient) {
-        // Native SDK relying on ADC (IAM role aiplatform.user granted by Lead Architect)
-        _aiClient = new GoogleGenAI({ vertexai: { project: "c4h-wesbite", location: 'europe-west4' } });
+        // Native SDK using ADC via aiplatform.user IAM role
+        _aiClient = new GoogleGenAI({ vertexAI: { project: "c4h-wesbite", location: 'europe-west4' } });
     }
     return _aiClient;
 }
@@ -251,7 +252,7 @@ async function generateSocialImage(town, context, source = "Social Post") {
 
   try {
     // Production Asset Generation via Vertex AI
-    const result = await (getAIClient()).models.generateImages({ model: 'gemini-3.1-flash-image', prompt: prompt, config: { numberOfImages: 1 } });
+    const result = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-pro', contents: prompt });
     const mediaData = result.generatedImages[0].image.imageUri || `data:image/png;base64,${result.generatedImages[0].image.imageBytes}`;
     let imageUrl = mediaData;
     if (mediaData.startsWith("data:image")) {

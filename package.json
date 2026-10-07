@@ -14,9 +14,11 @@
     "vite": "^6.2.0"
   },
   "dependencies": {
+    "@genkit-ai/google-genai": "^1.42.0",
     "@google-cloud/firestore": "^9.3.1",
     "firebase": "^12.11.0",
     "firebase-admin": "^14.5.0",
+    "genkit": "^1.42.0",
     "nodemailer": "^10.0.13"
   }
 }
