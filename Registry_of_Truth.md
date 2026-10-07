@@ -71,7 +71,8 @@ All future interactions, AI directives, and operational prompts MUST be prefaced
 ### LAW IX: THE FORENSIC CADENCE (CHECK, IDENTIFY, PLAN, ACT)
 No code mutation may occur based on an initial error report. The engineer or AI must first conduct an independent read-only audit to identify the root cause, present a formalized Plan of Action detailing every proposed file change, update the Registry of Truth, and await explicit approval from the Principal before writing any code. "Check, identify, recheck confirm, recheck verify."
 
-
+### LAW XI: API ROUTING VS. COMPUTE RESIDENCY SEPARATION
+While all Cloud Functions and Firestore deployments MUST be strictly bound to `europe-west4` (per LAW III), the instantiation of the `@google/genai` native SDK MUST configure its API endpoint routing to `location: "global"`. Furthermore, the SDK instantiation object MUST be flat (`{ vertexai: true, project: "...", location: "global" }`). Nesting these parameters causes the SDK to silently fall back to the consumer AI Studio API, triggering fatal 403 Authentication Scope errors.
 
 ---
 
@@ -810,6 +811,12 @@ GATE REPORT: [Phase/Task]
 
 ### [PHASE 019.14]: SDK Config Typo Rectification
 - **Objective:** Rectify SDK fallback to AI Studio by correcting the configuration object key from `vertexAI` to `vertexai`.
+- **Date Executed:** 07 October 2026
+- **Status:** `[Completed]`
+
+
+### [PHASE 019.16]: SDK Routing Rectification & Law Enshrinement
+- **Objective:** Flatten the @google/genai configuration object and route requests to the global API gateway to resolve 404 and 403 API crashes, and enshrine LAW XI.
 - **Date Executed:** 07 October 2026
 - **Status:** `[Completed]`
 
