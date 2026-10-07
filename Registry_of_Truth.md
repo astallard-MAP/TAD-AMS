@@ -782,3 +782,16 @@ GATE REPORT: [Phase/Task]
 | :--- | :--- | :--- |
 | `019.9-A` | **Package Correction:** Updated `functions/package.json` to use `@genkit-ai/google-genai`. | `[Completed]` |
 | `019.9-B` | **Genkit Realignment:** Restored standard Genkit plugin initialization and method signatures in `functions/index.js`. | `[Completed]` |
+
+---
+
+### [PHASE 019.10]: Native Agent Platform SDK Integration
+- **Objective:** Finalize the AI pipeline upgrade by migrating away from Genkit completely, to natively utilize the modern Google Gen AI SDK (`@google/genai`) to access the Gemini 3.1 Flash Image model via the Agent Platform API.
+- **Date Executed:** 07 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `019.10-A` | **SDK Dependency Update:** Replaced Genkit dependencies with `@google/genai@^2.27.0` (Latest Stable) in `package.json`. | `[Completed]` |
+| `019.10-B` | **Client Initialization:** Re-implemented the lazy-loaded `GoogleGenAI` initialization pattern using the `vertexai` parameter locked to `europe-west4`. | `[Completed]` |
+| `019.10-C` | **Method Refactoring:** Upgraded 15+ generation calls to natively use `ai.models.generateContent({ model: 'gemini-2.5-flash', ... })` and `ai.models.generateImages({ model: 'gemini-3.1-flash-image', ... })`. | `[Completed]` |
