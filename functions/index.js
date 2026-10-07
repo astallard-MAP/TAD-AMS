@@ -252,7 +252,7 @@ async function generateSocialImage(town, context, source = "Social Post") {
       const base64Data = mediaData.replace(/^data:image\/\w+;base64,/, "");
       const buffer = Buffer.from(base64Data, 'base64');
       const filename = `social_images/img_${Date.now()}_${Math.floor(Math.random() * 1000)}.png`;
-      const bucket = admin.storage().bucket('c4h-wesbite.firebasestorage.app');
+      const bucket = admin.storage().bucket('c4h-wesbite.appspot.com');
       const file = bucket.file(filename);
       
       await file.save(buffer, {
@@ -932,7 +932,7 @@ async function publishToMetaInternal(postId) {
     fbUrl = `https://graph.facebook.com/v19.0/${pageId}/photos`;
     fbPayload = { 
       url: imageUrl, 
-      caption: content,
+      message: content,
       published: true,
       access_token: token 
     };
@@ -1136,8 +1136,9 @@ async function publishToGBP(content, imageUrl) {
     const results = [];
     
     for (const locationId of locations) {
-      console.log(`Publishing to GBP location: ${locationId}`);
-      const url = `https://mybusiness.googleapis.com/v4/accounts/${accountId}/locations/${locationId}/localPosts`;
+      const cleanLocId = locationId.replace('locations/', '');
+      console.log(`Publishing to GBP location: ${cleanLocId}`);
+      const url = `https://mybusiness.googleapis.com/v4/accounts/${accountId}/locations/${cleanLocId}/localPosts`;
       
       const postBody = {
         languageCode: "en-GB",

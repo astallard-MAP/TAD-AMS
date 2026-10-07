@@ -13,7 +13,8 @@ async function runSlimVis() {
     const moduleId = "SLIM-VIS";
     
     const registryDoc = await db.collection('moduleRegistry').doc(moduleId).get();
-    let enabled = true; let dryRun = false;
+    let enabled = false; // Formally decommissioned. Active pipeline is in index.js onSocialPostCreated 
+    let dryRun = false;
 
     if (registryDoc.exists) {
         enabled = registryDoc.data().enabled !== false; dryRun = registryDoc.data().dryRun === true;

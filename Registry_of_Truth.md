@@ -694,3 +694,17 @@ GATE REPORT: [Phase/Task]
 | `018.09-C` | **Reviews Endpoint Migration:** Update the review fetch loop to query `https://mybusinessreviews.googleapis.com/v1/accounts/{accountId}/locations/{locationId}/reviews`. | `[Completed]` |
 | `018.09-D` | **Local Posts Endpoint Migration:** Update `publishToGBP` to accurately format the publication URL as `https://mybusiness.googleapis.com/v4/accounts/{accountId}/locations/{locationId}/localPosts` (the legacy `v4/locations/...` path is strictly invalid). | `[Completed]` |
 | `018.09-E` | **Pre-flight Verification:** Execute local Node syntax and MPA build checks to confirm structural stability. | `[Completed]` |
+
+---
+
+### [PHASE 019]: Image Generation Activation & API Stabilization
+- **Objective:** Rectify Vertex AI Cloud Storage bucket routing to enable live image generation, correct Meta Graph payload parameters, and sanitize GBP API paths to resolve 400/404 execution crashes.
+- **Date Executed:** 07 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `019-A` | **Cloud Storage Routing:** Corrected invalid bucket ID `.firebasestorage.app` to `.appspot.com` in `generateSocialImage` to prevent fatal Vertex AI write errors and Unsplash fallbacks. | `[Completed]` |
+| `019-B` | **Meta Graph Payload:** Replaced `caption` with `message` in `publishToMetaInternal` for Facebook `/photos` endpoint to resolve `400 Bad Request` rejections. | `[Completed]` |
+| `019-C` | **GBP Path Sanitization:** Injected `replace('locations/', '')` into `publishToGBP` to strip redundant prefixes, preventing `404 Not Found` HTML document errors from the Google API Gateway. | `[Completed]` |
+| `019-D` | **Decommission Legacy Engine:** Formally hardcoded `enabled = false` in `slimVis.js` to ensure telemetry and future AI diagnostics recognize `index.js` as the sole active visual generator. | `[Completed]` |
