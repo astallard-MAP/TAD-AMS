@@ -244,7 +244,7 @@ async function generateSocialImage(town, context, source = "Social Post") {
 
   try {
     // Production Asset Generation via Vertex AI
-    const result = await ai.generate({ model: 'vertexai/gemini-3-pro-image', prompt: prompt });
+    const result = await ai.generate({ model: 'vertexai/gemini-3.1-flash-image', prompt: prompt });
     const mediaData = result.media[0].url; 
     
     let imageUrl = mediaData;
