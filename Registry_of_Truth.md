@@ -49,7 +49,7 @@ Whenever an instruction is issued by the Principal (Andrew Stallard), work **mus
 3. No task may be marked `[Completed]` without verification of implementation and build validation.
 
 ### LAW III: REGIONAL INTEGRITY & DEPLOYMENT COHERENCE
-All Firebase Cloud Functions v2 and the First-Party MPA Runtime Server (App Hosting) must strictly reside in **`europe-west4`**. Multi-region divergence without explicit recorded dispensation is strictly prohibited to avoid deployment collisions, routing latency, and 409 conflict errors. (Legacy Firebase Hosting rewrites are deprecated and superseded by the MPA Runtime Server.)
+Under no circumstances can the project files, AI models, or fetch routes be split across continents. Everything must be firmly rooted in europe-west4 (Netherlands). There are no exceptions.
 
 ### LAW IV: DOCUMENTARY REALISM (THE ANTI-POLISHING RULE)
 Public-facing marketing imagery, social posts, and visual assets must adhere to Hyper-Local Visual Fidelity (HL-VF). Sterile, shiny, high-spec "show home" imagery is prohibited as it alienates distressed sellers. All generated assets must reflect genuine UK streetscapes, lived-in architectural vernacular, and documentary authenticity.
@@ -708,3 +708,17 @@ GATE REPORT: [Phase/Task]
 | `019-B` | **Meta Graph Payload:** Replaced `caption` with `message` in `publishToMetaInternal` for Facebook `/photos` endpoint to resolve `400 Bad Request` rejections. | `[Completed]` |
 | `019-C` | **GBP Path Sanitization:** Injected `replace('locations/', '')` into `publishToGBP` to strip redundant prefixes, preventing `404 Not Found` HTML document errors from the Google API Gateway. | `[Completed]` |
 | `019-D` | **Decommission Legacy Engine:** Formally hardcoded `enabled = false` in `slimVis.js` to ensure telemetry and future AI diagnostics recognize `index.js` as the sole active visual generator. | `[Completed]` |
+
+---
+
+### [PHASE 019.2]: Holistic Regional Rectification & Engine Upgrade
+- **Objective:** Eradicate all `us-central1` contamination across the frontend and backend, upgrade the visual engine to the flagship `gemini-3-pro-image` model, and apply the modernized GBP v1 endpoint.
+- **Date Executed:** 07 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `019.2-A` | **Regional Purification:** Swept `index.js`, `admin.js`, `dashboard.js`, and `contact.js`. Replaced all `us-central1` artifacts with `europe-west4` to enforce strict continental integrity. | `[Completed]` |
+| `019.2-B` | **Engine Upgrade:** Upgraded the Vertex AI model string in `generateSocialImage` to the verified `gemini-3-pro-image` model. | `[Completed]` |
+| `019.2-C` | **GBP API Modernization:** Updated `publishToGBP` to utilize the federated `mybusinessbusinessinformation.googleapis.com/v1` endpoint. | `[Completed]` |
+| `019.2-D` | **Law III Fortification:** Updated the Registry of Truth to explicitly ban cross-continent architecture. | `[Completed]` |

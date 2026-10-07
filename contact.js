@@ -29,7 +29,7 @@ if (contactForm) {
 
             // 2. Trigger Backend Notification (Cloud Function)
             const token = "CLIENT_SUBMISSION"; // Public submission token
-            const resp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/processContactEnquiry', {
+            const resp = await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/processContactEnquiry', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

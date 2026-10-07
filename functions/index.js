@@ -22,7 +22,7 @@ const db = admin.firestore();
 
 // Initialize Genkit (Social Media Agent & News Suite)
 const ai = genkit({
-  plugins: [vertexAI({ location: 'us-central1' })] 
+  plugins: [vertexAI({ location: 'europe-west4' })] 
 });
 
 // Secrets
@@ -244,7 +244,7 @@ async function generateSocialImage(town, context, source = "Social Post") {
 
   try {
     // Production Asset Generation via Vertex AI
-    const result = await ai.generate({ model: 'vertexai/imagen-3', prompt: prompt });
+    const result = await ai.generate({ model: 'vertexai/gemini-3-pro-image', prompt: prompt });
     const mediaData = result.media[0].url; 
     
     let imageUrl = mediaData;
@@ -1138,7 +1138,7 @@ async function publishToGBP(content, imageUrl) {
     for (const locationId of locations) {
       const cleanLocId = locationId.replace('locations/', '');
       console.log(`Publishing to GBP location: ${cleanLocId}`);
-      const url = `https://mybusiness.googleapis.com/v4/accounts/${accountId}/locations/${cleanLocId}/localPosts`;
+      const url = `https://mybusinessbusinessinformation.googleapis.com/v1/accounts/${accountId}/locations/${cleanLocId}/localPosts`;
       
       const postBody = {
         languageCode: "en-GB",

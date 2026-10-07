@@ -388,7 +388,7 @@ async function runValuationIntelligence(prop) {
     if (!grid) return;
     
     try {
-        const resp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/researchPropertyValuation', {
+        const resp = await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/researchPropertyValuation', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -415,7 +415,7 @@ async function runValuationIntelligence(prop) {
                 fallbackBtn.onclick = async () => {
                     fallbackBtn.disabled = true;
                     fallbackBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Request...';
-                    await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/processValuationRequest', {
+                    await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/processValuationRequest', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -482,7 +482,7 @@ async function runValuationIntelligence(prop) {
         if (appraisalLink) {
             appraisalLink.onclick = async (e) => {
                 e.preventDefault();
-                await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/processValuationRequest', {
+                await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/processValuationRequest', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -515,7 +515,7 @@ window.handlePurchaseSelection = async (type, price) => {
             });
         }
 
-        await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/processPurchaseEnquiry', {
+        await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/processPurchaseEnquiry', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

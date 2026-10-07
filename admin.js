@@ -194,7 +194,7 @@ async function loadDashboardStats() {
 
         // 4. Site Visitors (Active GA4 Telemetry)
         try {
-            const visitorsResp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/getLiveVisitors');
+            const visitorsResp = await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/getLiveVisitors');
             const visitorData = await visitorsResp.json();
             if (visitorData.success) {
                 document.getElementById('stat-visitors').textContent = visitorData.activeUsers.toLocaleString();
@@ -246,7 +246,7 @@ async function loadDashboardStats() {
 
             // 8. GBP Activity Insights
             try {
-                const gbpResp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/getGBPInsights');
+                const gbpResp = await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/getGBPInsights');
                 const gbpData = await gbpResp.json();
                 if (gbpData.success) {
                     document.getElementById('gbp-map-views').textContent = gbpData.mapViews.toLocaleString();
@@ -590,7 +590,7 @@ if (testEmailBtn) {
 
         try {
             const token = await auth.currentUser.getIdToken();
-            const resp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/testEmailConnection', {
+            const resp = await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/testEmailConnection', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const result = await resp.json();
@@ -734,7 +734,7 @@ if (reauthGBPAction) {
         reauthGBPAction.style.pointerEvents = 'none';
 
         try {
-            const resp = await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/generateGMBAuthUrl');
+            const resp = await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/generateGMBAuthUrl');
             const result = await resp.json();
             
             if (result.success && result.auth_url) {
@@ -998,7 +998,7 @@ if (reAnalyzeSocialBtn) {
         reAnalyzeSocialBtn.disabled = true;
         reAnalyzeSocialBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
         try {
-            await fetch('https://us-central1-c4h-wesbite.cloudfunctions.net/manualSocialAnalysis');
+            await fetch('https://europe-west4-c4h-wesbite.cloudfunctions.net/manualSocialAnalysis');
             alert("The Social Intelligence Agent has been tasked with a fresh forensic audit. Content strategy will update automatically.");
             setTimeout(loadSocialIntelligence, 3000);
         } catch (e) {
