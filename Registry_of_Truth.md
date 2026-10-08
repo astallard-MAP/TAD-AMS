@@ -20,7 +20,7 @@ The commercial purpose of the platform is to acquire residential real estate dir
 - **Build & Optimization Pipeline:** Vite (`vite.config.js`) explicitly configured to process and output each individual HTML page into the `dist/` folder via `rollupOptions.input`.
 - **Hosting Infrastructure:** **Google Firebase App Hosting (2026).** The project is officially hosted on the modern Firebase App Hosting platform. It conforms to App Hosting standards, relying on the automated build pipeline (`npm run build`) to serve the compiled MPA static assets directly from the global edge network.
 - **Backend Architecture:** Serverless Firebase Cloud Functions v2 running on Node.js 22 explicitly bound to region **`europe-west4`** (Eemshaven, Netherlands).
-- **AI Core Engine:** Google Genkit integrated with Google Cloud Vertex AI (`gemini-2.5-flash` for high-conversion copywriting, visual auditing, and chatbot dialogue; `imagen-3` for hyper-local documentary photography).
+- **AI Core Engine:** Native @google/genai SDK (^2.27.0). Models: gemini-2.5-pro (Text/Reasoning), gemini-nano-banana-2.1 (Multimodal Image).
 - **Data Persistence:** Google Cloud Firestore (multi-tenant structure for leads, audit logs, social intelligence, dynamic SEO pages, and communication transcripts).
 - **External Integration Hub:** Meta Graph API v19.0 (Facebook Page & Instagram Business), Google My Business API v4 (Dual Essex GBP locations), and Nodemailer via Gmail SMTP.
 
@@ -72,7 +72,7 @@ All future interactions, AI directives, and operational prompts MUST be prefaced
 No code mutation may occur based on an initial error report. The engineer or AI must first conduct an independent read-only audit to identify the root cause, present a formalized Plan of Action detailing every proposed file change, update the Registry of Truth, and await explicit approval from the Principal before writing any code. "Check, identify, recheck confirm, recheck verify."
 
 ### LAW XI: API ROUTING VS. COMPUTE RESIDENCY SEPARATION
-While all Cloud Functions and Firestore deployments MUST be strictly bound to `europe-west4` (per LAW III), the instantiation of the `@google/genai` native SDK MUST configure its API endpoint routing to `location: "global"`. Furthermore, the SDK instantiation object MUST be flat (`{ vertexai: true, project: "...", location: "global" }`). Nesting these parameters causes the SDK to silently fall back to the consumer AI Studio API, triggering fatal 403 Authentication Scope errors.
+The Native Node.js SDK MUST be instantiated with a flat configuration object: { vertexai: true, project: "1089937234221", location: "global" }. Nesting these parameters or using the alphabetic Project ID will cause fatal 404 API Gateway routing failures.
 
 ---
 
@@ -871,4 +871,16 @@ GATE REPORT: [Phase/Task]
 | `024-A` | **Hardening instantSocialTestAgent:** Increased memory to 2GiB and injected `timeoutSeconds: 540` to accommodate heavy multimodal tasks. | `[Completed]` |
 | `024-B` | **Hardening manualSocialGenerate:** Increased memory to 2GiB and injected `timeoutSeconds: 540` to match production parity. | `[Completed]` |
 | `024-C` | **Ledger Update:** Documented Phase 024 memory/timeout hardening in the Registry of Truth. | `[Completed]`
+
+---
+
+### [PHASE 025]: Architecture Documentation & Baseline Stabilization
+- **Objective:** Permanently enshrine the AI Core SDK configuration and rewrite LAW XI to prevent architectural regressions.
+- **Date Executed:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `025-A` | **Enshrine AI Core:** Updated Section 1.2 and rewritten LAW XI in the Registry of Truth to reflect the correct flat configuration object and models. | `[Completed]` |
+| `025-B` | **Operations Brief Update:** Enshrined the verified SDK & Model configurations in WEBSITE_OPERATIONS_BRIEF.md. | `[Completed]`
 

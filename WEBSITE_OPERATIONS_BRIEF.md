@@ -18,6 +18,15 @@ The platform operates as a robust two-sided system:
 
 ## 2. Artificial Intelligence: The SLIM Fleet (Self-Learning Independent Modules)
 
+### 2.1 Verified SDK & Model Configuration
+SDK: @google/genai (Version ^2.27.0)
+
+Auth/Routing: Application Default Credentials (ADC) using { vertexai: true, project: "1089937234221", location: "global" }
+
+Text/Analysis Model: gemini-2.5-pro
+
+Visual/Image Model: gemini-nano-banana-2.1
+
 The platform is driven by an advanced, multi-agent AI framework known as the "SLIM Fleet", primarily leveraging Google Gemini Pro. Each agent runs autonomously on scheduled cron jobs or via webhook triggers within Firebase Cloud Functions.
 
 ### The Specialized SLIM Fleet (`functions/slim/`)
