@@ -29,10 +29,9 @@ function getAIClient() {
         // Native SDK using ADC. 
         // Compute in europe-west4. API Routing global.
         _aiClient = new GoogleGenAI({ 
-            vertexai: { 
-                project: "1089937234221", 
-                location: "us-central1" 
-            }
+            vertexai: true, 
+            project: "1089937234221", 
+            location: "global" 
         });
     }
     return _aiClient;
@@ -258,7 +257,7 @@ async function generateSocialImage(town, context, source = "Social Post") {
 
   try {
     // Production Asset Generation via Vertex AI
-    const result = await (getAIClient()).models.generateContent({ model: 'gemini-2.5-pro', contents: prompt });
+    const result = await (getAIClient()).models.generateContent({ model: 'gemini-nano-banana-2.1', contents: prompt });
     const mediaData = result.generatedImages[0].image.imageUri || `data:image/png;base64,${result.generatedImages[0].image.imageBytes}`;
     let imageUrl = mediaData;
     if (mediaData.startsWith("data:image")) {

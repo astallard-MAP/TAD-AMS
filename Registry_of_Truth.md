@@ -845,3 +845,17 @@ GATE REPORT: [Phase/Task]
 | `020-B` | **Fortify RSS Parser Resiliency:** Moved the `try...catch` block inside the loop in `generateSocialContent` to prevent total failure if a single URL rejects the connection. | `[Completed]` |
 | `020-C` | **Ledger Update:** Documented the Phase 020 changes in the Registry of Truth. | `[Completed]`
 
+---
+
+### [PHASE 023.1]: Agent Platform SDK Alignment & Multimodal Model Rectification
+- **Objective:** Resolve dependency mismatch, align SDK configuration structure, and rectify image generation model.
+- **Date Executed:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `023.1-A` | **Resolve Dependency Mismatch:** Updated `@google/genai` dependency to `^2.27.0` in `functions/package.json`. | `[Completed]` |
+| `023.1-B` | **Align SDK Initialization:** Flattened `getAIClient()` config in `functions/index.js` to strictly use the alphanumeric Project ID and the global location at the top level. | `[Completed]` |
+| `023.1-C` | **Rectify Multimodal Model:** Updated the `generateSocialImage` model string to the officially supported `gemini-nano-banana-2.1`. | `[Completed]` |
+| `023.1-D` | **Ledger Update:** Documented Phase 023.1 changes in the Registry of Truth. | `[Completed]`
+
