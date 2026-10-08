@@ -884,3 +884,28 @@ GATE REPORT: [Phase/Task]
 | `025-A` | **Enshrine AI Core:** Updated Section 1.2 and rewritten LAW XI in the Registry of Truth to reflect the correct flat configuration object and models. | `[Completed]` |
 | `025-B` | **Operations Brief Update:** Enshrined the verified SDK & Model configurations in WEBSITE_OPERATIONS_BRIEF.md. | `[Completed]`
 
+---
+
+### [PHASE 026]: Payload Schema Diagnostics (Non-Destructive)
+- **Objective:** Inject a standalone temporary endpoint to capture and analyze the raw JSON payload from `gemini-nano-banana-2.1` to resolve extraction failures.
+- **Date Executed:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `026-A` | **Inject Diagnostic Endpoint:** Created `testRawImagePayload` to dump the exact structure of the multimodal API response. | `[Completed]` |
+| `026-B` | **Ledger Update:** Documented Phase 026 in the Registry of Truth. | `[Completed]`
+
+---
+
+### [PHASE 027]: Multimodal Payload Extraction & Cleanup
+- **Objective:** Rectify image extraction logic to match the new `gemini-nano-banana-2.1` payload schema and eradicate temporary diagnostic tools.
+- **Date Executed:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `027-A` | **Rectify Image Extraction Logic:** Updated `generateSocialImage` to extract base64 data from `candidates[0].content.parts[0].inlineData`. | `[Completed]` |
+| `027-B` | **Eradicate Diagnostic Endpoint:** Deleted the temporary `testRawImagePayload` function from `index.js`. | `[Completed]` |
+| `027-C` | **Ledger Update:** Documented Phase 027 in the Registry of Truth. | `[Completed]`
+

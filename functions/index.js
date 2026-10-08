@@ -258,7 +258,10 @@ async function generateSocialImage(town, context, source = "Social Post") {
   try {
     // Production Asset Generation via Vertex AI
     const result = await (getAIClient()).models.generateContent({ model: 'gemini-nano-banana-2.1', contents: prompt });
-    const mediaData = result.generatedImages[0].image.imageUri || `data:image/png;base64,${result.generatedImages[0].image.imageBytes}`;
+
+    // Verified 2026 Payload Extraction
+    const inlineData = result.candidates[0].content.parts[0].inlineData;
+    const mediaData = `data:${inlineData.mimeType};base64,${inlineData.data}`;
     let imageUrl = mediaData;
     if (mediaData.startsWith("data:image")) {
       const base64Data = mediaData.replace(/^data:image\/\w+;base64,/, "");
@@ -2919,3 +2922,4 @@ exports.fillArchiveAdmin = onRequest({ region: "europe-west4", cors: true }, asy
         res.status(500).send(err.toString());
     }
 });
+
