@@ -859,3 +859,16 @@ GATE REPORT: [Phase/Task]
 | `023.1-C` | **Rectify Multimodal Model:** Updated the `generateSocialImage` model string to the officially supported `gemini-nano-banana-2.1`. | `[Completed]` |
 | `023.1-D` | **Ledger Update:** Documented Phase 023.1 changes in the Registry of Truth. | `[Completed]`
 
+---
+
+### [PHASE 024]: Diagnostic Agent Hardening (Timeout & Memory)
+- **Objective:** Fix HTTP 504 Gateway Timeouts by uprating compute and extending execution windows for synchronous diagnostic probes.
+- **Date Executed:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `024-A` | **Hardening instantSocialTestAgent:** Increased memory to 2GiB and injected `timeoutSeconds: 540` to accommodate heavy multimodal tasks. | `[Completed]` |
+| `024-B` | **Hardening manualSocialGenerate:** Increased memory to 2GiB and injected `timeoutSeconds: 540` to match production parity. | `[Completed]` |
+| `024-C` | **Ledger Update:** Documented Phase 024 memory/timeout hardening in the Registry of Truth. | `[Completed]`
+

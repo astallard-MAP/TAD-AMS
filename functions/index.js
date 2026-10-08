@@ -814,7 +814,8 @@ exports.emailQueueAgent = onSchedule({ region: "europe-west4",
 
 exports.manualSocialGenerate = onRequest({ region: "europe-west4", 
   cors: true, 
-  memory: "512MiB",
+  memory: "2GiB",
+  timeoutSeconds: 540,
   secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "GBP_ACCOUNT_ID"] 
 }, async (req, res) => {
   const text = await generateSocialPost("Manual");
@@ -823,7 +824,8 @@ exports.manualSocialGenerate = onRequest({ region: "europe-west4",
 
 exports.instantSocialTestAgent = onRequest({ region: "europe-west4",
   cors: true,
-  memory: "512MiB",
+  memory: "2GiB",
+  timeoutSeconds: 540,
   secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "GBP_ACCOUNT_ID"]
 }, async (req, res) => {
   const steps = [];
