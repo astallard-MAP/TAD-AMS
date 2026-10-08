@@ -31,7 +31,7 @@ function getAIClient() {
         _aiClient = new GoogleGenAI({ 
             vertexai: { 
                 project: "1089937234221", 
-                location: "global" 
+                location: "us-central1" 
             }
         });
     }
@@ -400,15 +400,17 @@ async function generateSocialContent(timeOfDay, targetHour) {
   const town = await getActiveGSRLocation();
   
   let newsContext = "";
-  try {
-    const feeds = ["https://www.propertyindustryeye.com/feed/", "https://www.mortgagestrategy.co.uk/feed/"];
-    let newsItems = [];
-    for (const url of feeds) {
+  const feeds = ["https://www.propertyindustryeye.com/feed/", "https://www.mortgagestrategy.co.uk/feed/"];
+  let newsItems = [];
+  for (const url of feeds) {
+    try {
       const feed = await parser.parseURL(url);
       newsItems.push(...feed.items.slice(0, 2).map(i => i.title));
+    } catch (e) {
+      console.warn(`News Context Fail for URL: ${url}`);
     }
-    newsContext = newsItems.join(". ");
-  } catch (e) { console.warn("News Context Fail"); }
+  }
+  newsContext = newsItems.join(". ");
 
   const strategySnap = await db.collection("socialStrategy").doc("latest").get();
   let strategicInjections = "";

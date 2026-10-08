@@ -832,3 +832,16 @@ GATE REPORT: [Phase/Task]
 - **Date Executed:** 07 October 2026
 - **Status:** `[Completed]`
 
+---
+
+### [PHASE 020]: AI SDK Location Rectification & RSS Resiliency
+- **Objective:** Rectify SDK Vertex AI location to `us-central1` and fortify RSS parser resiliency.
+- **Date Executed:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `020-A` | **Rectify SDK Vertex AI Location:** Updated `getAIClient()` to use `location: "us-central1"`. This shift for the Vertex AI API route does not violate LAW III as the compute layer remains in `europe-west4`. | `[Completed]` |
+| `020-B` | **Fortify RSS Parser Resiliency:** Moved the `try...catch` block inside the loop in `generateSocialContent` to prevent total failure if a single URL rejects the connection. | `[Completed]` |
+| `020-C` | **Ledger Update:** Documented the Phase 020 changes in the Registry of Truth. | `[Completed]`
+
