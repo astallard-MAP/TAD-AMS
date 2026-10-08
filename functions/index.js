@@ -267,7 +267,7 @@ async function generateSocialImage(town, context, source = "Social Post") {
       const base64Data = mediaData.replace(/^data:image\/\w+;base64,/, "");
       const buffer = Buffer.from(base64Data, 'base64');
       const filename = `social_images/img_${Date.now()}_${Math.floor(Math.random() * 1000)}.png`;
-      const bucket = admin.storage().bucket('c4h-wesbite.appspot.com');
+      const bucket = admin.storage().bucket('c4h-wesbite.firebasestorage.app');
       const file = bucket.file(filename);
       
       await file.save(buffer, {

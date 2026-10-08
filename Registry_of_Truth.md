@@ -909,3 +909,15 @@ GATE REPORT: [Phase/Task]
 | `027-B` | **Eradicate Diagnostic Endpoint:** Deleted the temporary `testRawImagePayload` function from `index.js`. | `[Completed]` |
 | `027-C` | **Ledger Update:** Documented Phase 027 in the Registry of Truth. | `[Completed]`
 
+---
+
+### [PHASE 028]: Cloud Storage Bucket Resolution
+- **Objective:** Rectify the 404 Bucket Not Found error by synchronizing the backend Cloud Storage target to `c4h-wesbite.firebasestorage.app`.
+- **Date Executed:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `028-A` | **Rectify Cloud Storage Target:** Updated `generateSocialImage` bucket target to `c4h-wesbite.firebasestorage.app`. | `[Completed]` |
+| `028-B` | **Ledger Update:** Documented Phase 028 in the Registry of Truth. | `[Completed]`
+
