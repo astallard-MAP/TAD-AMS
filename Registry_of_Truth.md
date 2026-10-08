@@ -921,3 +921,15 @@ GATE REPORT: [Phase/Task]
 | `028-A` | **Rectify Cloud Storage Target:** Updated `generateSocialImage` bucket target to `c4h-wesbite.firebasestorage.app`. | `[Completed]` |
 | `028-B` | **Ledger Update:** Documented Phase 028 in the Registry of Truth. | `[Completed]`
 
+---
+
+### [PHASE 029]: Scheduled Agent Memory Hardening
+- **Objective:** Uprate `dailyMarketAnalysis` memory allocation to 2GiB to resolve Out Of Memory (OOM) fatal crashes during scheduled execution.
+- **Date Executed:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `029-A` | **Hardening dailyMarketAnalysis:** Injected `memory: "2GiB"` and `timeoutSeconds: 300` into the scheduled function configuration. | `[Completed]` |
+| `029-B` | **Ledger Update:** Documented Phase 029 in the Registry of Truth. | `[Completed]`
+

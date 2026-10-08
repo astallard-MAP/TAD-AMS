@@ -702,8 +702,10 @@ async function updateMarketNews() {
 exports.dailyMarketAnalysis = onSchedule({ region: "europe-west4", 
   schedule: "0 8 * * *", 
   timeZone: "Europe/London",
+  memory: "2GiB",
+  timeoutSeconds: 300,
   secrets: ["META_PAGE_ID", "META_PERMANENT_PAGE_TOKEN", "GBP_LOCATION_ID", "GBP_CLIENT_ID", "GBP_CLIENT_SECRET", "GBP_REFRESH_TOKEN", "GBP_ACCOUNT_ID"] 
-}, async (event) => { 
+}, async (event) => {
   await updateMarketNews(); 
 });
 
