@@ -933,3 +933,32 @@ GATE REPORT: [Phase/Task]
 | `029-A` | **Hardening dailyMarketAnalysis:** Injected `memory: "2GiB"` and `timeoutSeconds: 300` into the scheduled function configuration. | `[Completed]` |
 | `029-B` | **Ledger Update:** Documented Phase 029 in the Registry of Truth. | `[Completed]`
 
+---
+
+### [PHASE 030]: Homepage Success Story Pipeline Rectification
+- **Objective:** Physically wire the latest generated story into the home page based on diagnostic findings.
+- **Date Logged:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `030-A` | **Client-Side Verification:** Acknowledge that `index.html` already contains a static fallback container (`#success-stories`) and `main.js` correctly executes a client-side fetch (`fetchSuccessStories()`) pulling from the `successStories` collection. The pipeline for Daily Testimonials is NOT hallucinated and actively functions. | `[Completed]` |
+| `030-B` | **Spotlight Integration:** The `generateDailySpotlight` function writes to `areaSpotlights`, which is currently unlinked on the homepage. Formulate the wiring of this data (e.g. server-side injection via `server/dynamic-content.js` or client-side fetch in `main.js`). | `[Completed]` |
+| `030-C` | **Performance/SEO Upgrade:** Transition the existing client-side Success Story fetch into a server-side injection within `server/dynamic-content.js` to eliminate layout shift and improve SEO rendering. | `[Completed]` |
+| `030-F` | **Execution - Server:** Refactored `server/dynamic-content.js` `/index.html` handler to execute server-side DOM injection for both `successStories` and `areaSpotlights`. | `[Completed]` |
+| `030-G` | **Execution - Client:** Refactored `main.js` to eradicate the redundant client-side `fetchSuccessStories()` asynchronous call. | `[Completed]` |
+
+---
+
+### [PHASE 031]: Dependency Harmonization & Node 22 Upgrade
+- **Objective:** Rectify Node engine mismatches, eradicate deprecated Genkit remnants, and unify `firebase-admin` versions to natively support the Node.js 22 runtime environment.
+- **Date Logged:** 08 October 2026
+- **Status:** `[to be actioned]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `031-A` | **Node Engine Upgrade (Functions):** In `functions/package.json`, upgrade `"engines": { "node": "20" }` to `"22"`. | `[to be actioned]` |
+| `031-B` | **Node Engine Enforcement (Root):** In the root `package.json`, explicitly inject the `"engines": { "node": "22" }` field to prevent App Hosting drift. | `[to be actioned]` |
+| `031-C` | **Firebase Admin Synchronization:** Upgrade `firebase-admin` in `functions/package.json` from `^13.7.0` to `^14.5.0` to perfectly mirror the root repository version. | `[to be actioned]` |
+| `031-D` | **Eradicate Genkit Remnants:** Purge the deprecated `genkit` and `@genkit-ai/google-genai` dependencies from the root `package.json` (leftover from Phase 019). | `[to be actioned]` |
+

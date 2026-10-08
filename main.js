@@ -285,36 +285,6 @@ async function fetchLatestNews() {
 
 fetchLatestNews();
 
-// --- SUCCESS STORIES INTEGRATION ---
-async function fetchSuccessStories() {
-    const successGrid = document.querySelector('#success-stories .feature-grid');
-    if (!successGrid) return;
-
-    try {
-        const q = query(collection(db, "successStories"), orderBy("timestamp", "desc"), limit(4));
-        const snapshot = await getDocs(q);
-        
-        const stories = [];
-        snapshot.forEach(doc => stories.push(doc.data()));
-        
-        if (stories.length === 0) return;
-
-        // Render Dynamic Success Stories
-        successGrid.innerHTML = stories.map(story => `
-            <div class="feature-card success-card">
-                <div class="success-icon"><i class="${story.icon || 'fas fa-home'}"></i></div>
-                <h3>${story.title}</h3>
-                <p>${story.content}</p>
-                <span class="success-meta">${story.meta}</span>
-            </div>
-        `).join('');
-
-    } catch (err) {
-        console.warn("Success Stories Fetch Failure:", err);
-    }
-}
-
-fetchSuccessStories();
 
 // Smooth Scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
