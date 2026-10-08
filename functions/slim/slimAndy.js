@@ -1,5 +1,16 @@
 const { onRequest } = require("firebase-functions/v2/https");
-const admin = require('firebase-admin');
+const { getApps, initializeApp } = require("firebase-admin/app");
+const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
+const { getStorage } = require("firebase-admin/storage");
+
+const admin = {
+    get apps() { return getApps(); },
+    initializeApp: initializeApp,
+    firestore: () => getFirestore(),
+    storage: () => getStorage()
+};
+admin.firestore.FieldValue = FieldValue;
+admin.firestore.Timestamp = Timestamp;
 const HiveClient = require('../hive/hiveClient');
 const db = admin.firestore();
 

@@ -1,4 +1,15 @@
-const admin = require('firebase-admin');
+const { getApps, initializeApp } = require("firebase-admin/app");
+const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
+const { getStorage } = require("firebase-admin/storage");
+
+const admin = {
+    get apps() { return getApps(); },
+    initializeApp: initializeApp,
+    firestore: () => getFirestore(),
+    storage: () => getStorage()
+};
+admin.firestore.FieldValue = FieldValue;
+admin.firestore.Timestamp = Timestamp;
 const cryptoUtils = require('./cryptoUtils');
 
 // Ensure firebase-admin is initialized before using

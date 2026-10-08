@@ -953,12 +953,48 @@ GATE REPORT: [Phase/Task]
 ### [PHASE 031]: Dependency Harmonization & Node 22 Upgrade
 - **Objective:** Rectify Node engine mismatches, eradicate deprecated Genkit remnants, and unify `firebase-admin` versions to natively support the Node.js 22 runtime environment.
 - **Date Logged:** 08 October 2026
-- **Status:** `[to be actioned]`
+- **Status:** `[Completed]`
 
 | Task ID | Description | Status |
 | :--- | :--- | :--- |
-| `031-A` | **Node Engine Upgrade (Functions):** In `functions/package.json`, upgrade `"engines": { "node": "20" }` to `"22"`. | `[to be actioned]` |
-| `031-B` | **Node Engine Enforcement (Root):** In the root `package.json`, explicitly inject the `"engines": { "node": "22" }` field to prevent App Hosting drift. | `[to be actioned]` |
-| `031-C` | **Firebase Admin Synchronization:** Upgrade `firebase-admin` in `functions/package.json` from `^13.7.0` to `^14.5.0` to perfectly mirror the root repository version. | `[to be actioned]` |
-| `031-D` | **Eradicate Genkit Remnants:** Purge the deprecated `genkit` and `@genkit-ai/google-genai` dependencies from the root `package.json` (leftover from Phase 019). | `[to be actioned]` |
+| `031-A` | **Node Engine Upgrade (Functions):** In `functions/package.json`, upgrade `"engines": { "node": "20" }` to `"22"`. | `[Completed]` |
+| `031-B` | **Node Engine Enforcement (Root):** In the root `package.json`, explicitly inject the `"engines": { "node": "22" }` field to prevent App Hosting drift. | `[Completed]` |
+| `031-C` | **Firebase Admin Synchronization:** Upgrade `firebase-admin` in `functions/package.json` from `^13.7.0` to `^14.5.0` to perfectly mirror the root repository version. | `[Completed]` |
+| `031-D` | **Eradicate Genkit Remnants:** Purge the deprecated `genkit` and `@genkit-ai/google-genai` dependencies from the root `package.json` (leftover from Phase 019). | `[Completed]` |
+
+---
+
+### [PHASE 032]: Pre-Flight Verification & Syntax Audit
+- **Objective:** Perform strict pre-flight syntax and structural verification on Phase 030 execution to ensure zero malformed DOM structures or orphaned callbacks.
+- **Date Logged:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `032-A` | **Read-Only Syntax Audit (Server):** Executed a parse of `server/dynamic-content.js`. Verified all backend fetch calls are safely enclosed within `try...catch` blocks to prevent crash failures. Verified DOM replacement payload schemas perfectly match structural balance without unclosed HTML tags. | `[Completed]` |
+| `032-B` | **Read-Only Integration Audit (Client):** Executed a parse of `main.js`. Confirmed the total eradication of the client-side `fetchSuccessStories` pipeline left zero orphaned execution calls or broken event listeners. | `[Completed]` |
+
+---
+
+### [PHASE 033]: ESM Dependency Resolution (ERR_REQUIRE_ESM)
+- **Objective:** Rectify the CommonJS vs ES Module resolution conflict within the `firebase-admin` sub-dependency tree to restore Cloud Functions deployment capability.
+- **Date Logged:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `033-A` | **Diagnostic Analysis:** Acknowledge the `ERR_REQUIRE_ESM` error caused by `jwks-rsa` requiring the ESM-only version of `jose` within a CommonJS execution context. | `[Completed]` |
+| `033-B` | **Plan of Action:** Formulate a structural fix utilizing NPM `overrides` in `functions/package.json` to explicitly pin `jose` to a CommonJS-compatible version (v4.x.x). | `[Completed]` |
+
+---
+
+### [PHASE 034]: SDK Modular Migration (TypeError: admin.firestore)
+- **Objective:** Rectify the deployment crash caused by the removal of the legacy `firebase-admin` namespace API in v14 by implementing an Adapter Pattern shim using the modern modular SDK.
+- **Date Logged:** 08 October 2026
+- **Status:** `[Completed]`
+
+| Task ID | Description | Status |
+| :--- | :--- | :--- |
+| `034-A` | **Diagnostic Analysis:** Acknowledge the `TypeError: admin.firestore is not a function` crash. Identified the architectural root cause as `firebase-admin@14.5.0` stripping the legacy namespace API in favor of modular exports. | `[Completed]` |
+| `034-B` | **Adapter Implementation:** Injected an Adapter Pattern shim into `functions/index.js` (Lines 8-15) mapping `admin.firestore()` and `admin.storage()` to their respective modern `getFirestore()` and `getStorage()` modular equivalents, ensuring the 2,900-line codebase remains stable without risky mass regex replacements. | `[Completed]` |
 

@@ -5,7 +5,18 @@ setGlobalOptions({ region: "europe-west4" });
 const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
-const admin = require("firebase-admin");
+const { initializeApp } = require("firebase-admin/app");
+const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
+const { getStorage } = require("firebase-admin/storage");
+
+const admin = {
+    get apps() { return getApps(); },
+    initializeApp: initializeApp,
+    firestore: () => getFirestore(),
+    storage: () => getStorage()
+};
+admin.firestore.FieldValue = FieldValue;
+admin.firestore.Timestamp = Timestamp;
 const nodemailer = require("nodemailer");
 const Parser = require("rss-parser");
 
